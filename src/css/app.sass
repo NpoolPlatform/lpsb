@@ -2052,14 +2052,6 @@ h3.mining-title
   position: relative
   width: calc(100% - 40px)
   z-index: 1
-
-.first-child::before
-  height: calc(100% + 120px) !important
-  top: -60px !important
-
-.last-child::before
-  height: 40px !important
-
   &::before
     background: var(--aqua-1)
     content: ""
@@ -2081,6 +2073,13 @@ h3.mining-title
     height: 1px
     width: 20px
     z-index: -1
+
+.first-child::before
+  height: calc(100% + 120px) !important
+  top: -60px !important
+
+.last-child::before
+  height: 40px !important
 
 .aff-top
   display: flex
