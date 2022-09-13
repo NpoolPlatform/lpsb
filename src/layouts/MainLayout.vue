@@ -1,17 +1,15 @@
 <template>
-  <div class='page column'>
-    <MainHeader v-if='setting.ShowMainHeader' :class='[ special ? "special" : "" ]' />
-    <div :class='[ "main row", special ? "special" : "" ]'>
-      <SideMenu />
-      <div id='main'>
-        <div :class='[ setting.ShowSideMenu ? "with-sidebar" : "" ]'>
-          <router-view />
-        </div>
+  <MainHeader v-if='setting.ShowMainHeader' :class='[ special ? "special" : "" ]' />
+  <div :class='[ "main row", special ? "special" : "" ]'>
+    <SideMenu />
+    <div id='main'>
+      <div :class='[ setting.ShowSideMenu ? "with-sidebar" : "" ]'>
+        <router-view />
       </div>
     </div>
-    <q-space />
-    <Footer v-if='setting.ShowFooterTop' :class='[ special ? "special" : "" ]' />
   </div>
+  <q-space />
+  <Footer v-if='setting.ShowFooterTop' :class='[ special ? "special" : "" ]' />
   <LangLoader />
   <Prepare />
 </template>
