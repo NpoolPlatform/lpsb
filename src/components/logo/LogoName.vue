@@ -22,3 +22,9 @@ const name = toRef(props, 'name')
 const logo = toRef(props, 'logo')
 
 </script>
+<style lang='sass' scoped>
+  .table-coin-icon
+    width: 24px
+    height: 24px
+    margin-right: 10px
+  </style>
