@@ -8,7 +8,7 @@
         <li><a class='nav-link' href='#/faqs'>{{ $t('MSG_SUPPORT_AND_FAQ') }}</a></li>
         <li><a class='nav-link' href='#/contact'>{{ $t('MSG_CONTACT') }}</a></li>
         <LangSwitcher />
-        <SignHelper v-if='!localUser.logined' />
+        <SignHelper v-if='!logined.logined' />
         <q-btn
           v-else
           size='1.1rem'
@@ -44,7 +44,7 @@
 
     <div class='header-inner'>
       <LangSwitcher />
-      <SignHelper v-if='!localUser.logined' />
+      <SignHelper v-if='!logined.logined' />
       <q-btn
         v-else
         size='1.1rem'
@@ -110,14 +110,14 @@ const { t } = useI18n({ useScope: 'global' })
 
 const inspire = useInspireStore()
 const user = useFrontendUserStore()
-const localUser = useLocalUserStore()
+const logined = useLocalUserStore()
 
 const router = useRouter()
 
 const onSwitchMenu = (item: MenuItem) => {
   if (item.label === 'MSG_LOGOUT') {
     user.logout({
-      Token: localUser.User.LoginToken,
+      Token: logined.User.LoginToken,
       Message: {
         Error: {
           Title: t('MSG_LOGOUT_FAIL'),
@@ -142,7 +142,7 @@ const onSwitchMenu = (item: MenuItem) => {
 
 const menu = computed(() => {
   const myMenu = HeaderAvatarMenu()
-  myMenu.children = myMenu.children.filter((m) => m.label !== 'MSG_REFERRAL' || localUser.User?.InvitationCode?.length)
+  myMenu.children = myMenu.children.filter((m) => m.label !== 'MSG_REFERRAL' || logined.User?.InvitationCode?.length)
   return myMenu
 })
 
@@ -150,7 +150,7 @@ const onLogoClick = () => {
   void router.push({ path: '/' })
 }
 
-const userLogined = computed(() => localUser.logined)
+const userLogined = computed(() => logined.logined)
 
 watch(userLogined, () => {
   if (!userLogined.value) {
@@ -162,7 +162,7 @@ watch(userLogined, () => {
 })
 
 const initialize = () => {
-  if (localUser.User?.InvitationCode?.length) {
+  if (logined.User?.InvitationCode?.length) {
     inspire.getPurchaseAmountSettings({
       Message: {}
     }, () => {
