@@ -1,6 +1,6 @@
 <template>
-  <header class='desktop1'>
-    <img :src='lightLogo' class='attachment-large size-large logo cursor-pointer' @click='onLogoClick'>
+  <header class='desktop'>
+    <img :src='logoText' class='attachment-large size-large logo  cursor-pointer' @click='onLogoClick'>
     <div class='nav'>
       <ul>
         <li><a class='nav-link' href='#'>{{ $t('MSG_HOME') }}</a></li>
@@ -90,11 +90,12 @@ import { defineAsyncComponent, computed, watch, onMounted } from 'vue'
 import { HeaderAvatarMenu, MenuItem } from 'src/menus/menus'
 import { useRouter } from 'vue-router'
 
-import lightLogo from '../../assets/procyon-light.svg'
-import logo from '../../assets/procyon-logo.svg'
+import logoText from '../../assets/logo-text.png'
+import logo from '../../assets/logo-icon.png'
+
 import { useI18n } from 'vue-i18n'
 
-import userAvatar from '../../assets/icon-user.svg'
+import userAvatar from '../../assets/user-circle.svg'
 import {
   NotifyType,
   useFrontendUserStore,
