@@ -1,22 +1,20 @@
 <template>
   <h2>{{ $t('MSG_DIRECT_AFFILIATES') }}</h2>
   <div class='direct-ref content-glass'>
-    <div class='row'>
-      <div id='search-box'>
-        <h4>{{ $t('MSG_SEARCH_ACCOUNTS') }}</h4>
-        <form action='javascript: void(0)' @submit='onSearchSubmit'>
-          <div class='sub-form'>
-            <input id='search-field' type='text' v-model='searchStr' :placeholder='$t("MSG_AFFILIATES_SEARCH_PLACEHOLDER")'>
+    <div id='user-search'>
+      <form action='javascript: void(0)' @submit='onSearchSubmit'>
+        <div class='sub-form'>
+          <h4>{{ $t('MSG_SEARCH_ACCOUNTS') }}</h4>
+          <div class='search-wrap'>
+            <input type='text' v-model='searchStr' :placeholder='$t("MSG_AFFILIATES_SEARCH_PLACEHOLDER")'>
             <button v-if='searchStr.length > 0' class='search-reset' type='reset' @click='onSearchResetClick'>
               &times;
             </button>
           </div>
-        </form>
-      </div>
-      <q-space />
-      <div v-show='coins.length >= 1' id='product-filter'>
-        <h4>{{ $t('MSG_PRODUCT_FILTER') }}</h4>
-        <form>
+        </div>
+        <q-space />
+        <div class='sub-form' v-show='coins.length >= 1'>
+          <h4>{{ $t('MSG_PRODUCT_FILTER') }}</h4>
           <select v-model='selectedCoin'>
             <option
               v-for='_coin in coins'
@@ -27,8 +25,8 @@
               {{ _coin.label }}
             </option>
           </select>
-        </form>
-      </div>
+        </div>
+      </form>
     </div>
     <div class='aff-table'>
       <table id='direct-ref-table'>
@@ -233,7 +231,7 @@ const pageReferrals = computed(() => displayReferrals.value.filter((el, index) =
 
 </script>
 
-<stype lang='sass' scoped>
+<style lang='sass' scoped>
 .pagination
   max-width: 40%
-</stype>
+</style>
