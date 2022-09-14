@@ -23,9 +23,16 @@
           <span>{{ $t(faq.subtitle) }}</span>
         </div>
       </a>
+      <a class='faq-menu-item' @click='onAleoClick'>
+        <img class='faq-product' src='product/aleo/product-aleo.png'>
+        <div class='faq-menu-item-info'>
+          <h2>{{ $t('MSG_ALEO_FAQ_MENU_TITLE') }}</h2>
+          <span>{{ $t('MSG_ALEO_FAQ_MENU_SUBTITLE') }}</span>
+        </div>
+      </a>
     </div>
 
-    <h2>{{ $t('MSG_PROCYON_PRODUCTS') }}</h2>
+    <!-- <h2>{{ $t('MSG_PROCYON_PRODUCTS') }}</h2>
     <div class='faq-menu-cointainer'>
       <a class='faq-menu-item' @click='onAleoClick'>
         <img class='faq-product' src='product/aleo/product-aleo.png'>
@@ -41,7 +48,7 @@
           <span>{{ $t('MSG_SPACEMESH_FAQ_MENU_SUBTITLE') }}</span>
         </div>
       </a>
-    </div>
+    </div> -->
     <!--
     <h2>Learning Center</h2>
     <div class='faq-menu-cointainer'>
@@ -89,12 +96,12 @@ const faqs = computed(() => [
     topic: 'Dashboard',
     title: 'MSG_DASHBOARD_FAQ_MENU_TITLE',
     subtitle: 'MSG_DASHBOARD_FAQ_MENU_SUBTITLE'
-  }, /* {
+  }, {
     icon: 'font-awesome/bitcoin.svg',
     topic: 'Payments',
     title: 'MSG_PAYMENTS_FAQ_MENU_TITLE',
     subtitle: 'MSG_PAYMENTS_FAQ_MENU_SUBTITLE'
-  }, */ {
+  }, {
     icon: 'font-awesome/user-check.svg',
     topic: 'KYC',
     title: 'MSG_KYC_FAQ_MENU_TITLE',
@@ -104,12 +111,12 @@ const faqs = computed(() => [
     topic: 'Security',
     title: 'MSG_SECURITY_FAQ_MENU_TITLE',
     subtitle: 'MSG_SECURITY_FAQ_MENU_SUBTITLE'
-  }, {
+  } /* {
     icon: 'font-awesome/question.svg',
     topic: 'General',
     title: 'MSG_GENERAL_FAQ_MENU_TITLE',
     subtitle: 'MSG_GENERAL_FAQ_MENU_SUBTITLE'
-  }
+  } */
 ] as Array<FaqItem>)
 
 const router = useRouter()
@@ -123,14 +130,14 @@ const onItemClick = (faq: FaqItem) => {
   })
 }
 
-const onSpacemeshClick = () => {
-  void router.push({
-    path: '/faq',
-    query: {
-      topic: 'Spacemesh'
-    }
-  })
-}
+// const onSpacemeshClick = () => {
+//   void router.push({
+//     path: '/faq',
+//     query: {
+//       topic: 'Spacemesh'
+//     }
+//   })
+// }
 
 const onAleoClick = () => {
   void router.push({
