@@ -5,10 +5,10 @@
         <div class='column-4'>
           <img class='logo' :src='logoText'>
           <h1>
-            <!-- <span v-html='$t("MSG_SHOOT_FOT_THE_STARS")' /> -->
+            <span v-html='$t("MSG_SHOOT_FOT_THE_STARS")' />
           </h1>
           <h4 class='tagline'>
-            <!-- <span v-html='$t("MSG_YOUR_GLOBAL_CONSTELLATION")' /> -->
+            <span v-html='$t("MSG_YOUR_GLOBAL_CONSTELLATION")' />
           </h4>
         </div>
         <div class='column-4'>
