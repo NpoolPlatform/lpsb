@@ -11,7 +11,7 @@
             <li><a @click='scrollTo("Aleo マイニング製品")'>Aleo マイニング製品</a></li>
             <li><a @click='scrollTo("Aleo とは")'>Aleo とは</a></li>
             <li><a @click='scrollTo("Aleoの技術概要")'>Aleoの技術概要</a></li>
-            <li><a @click='scrollTo("なぜProcyonはAleoを選定したか？")'>なぜProcyonはAleoを選定したか？</a></li>
+            <li><a @click='scrollTo("なぜLPSecretBaseはAleoを選定したか？")'>なぜLPSecretBaseはAleoを選定したか？</a></li>
           </ul>
 
           <div class='hr' />
