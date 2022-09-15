@@ -1,7 +1,7 @@
 <template>
   <Page>
     <template #body>
-      <h2>Procyon プラットフォーム：ダッシュボード</h2>
+      <h2>ダッシュボード</h2>
 
       <div class='faq-content'>
         <div class='faq-content-nav'>
