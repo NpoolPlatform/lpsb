@@ -33,7 +33,7 @@
         </div>
       </div>
       <p class='copyright'>
-        © © 2022 LP Secret Base
+        © 2022 LP Secret Base
       </p>
     </div>
   </footer>
