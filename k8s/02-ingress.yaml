@@ -1,11 +1,11 @@
 apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
-  name: lpsb-webui-v2-ingress
+  name: lpsb-webui-ingress
   namespace: kube-system
   annotations:
-    k8s.kuboard.cn/displayName: lpsb-webui-v2
-    k8s.kuboard.cn/workload: lpsb-webui-v2
+    k8s.kuboard.cn/displayName: lpsb-webui
+    k8s.kuboard.cn/workload: lpsb-webui
     kubernetes.io/ingress.class: "traefik-internet"
     traefik.ingress.kubernetes.io/router.entrypoints: websecure, web
     traefik.ingress.kubernetes.io/router.middlewares:
@@ -25,12 +25,12 @@ spec:
         paths:
           - path: /
             backend:
-              serviceName: lpsb-webui-v2
+              serviceName: lpsb-webui
               servicePort: 80
     - host: lpsb.vip
       http:
         paths:
           - path: /
             backend:
-              serviceName: lpsb-webui-v2
+              serviceName: lpsb-webui
               servicePort: 80

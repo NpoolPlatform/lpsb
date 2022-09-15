@@ -71,7 +71,7 @@ pipeline {
         expression { BUILD_TARGET == 'true' }
       }
       steps {
-        sh 'docker build -t $DOCKER_REGISTRY/entropypool/lpsb-webui-v2:latest .'
+        sh 'docker build -t $DOCKER_REGISTRY/entropypool/lpsb-webui:latest .'
       }
     }
 
@@ -210,7 +210,7 @@ pipeline {
           fi
           PATH=/usr/local/bin:$PATH:./node_modules/@quasar/app/bin yarn install --registry https://registry.npm.taobao.org/
           PATH=/usr/local/bin:$PATH:./node_modules/@quasar/app/bin quasar build
-          docker build -t $DOCKER_REGISTRY/entropypool/lpsb-webui-v2:$tag .
+          docker build -t $DOCKER_REGISTRY/entropypool/lpsb-webui:$tag .
         '''.stripIndent())
       }
     }
@@ -220,9 +220,9 @@ pipeline {
         expression { RELEASE_TARGET == 'true' }
       }
       steps {
-        sh 'docker push $DOCKER_REGISTRY/entropypool/lpsb-webui-v2:latest'
+        sh 'docker push $DOCKER_REGISTRY/entropypool/lpsb-webui:latest'
         sh(returnStdout: true, script: '''
-          images=`docker images | grep entropypool | grep lpsb-webui-v2 | grep none | awk '{ print $3 }'`
+          images=`docker images | grep entropypool | grep lpsb-webui | grep none | awk '{ print $3 }'`
           for image in $images; do
             docker rmi $image -f
           done
@@ -240,11 +240,11 @@ pipeline {
           tag=`git describe --tags $revlist`
 
           set +e
-          docker images | grep lpsb-webui-v2 | grep $tag
+          docker images | grep lpsb-webui | grep $tag
           rc=$?
           set -e
           if [ 0 -eq $rc ]; then
-            docker push $DOCKER_REGISTRY/entropypool/lpsb-webui-v2:$tag
+            docker push $DOCKER_REGISTRY/entropypool/lpsb-webui:$tag
           fi
         '''.stripIndent())
       }
@@ -267,11 +267,11 @@ pipeline {
           tag=$major.$minor.$patch
 
           set +e
-          docker images | grep lpsb-webui-v2 | grep $tag
+          docker images | grep lpsb-webui | grep $tag
           rc=$?
           set -e
           if [ 0 -eq $rc ]; then
-            docker push $DOCKER_REGISTRY/entropypool/lpsb-webui-v2:$tag
+            docker push $DOCKER_REGISTRY/entropypool/lpsb-webui:$tag
           fi
         '''.stripIndent())
       }
@@ -304,7 +304,7 @@ pipeline {
 
           git reset --hard
           git checkout $tag
-          sed -i "s/lpsb-webui-v2:latest/lpsb-webui-v2:$tag/g" k8s/01-lpsb-webui.yaml
+          sed -i "s/lpsb-webui:latest/lpsb-webui:$tag/g" k8s/01-lpsb-webui.yaml
           sed -i "s/uhub.service.ucloud.cn/$DOCKER_REGISTRY/g" k8s/01-lpsb-webui.yaml
 
           sed -i "s/lpsb\\.vip/lpsb\\.npool\\.top/g" k8s/02-ingress.yaml
@@ -332,7 +332,7 @@ pipeline {
 
           git reset --hard
           git checkout $tag
-          sed -i "s/lpsb-webui-v2:latest/lpsb-webui-v2:$tag/g" k8s/01-lpsb-webui.yaml
+          sed -i "s/lpsb-webui:latest/lpsb-webui:$tag/g" k8s/01-lpsb-webui.yaml
           sed -i "s/uhub.service.ucloud.cn/$DOCKER_REGISTRY/g" k8s/01-lpsb-webui.yaml
           kubectl apply -k k8s
         '''.stripIndent())

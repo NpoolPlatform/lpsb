@@ -1,21 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: lpsb-webui-v2
+  name: lpsb-webui
   namespace: kube-system
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: lpsb-webui-v2
+      app: lpsb-webui
   template:
     metadata:
       labels:
-        app: lpsb-webui-v2
+        app: lpsb-webui
     spec:
       containers:
-        - name: lpsb-webui-v2
-          image: uhub.service.ucloud.cn/entropypool/lpsb-webui-v2:latest
+        - name: lpsb-webui
+          image: uhub.service.ucloud.cn/entropypool/lpsb-webui:latest
           imagePullPolicy: Always
           env:
             - name: ENV_ENVIRONMENT_TARGET
@@ -42,7 +42,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: lpsb-webui-v2
+  name: lpsb-webui
   namespace: kube-system
 spec:
   ports:
@@ -50,4 +50,4 @@ spec:
       port: 80
       targetPort: 80
   selector:
-    app: lpsb-webui-v2
+    app: lpsb-webui
