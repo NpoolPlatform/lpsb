@@ -1,7 +1,7 @@
 <template>
   <Page>
     <template #body>
-      <h2>Procyon プラットフォーム：KYC (本人確認)</h2>
+      <h2>KYC (本人確認)</h2>
 
       <div class='faq-content'>
         <div class='faq-content-nav'>
@@ -21,17 +21,8 @@
             KYCの申請の方法
           </h3>
 
-          <div class='video-box'>
-            <iframe
-              width='720' height='405' src='https://www.youtube.com/embed/80zQV5wLT6Y'
-              title='YouTube video player' frameborder='0'
-              allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture'
-              allowfullscreen
-            />
-          </div>
-
           <ul>
-            <li>(1)ログイン後、<a href='https://www.procyon.vip/#/kyc'>KYCページ</a>へアクセスします。</li>
+            <li>(1)ログイン後、<a href='/#/kyc'>KYCページ</a>へアクセスします。</li>
             <li>(2)身分証明書一覧からKYCに使用する身分証明書を選択します。</li>
             <ul>
               <li>パスポート</li>
@@ -41,18 +32,12 @@
             <li>(4)画面下部の、オレンジ色の申請ボタンを押下します。</li>
           </ul>
 
-          <p>
-            <a href='https://drive.google.com/file/d/1w-P1WTkuWBDxcIaxvwNLYReL4mFh08ro/view?usp=sharing' target='_blank'>
-              KYCの申請方法をユーザーガイドで確認
-            </a>
-          </p>
-
           <h3 id='審査状況の確認方法'>
             審査状況の確認方法
           </h3>
 
           <ul>
-            <li>(1)ログイン後、<a href='https://www.procyon.vip/#/kyc'>KYCページ</a>へアクセスします。</li>
+            <li>(1)ログイン後、<a href='/#/kyc'>KYCページ</a>へアクセスします。</li>
             <li>(2)身分証明の認証ステータスの記載内容から確認をします。</li>
           </ul>
 
@@ -61,12 +46,6 @@
             <li><strong>成功：</strong>KYCの審査がとおった状態です。</li>
             <li><strong>失敗：</strong>KYCの審査が棄却された状態です。併記されている理由を参考に再度申請をお願いします。</li>
           </ul>
-
-          <p>
-            <a href='https://drive.google.com/file/d/1w-P1WTkuWBDxcIaxvwNLYReL4mFh08ro/view?usp=sharing' target='_blank'>
-              審査状況の確認方法をユーザーガイドで確認
-            </a>
-          </p>
 
           <h3 id='KYC申請中'>
             KYC申請中(ボタンをクリック中)にサイトが落ちた場合、どうすればいいですか？
