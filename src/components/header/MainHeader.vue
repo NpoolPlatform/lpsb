@@ -1,14 +1,14 @@
 <template>
-  <header class='desktop1'>
-    <img :src='lightLogo' class='attachment-large size-large logo cursor-pointer' @click='onLogoClick'>
+  <header class='desktop'>
+    <img :src='logoText' class='attachment-large size-large logo  cursor-pointer' @click='onLogoClick'>
     <div class='nav'>
       <ul>
-        <li><a class='nav-link' href='#'>{{ $t('MSG_HOME') }}</a></li>
+        <li><a class='nav-link' href='#/signin'>{{ $t('MSG_HOME') }}</a></li>
         <li><a class='nav-link' href='https://procyon-vip.medium.com'>{{ $t('MSG_BLOG') }}</a></li>
         <li><a class='nav-link' href='#/faqs'>{{ $t('MSG_SUPPORT_AND_FAQ') }}</a></li>
         <li><a class='nav-link' href='#/contact'>{{ $t('MSG_CONTACT') }}</a></li>
         <LangSwitcher />
-        <SignHelper v-if='!localUser.logined' />
+        <SignHelper v-if='!logined.logined' />
         <q-btn
           v-else
           size='1.1rem'
@@ -44,7 +44,7 @@
 
     <div class='header-inner'>
       <LangSwitcher />
-      <SignHelper v-if='!localUser.logined' />
+      <SignHelper v-if='!logined.logined' />
       <q-btn
         v-else
         size='1.1rem'
@@ -90,11 +90,12 @@ import { defineAsyncComponent, computed, watch, onMounted } from 'vue'
 import { HeaderAvatarMenu, MenuItem } from 'src/menus/menus'
 import { useRouter } from 'vue-router'
 
-import lightLogo from '../../assets/procyon-light.svg'
-import logo from '../../assets/procyon-logo.svg'
+import logoText from '../../assets/logo-text.png'
+import logo from '../../assets/logo-icon.png'
+
 import { useI18n } from 'vue-i18n'
 
-import userAvatar from '../../assets/icon-user.svg'
+import userAvatar from '../../assets/user-circle.svg'
 import {
   NotifyType,
   useFrontendUserStore,
@@ -110,14 +111,14 @@ const { t } = useI18n({ useScope: 'global' })
 
 const inspire = useInspireStore()
 const user = useFrontendUserStore()
-const localUser = useLocalUserStore()
+const logined = useLocalUserStore()
 
 const router = useRouter()
 
 const onSwitchMenu = (item: MenuItem) => {
   if (item.label === 'MSG_LOGOUT') {
     user.logout({
-      Token: localUser.User.LoginToken,
+      Token: logined.User.LoginToken,
       Message: {
         Error: {
           Title: t('MSG_LOGOUT_FAIL'),
@@ -142,7 +143,7 @@ const onSwitchMenu = (item: MenuItem) => {
 
 const menu = computed(() => {
   const myMenu = HeaderAvatarMenu()
-  myMenu.children = myMenu.children.filter((m) => m.label !== 'MSG_REFERRAL' || localUser.User?.InvitationCode?.length)
+  myMenu.children = myMenu.children.filter((m) => m.label !== 'MSG_REFERRAL' || logined.User?.InvitationCode?.length)
   return myMenu
 })
 
@@ -150,7 +151,7 @@ const onLogoClick = () => {
   void router.push({ path: '/' })
 }
 
-const userLogined = computed(() => localUser.logined)
+const userLogined = computed(() => logined.logined)
 
 watch(userLogined, () => {
   if (!userLogined.value) {
@@ -162,7 +163,7 @@ watch(userLogined, () => {
 })
 
 const initialize = () => {
-  if (localUser.User?.InvitationCode?.length) {
+  if (logined.User?.InvitationCode?.length) {
     inspire.getPurchaseAmountSettings({
       Message: {}
     }, () => {

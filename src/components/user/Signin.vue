@@ -174,7 +174,7 @@ const _verify = () => {
       })
       return
     }
-    void router.push({ path: '/' })
+    void router.push({ path: '/dashboard' })
     return
   }
 
@@ -254,7 +254,7 @@ const remainder = () => {
       void router.push({ path: '/remainder/ga' })
       return
     }
-    void router.push({ path: '/' })
+    void router.push({ path: '/dashboard' })
   })
 }
 </script>

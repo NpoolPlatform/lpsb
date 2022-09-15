@@ -1,3 +1,3 @@
 resources:
-  - 01-procyon-webui.yaml
+  - 01-lpsb-webui.yaml
   - 02-ingress.yaml

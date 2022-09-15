@@ -3,12 +3,12 @@
     <div class='content'>
       <div class='columns-4'>
         <div class='column-4'>
-          <img class='logo' :src='lightLogo'>
+          <img class='logo' :src='logoText'>
           <h1>
-            <span v-html='$t("MSG_SHOOT_FOT_THE_STARS")' />
+            <!-- <span v-html='$t("MSG_SHOOT_FOT_THE_STARS")' /> -->
           </h1>
           <h4 class='tagline'>
-            <span v-html='$t("MSG_YOUR_GLOBAL_CONSTELLATION")' />
+            <!-- <span v-html='$t("MSG_YOUR_GLOBAL_CONSTELLATION")' /> -->
           </h4>
         </div>
         <div class='column-4'>
@@ -33,7 +33,7 @@
         </div>
       </div>
       <p class='copyright'>
-        © 2021-{{ new Date().getFullYear() }} {{ $t('MSG_ORGANIZATION') }}
+        © © 2022 LP Secret Base
       </p>
     </div>
   </footer>
@@ -42,7 +42,7 @@
 <script setup lang='ts'>
 import { defineAsyncComponent } from 'vue'
 
-import lightLogo from '../../assets/procyon-light.svg'
+import logoText from '../../assets/logo-text.png'
 const LangSwitcher = defineAsyncComponent(() => import('src/components/lang/LangSwitcher.vue'))
 
 </script>

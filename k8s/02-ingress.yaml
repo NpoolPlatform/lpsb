@@ -1,11 +1,11 @@
 apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
-  name: procyon-webui-v2-ingress
+  name: lpsb-webui-v2-ingress
   namespace: kube-system
   annotations:
-    k8s.kuboard.cn/displayName: procyon-webui-v2
-    k8s.kuboard.cn/workload: procyon-webui-v2
+    k8s.kuboard.cn/displayName: lpsb-webui-v2
+    k8s.kuboard.cn/workload: lpsb-webui-v2
     kubernetes.io/ingress.class: "traefik-internet"
     traefik.ingress.kubernetes.io/router.entrypoints: websecure, web
     traefik.ingress.kubernetes.io/router.middlewares:
@@ -16,21 +16,21 @@ metadata:
 spec:
   tls:
     - hosts:
-        - '*.procyon.vip'
-        - procyon.vip
-      secretName: procyon-vip-tls
+        - '*.lpsb.vip'
+        - lpsb.vip
+      secretName: lpsb-vip-tls
   rules:
-    - host: www.procyon.vip
+    - host: www.lpsb.vip
       http:
         paths:
           - path: /
             backend:
-              serviceName: procyon-webui-v2
+              serviceName: lpsb-webui-v2
               servicePort: 80
-    - host: procyon.vip
+    - host: lpsb.vip
       http:
         paths:
           - path: /
             backend:
-              serviceName: procyon-webui-v2
+              serviceName: lpsb-webui-v2
               servicePort: 80

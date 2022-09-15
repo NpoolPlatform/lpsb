@@ -9,16 +9,29 @@ declare module 'vue-router' {
 
 const routes: RouteRecordRaw[] = [
   {
-    path: '/maintanence',
+    path: '/maintenance',
     component: () => import('pages/Maintenance.vue')
   },
   {
     path: '/',
     component: () => import('layouts/MainLayout.vue'),
     children: [
+      // {
+      //   path: '',
+      //   component: () => import('pages/AleoIndex.vue'),
+      //   meta: {
+      //     ShowHeaderAnnouncement: true,
+      //     ShowMainHeader: true,
+      //     ShowBigLogo: true,
+      //     ShowFooterTop: true,
+      //     ShowSignHelper: true,
+      //     ShowTopTip: false,
+      //     NeedLogined: false
+      //   }
+      // },
       {
         path: '',
-        component: () => import('pages/AleoIndex.vue'),
+        component: () => import('pages/Signin.vue'),
         meta: {
           ShowHeaderAnnouncement: true,
           ShowMainHeader: true,
