@@ -1,7 +1,7 @@
 <template>
   <Page>
     <template #body>
-      <h2>Procyon プラットフォーム：ログイン</h2>
+      <h2>ログイン</h2>
       <div class='faq-content'>
         <div class='faq-content-nav'>
           <h3>目次</h3>
