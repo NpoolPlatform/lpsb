@@ -20,7 +20,7 @@
           <ul>
             <li><a class='footer-link' href='#'>{{ $t('MSG_HOME') }}</a></li>
             <li><a class='footer-link' href='#'>{{ $t('MSG_PRODUCTS') }}</a></li>
-            <li><a class='footer-link' href='https://procyon-vip.medium.com/'>{{ $t('MSG_BLOG') }}</a></li>
+            <li><a class='footer-link' href='https://lpsb-vip.medium.com/'>{{ $t('MSG_BLOG') }}</a></li>
           </ul>
         </div>
         <div class='column-4'>
@@ -33,7 +33,7 @@
         </div>
       </div>
       <p class='copyright'>
-        © © 2022 LP Secret Base
+        © 2022 LP Secret Base
       </p>
     </div>
   </footer>

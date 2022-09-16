@@ -1,7 +1,7 @@
 <template>
   <Page>
     <template #body>
-      <h2>Procyon プラットフォーム：ログイン</h2>
+      <h2>ログイン</h2>
       <div class='faq-content'>
         <div class='faq-content-nav'>
           <h3>目次</h3>
@@ -24,14 +24,14 @@
             ログインの方法
           </h3>
 
-          <div class='video-box'>
+          <!-- <div class='video-box'>
             <iframe
               width='720' height='405' src='https://www.youtube.com/embed/CSeoLtAPOR0'
               title='YouTube video player' frameborder='0'
               allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture'
               allowfullscreen
             />
-          </div>
+          </div> -->
 
           <ul>
             <li>(1)ログイン画面へアクセス後、ご登録メールアドレス／パスワードを入力します。</li>
@@ -62,14 +62,14 @@
             初回ログインの方法
           </h3>
 
-          <div class='video-box'>
+          <!-- <div class='video-box'>
             <iframe
               width='720' height='405' src='https://www.youtube.com/embed/s9bNxlU7JVs'
               title='YouTube video player' frameborder='0'
               allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture'
               allowfullscreen
             />
-          </div>
+          </div> -->
 
           <p>初回ログインの際は、パスワードの変更後に通常のログイン対応をおこないます。</p>
 
@@ -102,14 +102,14 @@
             パスワードを忘れた場合
           </h3>
 
-          <div class='video-box'>
+          <!-- <div class='video-box'>
             <iframe
               width='720' height='405' src='https://www.youtube.com/embed/s9bNxlU7JVs'
               title='YouTube video player' frameborder='0'
               allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture'
               allowfullscreen
             />
-          </div>
+          </div> -->
 
           <ul>
             <li>(1)ログイン画面へアクセスします。</li>
@@ -132,14 +132,14 @@
             パスワードの変更
           </h3>
 
-          <div class='video-box'>
+          <!-- <div class='video-box'>
             <iframe
               width='720' height='405' src='https://www.youtube.com/embed/bMWoc0qflwI'
               title='YouTube video player' frameborder='0'
               allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture'
               allowfullscreen
             />
-          </div>
+          </div> -->
 
           <ul>
             <li>(1)ログイン後、セキュリティ画面へアクセスします。</li>
@@ -191,8 +191,8 @@
             <li>(1)迷惑メールフォルダの確認をする</li>
             <li>(2)以下、件名および送信元アドレスでメールボックス内の検索をおこなう</li>
             <ul>
-              <li><strong>件名：</strong>【Procyon】Email認証コード</li>
-              <li><strong>送信元メール：</strong>support@procyon.vip</li>
+              <li><strong>件名：</strong>【LPSecretBase】Email認証コード</li>
+              <li><strong>送信元メール：</strong>support@lpsecretbase.com</li>
             </ul>
           </ul>
           <div class='hr' />
