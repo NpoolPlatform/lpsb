@@ -3,7 +3,7 @@
     <img :src='logoText' class='attachment-large size-large logo  cursor-pointer' @click='onLogoClick'>
     <div class='nav'>
       <ul>
-        <li><a class='nav-link' href='#/signin'>{{ $t('MSG_HOME') }}</a></li>
+        <li><a class='nav-link' href='#/product/aleo'>{{ $t('MSG_HOME') }}</a></li>
         <li><a class='nav-link' href='https://lpsb-vip.medium.com'>{{ $t('MSG_BLOG') }}</a></li>
         <li><a class='nav-link' href='#/faqs'>{{ $t('MSG_SUPPORT_AND_FAQ') }}</a></li>
         <li><a class='nav-link' href='#/contact'>{{ $t('MSG_CONTACT') }}</a></li>
@@ -75,7 +75,7 @@
     <div class='hr' />
     <div class='nav'>
       <ul>
-        <li><a class='nav-link' href='#'>{{ $t('MSG_HOME') }}</a></li>
+        <li><a class='nav-link' href='#/product/aleo'>{{ $t('MSG_HOME') }}</a></li>
         <li><a class='nav-link' href='https://lpsb-vip.medium.com'>{{ $t('MSG_BLOG') }}</a></li>
         <li><a class='nav-link' href='#/faqs'>{{ $t('MSG_SUPPORT_AND_FAQ') }}</a></li>
         <li><a class='nav-link' href='#/contact'>{{ $t('MSG_CONTACT') }}</a></li>
@@ -148,7 +148,7 @@ const menu = computed(() => {
 })
 
 const onLogoClick = () => {
-  void router.push({ path: '/' })
+  void router.push({ path: '/product/aleo' })
 }
 
 const userLogined = computed(() => logined.logined)
