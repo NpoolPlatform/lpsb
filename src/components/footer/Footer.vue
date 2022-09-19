@@ -18,8 +18,8 @@
         <div class='column-4'>
           <h4>{{ $t('MSG_LINKS') }}</h4>
           <ul>
-            <li><a class='footer-link' href='#'>{{ $t('MSG_HOME') }}</a></li>
-            <li><a class='footer-link' href='#'>{{ $t('MSG_PRODUCTS') }}</a></li>
+            <li><a class='footer-link' href='#/product/aleo'>{{ $t('MSG_HOME') }}</a></li>
+            <li><a class='footer-link' href='#/product/aleo'>{{ $t('MSG_PRODUCTS') }}</a></li>
             <li><a class='footer-link' href='https://lpsb-vip.medium.com/'>{{ $t('MSG_BLOG') }}</a></li>
           </ul>
         </div>
