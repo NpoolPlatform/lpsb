@@ -24,7 +24,7 @@
 <script setup lang='ts'>
 import { defineAsyncComponent, watch, ref, Component, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
-import lightLogo from 'src/assets/procyon-light.svg'
+import lightLogo from 'src/assets/logo-text.png'
 
 const { locale } = useI18n({ useScope: 'global' })
 const Maintenance = ref<Component>()

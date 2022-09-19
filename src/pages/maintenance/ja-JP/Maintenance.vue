@@ -8,5 +8,5 @@
   </div>
 </template>
 <script setup lang='ts'>
-import lightLogo from 'src/assets/procyon-light.svg'
+import lightLogo from 'src/assets/logo-text.png'
 </script>
