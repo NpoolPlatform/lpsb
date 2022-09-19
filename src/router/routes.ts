@@ -52,7 +52,7 @@ const routes: RouteRecordRaw[] = [
           ShowFooterTop: true,
           ShowSignHelper: true,
           ShowTopTip: false,
-          NeedLogined: false
+          NeedLogined: true
         }
       }, {
         path: 'aleo',
@@ -64,7 +64,7 @@ const routes: RouteRecordRaw[] = [
           ShowFooterTop: true,
           ShowSignHelper: true,
           ShowTopTip: false,
-          NeedLogined: false
+          NeedLogined: true
         }
       }, {
         path: 'contact',
@@ -76,7 +76,7 @@ const routes: RouteRecordRaw[] = [
           ShowFooterTop: true,
           ShowSignHelper: true,
           ShowTopTip: false,
-          NeedLogined: false
+          NeedLogined: true
         }
       }, {
         path: 'registration',
@@ -124,7 +124,7 @@ const routes: RouteRecordRaw[] = [
           ShowFooterTop: true,
           ShowSignHelper: true,
           ShowTopTip: false,
-          NeedLogined: false
+          NeedLogined: true
         }
       }, {
         path: 'faq',
@@ -136,7 +136,7 @@ const routes: RouteRecordRaw[] = [
           ShowFooterTop: true,
           ShowSignHelper: true,
           ShowTopTip: false,
-          NeedLogined: false
+          NeedLogined: true
         }
       }, {
         path: 'faqs',
@@ -148,7 +148,7 @@ const routes: RouteRecordRaw[] = [
           ShowFooterTop: true,
           ShowSignHelper: true,
           ShowTopTip: false,
-          NeedLogined: false
+          NeedLogined: true
         }
       }, {
         path: 'dashboard',
@@ -446,7 +446,7 @@ const routes: RouteRecordRaw[] = [
           ShowFooterTop: true,
           ShowSignHelper: true,
           ShowTopTip: false,
-          NeedLogined: false,
+          NeedLogined: true,
           ShowSideMenu: false
         }
       }, {
@@ -459,7 +459,7 @@ const routes: RouteRecordRaw[] = [
           ShowFooterTop: true,
           ShowSignHelper: true,
           ShowTopTip: false,
-          NeedLogined: false,
+          NeedLogined: true,
           ShowSideMenu: false
         }
       }
