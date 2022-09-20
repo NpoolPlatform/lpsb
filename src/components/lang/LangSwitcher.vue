@@ -1,15 +1,17 @@
 <template>
   <ul class='language-picker'>
-    <li
-      v-for='language in locale.Languages'
-      :class='[ curLang === language.Lang ? "selected" : "" ]'
-      :key='language.ID'
-      @click='onLangClick(language)'
-    >
-      <a class='language'>
-        {{ language.Short?.length > 0 ? language.Short : language.Lang }}
-      </a>
-    </li>
+    <div v-if='locale.Languages.length > 1'>
+      <li
+        v-for='language in locale.Languages'
+        :class='[ curLang === language.Lang ? "selected" : "" ]'
+        :key='language.ID'
+        @click='onLangClick(language)'
+      >
+        <a class='language'>
+          {{ language.Short?.length > 0 ? language.Short : language.Lang }}
+        </a>
+      </li>
+    </div>
   </ul>
 </template>
 
