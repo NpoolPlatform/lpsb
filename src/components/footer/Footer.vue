@@ -28,7 +28,7 @@
           <ul>
             <li><a class='footer-link' href='#/faqs'>{{ $t('MSG_FAQ') }}</a></li>
             <li><a class='footer-link' href='#/contact'>{{ $t('MSG_CONTACT') }}</a></li>
-            <li><a class='footer-link' href='#/legal'>{{ $t('MSG_LEGAL') }}</a></li>
+            <!-- <li><a class='footer-link' href='#/legal'>{{ $t('MSG_LEGAL') }}</a></li> -->
           </ul>
         </div>
       </div>
