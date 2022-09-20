@@ -116,7 +116,7 @@ const routes: RouteRecordRaw[] = [
         }
       }, {
         path: 'legal',
-        component: () => import('pages/Legal.vue'),
+        component: () => import('pages/legal/Legal.vue'),
         meta: {
           ShowHeaderAnnouncement: true,
           ShowMainHeader: true,
