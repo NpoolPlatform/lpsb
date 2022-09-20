@@ -11,9 +11,12 @@
             <!-- <span v-html='$t("MSG_YOUR_GLOBAL_CONSTELLATION")' /> -->
           </h4>
         </div>
-        <div class='column-4'>
+        <div class='column-4' v-if='locale.Languages.length > 1'>
           <h4>{{ $t('MSG_LANGUAGE') }}</h4>
           <LangSwitcher />
+        </div>
+        <div v-else class='column-4'>
+          <h4 />
         </div>
         <div class='column-4'>
           <h4>{{ $t('MSG_LINKS') }}</h4>
@@ -40,9 +43,10 @@
 </template>
 
 <script setup lang='ts'>
+import { useLocaleStore } from 'npool-cli-v2'
 import { defineAsyncComponent } from 'vue'
 
 import logoText from '../../assets/logo-text.png'
 const LangSwitcher = defineAsyncComponent(() => import('src/components/lang/LangSwitcher.vue'))
-
+const locale = useLocaleStore()
 </script>
