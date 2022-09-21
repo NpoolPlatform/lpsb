@@ -182,7 +182,7 @@
             </a>
           </li>
           <li>
-            <a href='https://procyon-public.s3.ap-northeast-1.amazonaws.com/【Procyon_vip】Aleoマイニング製品の購入方法マニュアル_20220606.pdf'>
+            <a href='#/product/aleo'>
               <img class='link-icon' :src='lightbulb'>
               <span>{{ $t('MSG_PDF_MANUAL') }}</span>
             </a>

@@ -38,7 +38,7 @@
           <input type='submit' :value='$t("MSG_SEND_MESSAGE")' class='register'>
         </form>
       </div>
-      <div class='form-container content-glass'>
+      <!-- <div class='form-container content-glass'>
         <h3 class='form-title'>
           {{ $t('MSG_CONTACT_VIA_LINE') }}
         </h3>
@@ -50,7 +50,7 @@
         <h4 id='signature'>
           {{ $t('MSG_CONTACT_SIGNATURE') }}
         </h4>
-      </div>
+      </div> -->
     </div>
   </BackPage>
 </template>
@@ -61,7 +61,7 @@ import { defineAsyncComponent, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 
-import lineQr from '../../assets/line-qr.png'
+// import lineQr from '../../assets/line-qr.png'
 
 // eslint-disable-next-line @typescript-eslint/unbound-method
 const { t } = useI18n({ useScope: 'global' })
