@@ -91,7 +91,7 @@ const onSubmit = () => {
       }
     }
   }, () => {
-    void router.push({ path: '/' })
+    void router.push({ path: '/dashboard' })
   })
 }
 
