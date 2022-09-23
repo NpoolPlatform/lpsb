@@ -23,7 +23,7 @@
           <ul>
             <li><a class='footer-link' href='#/product/aleo'>{{ $t('MSG_HOME') }}</a></li>
             <li><a class='footer-link' href='#/product/aleo'>{{ $t('MSG_PRODUCTS') }}</a></li>
-            <li><a class='footer-link' href='https://lpsb-vip.medium.com/'>{{ $t('MSG_BLOG') }}</a></li>
+            <li><a class='footer-link' href='javascript:void(0)'>{{ $t('MSG_BLOG') }}</a></li>
           </ul>
         </div>
         <div class='column-4'>
