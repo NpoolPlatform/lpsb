@@ -16,18 +16,18 @@ metadata:
 spec:
   tls:
     - hosts:
-        - '*.lpsb.vip'
-        - lpsb.vip
+        - '*.lpsecretbase.com'
+        - lpsecretbase.com
       secretName: lpsb-vip-tls
   rules:
-    - host: www.lpsb.vip
+    - host: www.lpsecretbase.com
       http:
         paths:
           - path: /
             backend:
               serviceName: lpsb-webui
               servicePort: 80
-    - host: lpsb.vip
+    - host: lpsecretbase.com
       http:
         paths:
           - path: /

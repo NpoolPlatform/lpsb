@@ -24,7 +24,7 @@ import { useLocalUserStore } from 'npool-cli-v4'
 const { t } = useI18n({ useScope: 'global' })
 
 const logined = useLocalUserStore()
-const inviteLink = computed(() => 'https://lpsb.vip/#/invitation?code=' + (logined.User?.InvitationCode))
+const inviteLink = computed(() => 'https://lpsecretbase.com/#/invitation?code=' + (logined.User?.InvitationCode))
 const notification = useNotificationStore()
 
 function onCopyCodeClick () {
@@ -39,7 +39,7 @@ function onCopyCodeClick () {
 
 </script>
 
-<stype lang='sass' scoped>
+<style lang='sass' scoped>
 .invitation-code
   margin: 0 auto 0 0 !important
   font-size: 24px
@@ -50,4 +50,4 @@ function onCopyCodeClick () {
   margin: 0 32px 0 0 !important
   line-height: 32px
   padding: 4px 32px 4px 32px !important
-</stype>
+</style>

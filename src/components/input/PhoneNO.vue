@@ -1,6 +1,6 @@
 <template>
   <label for='phone'>{{ $t('MSG_PHONE_NO') }}</label>
-  <div class='row'>
+  <div class='row no-wrap'>
     <CountrySelector class='code' v-model:country='country' />
     <input
       type='text'
@@ -67,4 +67,6 @@ input
   width: 120px
   margin-top: 8px
   max-height: 45px
+.no-wrap
+  flex-wrap: nowrap
 </style>

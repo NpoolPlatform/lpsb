@@ -10,7 +10,7 @@
   <q-ajax-bar
     ref='progress'
     position='top'
-    color='green-2'
+    color='blue-3'
     size='6px'
   />
 </template>

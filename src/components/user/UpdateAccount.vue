@@ -225,9 +225,8 @@ const onSendCodeClick = () => {
   height: 0
   border-width: 32px
   border-style: solid
-  border-color: #ff964a #ff964a transparent transparent
+  border-color: var(--blue-1) var(--blue-1) transparent transparent
   border-top-right-radius: 12px
-
 .icon
   margin-right: -48px
   margin-top: -56px

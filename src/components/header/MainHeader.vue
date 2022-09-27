@@ -4,7 +4,7 @@
     <div class='nav'>
       <ul>
         <li><a class='nav-link' href='#/product/aleo'>{{ $t('MSG_HOME') }}</a></li>
-        <li><a class='nav-link' href='https://lpsb-vip.medium.com'>{{ $t('MSG_BLOG') }}</a></li>
+        <!-- <li><a class='nav-link' href='javascript:void(0)'>{{ $t('MSG_BLOG') }}</a></li> -->
         <li><a class='nav-link' href='#/faqs'>{{ $t('MSG_SUPPORT_AND_FAQ') }}</a></li>
         <li><a class='nav-link' href='#/contact'>{{ $t('MSG_CONTACT') }}</a></li>
         <LangSwitcher />
@@ -76,7 +76,7 @@
     <div class='nav'>
       <ul>
         <li><a class='nav-link' href='#/product/aleo'>{{ $t('MSG_HOME') }}</a></li>
-        <li><a class='nav-link' href='https://lpsb-vip.medium.com'>{{ $t('MSG_BLOG') }}</a></li>
+        <!-- <li><a class='nav-link' href='javascript:void(0)'>{{ $t('MSG_BLOG') }}</a></li> -->
         <li><a class='nav-link' href='#/faqs'>{{ $t('MSG_SUPPORT_AND_FAQ') }}</a></li>
         <li><a class='nav-link' href='#/contact'>{{ $t('MSG_CONTACT') }}</a></li>
       </ul>
