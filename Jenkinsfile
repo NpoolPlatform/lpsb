@@ -285,8 +285,8 @@ pipeline {
       steps {
         sh '''
           sed -i "s/uhub.service.ucloud.cn/$DOCKER_REGISTRY/g" k8s/01-lpsb-webui.yaml
-          sed -i "s/lpsb-vip/${CERT_NAME}/g" k8s/02-ingress.yaml
-          sed -i "s/lpsb\\.vip/${ROOT_DOMAIN}/g" k8s/02-ingress.yaml
+          sed -i "s/lpsecretbase\\.com/${ROOT_DOMAIN}/g" k8s/02-ingress.yaml
+          sed -i "s/lpsecretbase-com/${CERT_NAME}/g" k8s/02-ingress.yaml
           kubectl apply -k k8s
         '''
       }
@@ -307,8 +307,8 @@ pipeline {
           sed -i "s/lpsb-webui:latest/lpsb-webui:$tag/g" k8s/01-lpsb-webui.yaml
           sed -i "s/uhub.service.ucloud.cn/$DOCKER_REGISTRY/g" k8s/01-lpsb-webui.yaml
 
-          sed -i "s/lpsb\\.vip/lpsb\\.npool\\.top/g" k8s/02-ingress.yaml
-          sed -i "s/lpsb-vip/lpsb-npool-top/g" k8s/02-ingress.yaml
+          sed -i "s/lpsecretbase\\.com/lpsb\\.npool\\.top/g" k8s/02-ingress.yaml
+          sed -i "s/lpsecretbase-com/lpsb-npool-top/g}" k8s/02-ingress.yaml
           kubectl apply -k k8s
         '''.stripIndent())
       }
