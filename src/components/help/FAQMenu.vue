@@ -13,7 +13,7 @@
     </div>
 
     <h2>
-      <span v-html='$t("MSG_PROCYON_PLATFORM")' />
+      <span v-html='$t("MSG_LPSB_PLATFORM")' />
     </h2>
     <div class='faq-menu-cointainer'>
       <a v-for='faq in faqs' :key='faq.topic' class='faq-menu-item' @click='onItemClick(faq)'>
@@ -32,7 +32,7 @@
       </a>
     </div>
 
-    <!-- <h2>{{ $t('MSG_PROCYON_PRODUCTS') }}</h2>
+    <!-- <h2>{{ $t('MSG_LPSB_PRODUCTS') }}</h2>
     <div class='faq-menu-cointainer'>
       <a class='faq-menu-item' @click='onAleoClick'>
         <img class='faq-product' src='product/aleo/product-aleo.png'>
