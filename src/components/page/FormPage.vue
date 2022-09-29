@@ -3,7 +3,7 @@
     <div class='content'>
       <div class='form-container content-glass incr'>
         <div class='row'>
-          <h2 class='form-title' style='width: 100%'>
+          <h2 class='form-title'>
             {{ $t(label) }}
           </h2>
           <q-space />
