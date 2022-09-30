@@ -25,6 +25,7 @@
   <div class='error-message'>
     <span>{{ error ? $t(message) : '' }}</span>
   </div>
+  <!-- <div>{{ error }}</div> -->
 </template>
 
 <script setup lang='ts'>
@@ -76,19 +77,21 @@ const emit = defineEmits<{(e: 'update:value', value: string | number): void;
   (e: 'focus'): void;
   (e: 'blur'): void;
 }>()
+
 watch(myValue, () => {
   emit('update:value', myValue.value)
 })
 
+const input = ref<HTMLInputElement>()
+
 const onFocus = () => {
+  input.value?.setCustomValidity('')
   emit('focus')
 }
 
 const onBlur = () => {
   emit('blur')
 }
-
-const input = ref<HTMLInputElement>()
 
 const onInvalid = (str: string) => {
   input.value?.setCustomValidity(str)
