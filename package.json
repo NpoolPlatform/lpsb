@@ -1,7 +1,7 @@
 {
   "name": "lpsb-webui",
   "version": "0.1.19",
-  "description": "vue3 framework use quasar ui and pinia manage store",
+  "description": "LP Secret Base",
   "productName": "LP SECRET BASE",
   "author": "Entropy Pool Team <kikakkz@hotmail.com>",
   "private": true,

@@ -160,7 +160,7 @@ module.exports = configure(function (ctx) {
       manifest: {
         name: 'lpsb webui',
         short_name: 'lpsb webui',
-        description: 'vue3 framework use quasar ui and pinia manage store',
+        description: 'LP Secret Base',
         display: 'standalone',
         orientation: 'portrait',
         background_color: '#ffffff',
