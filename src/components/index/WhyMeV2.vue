@@ -2,7 +2,7 @@
   <div class='feature'>
     <div class='content'>
       <h1 class='feature-title'>
-        <span v-html='$t("MSG_WHY_PROCYON")' />
+        <span v-html='$t("MSG_WHY_LPSB")' />
       </h1>
       <div class='columns-3'>
         <div class='column-3'>

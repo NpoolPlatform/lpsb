@@ -1,7 +1,7 @@
 <template>
   <BackPage>
     <div class='content'>
-      <div class='form-container content-glass'>
+      <div class='form-container content-glass incr'>
         <div class='row'>
           <h2 class='form-title'>
             {{ $t(label) }}
@@ -51,4 +51,6 @@ const onSubmit = () => {
 .top-right
   margin-top: -48px
   margin-right: -48px
+.incr
+  max-width: 490px
 </style>
