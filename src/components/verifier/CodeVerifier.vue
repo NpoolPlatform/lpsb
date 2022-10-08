@@ -56,7 +56,6 @@ const Input = defineAsyncComponent(() => import('src/components/input/Input.vue'
 interface Props {
   verifyMethod?: AccountType;
   usedFor: UsedFor;
-  toUsername?: string;
   account: string;
   accountType: AccountType;
   disabled?: boolean;
@@ -66,7 +65,6 @@ interface Props {
 const props = defineProps<Props>()
 const verifyMethod = toRef(props, 'verifyMethod')
 const usedFor = toRef(props, 'usedFor')
-const toUsername = toRef(props, 'toUsername')
 const disabled = toRef(props, 'disabled')
 const showCancel = toRef(props, 'showCancel')
 
@@ -167,7 +165,7 @@ const onCancelClick = () => {
 }
 
 const onSendCodeClick = () => {
-  coderepo.sendVerificationCode(account.value, myVerifyMethod.value, usedFor.value, toUsername.value?.length ? toUsername.value : logined.User.Username)
+  coderepo.sendVerificationCode(account.value, myVerifyMethod.value, usedFor.value, logined.User.Username.length ? logined.User.Username : account.value)
 }
 
 onMounted(() => {

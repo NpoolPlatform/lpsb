@@ -218,7 +218,7 @@ const onSendCodeClick = () => {
   if (accountError.value) {
     return
   }
-  coderepo.sendVerificationCode(account.value, accountType.value, UsedFor.Update, logined.User.Username)
+  coderepo.sendVerificationCode(account.value, accountType.value, UsedFor.Update, logined.User.Username.length ? logined.User.Username : account.value)
 }
 
 </script>
