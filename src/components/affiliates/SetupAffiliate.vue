@@ -125,7 +125,9 @@ const onSubmit = () => {
       }
     }
   }, () => {
-    // TODO
+    if (visibleGoodsArchivements.value(referral?.value.Archivements).length === 0) {
+      void router.push({ path: '/affiliates' })
+    }
   })
 
   visibleGoodsArchivements.value(referral.value?.Archivements).forEach((good) => {
@@ -183,7 +185,6 @@ onMounted(() => {
     })
   })
 })
-
 </script>
 
 <style lang='sass' scoped>
