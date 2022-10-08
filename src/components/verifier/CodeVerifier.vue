@@ -167,7 +167,7 @@ const onCancelClick = () => {
 }
 
 const onSendCodeClick = () => {
-  coderepo.sendVerificationCode(account.value, myVerifyMethod.value, usedFor.value, toUsername.value?.length ? toUsername.value : account.value)
+  coderepo.sendVerificationCode(account.value, myVerifyMethod.value, usedFor.value, toUsername.value?.length ? toUsername.value : logined.User.Username)
 }
 
 onMounted(() => {

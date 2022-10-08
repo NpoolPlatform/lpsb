@@ -62,7 +62,7 @@ const onSendCodeClick = () => {
   if (!myAccount.value?.length) {
     return
   }
-  coderepo.sendVerificationCode(myAccount.value, myAccountType.value, UsedFor.Update, myAccount.value)
+  coderepo.sendVerificationCode(myAccount.value, myAccountType.value, UsedFor.Update, logined.User.Username)
 }
 
 const logined = useLocalUserStore()
