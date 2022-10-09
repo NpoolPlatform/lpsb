@@ -1,8 +1,5 @@
 <template>
   <BackPage>
-    <div class='content'>
-      <h2>{{ $t('MSG_CONTACT_SUPPORT') }}</h2>
-    </div>
     <div class='content contact-page'>
       <div class='form-container content-glass'>
         <h3 class='form-title'>
