@@ -10,7 +10,7 @@
           @click='onMenuSwitch(menu)'
           :class='[ menuId === menu.menuId ? "current-page" : "" ]'
         >
-          <img :src='menu.icon'>
+          <img :src='menu.icon' :class='[menu.label === "MSG_ALEO_PURCHASE" ? "product-icon" : ""]'>
           <span>{{ $t(menu.label) }}</span>
         </li>
       </div>
@@ -34,9 +34,9 @@ const showMenu = (menu: MenuItem) => {
   if (menu.label === 'MSG_REFERRAL' && !user.User?.InvitationCode?.length) {
     return false
   }
-  if (menu.label === 'MSG_ALEO_PURCHASE') {
+  /* if (menu.label === 'MSG_ALEO_PURCHASE') {
     return false
-  }
+  } */
   return true
 }
 
