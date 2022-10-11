@@ -1,8 +1,5 @@
 <template>
   <BackPage>
-    <div class='content'>
-      <h2>{{ $t('MSG_CONTACT_SUPPORT') }}</h2>
-    </div>
     <div class='content contact-page'>
       <div class='form-container content-glass'>
         <h3 class='form-title'>
@@ -56,7 +53,7 @@
 </template>
 
 <script setup lang='ts'>
-import { MessageUsedFor, useCodeRepoStore, NotificationType } from 'npool-cli-v2'
+import { NotifyType, UsedFor, useFrontendContactStore } from 'npool-cli-v4'
 import { defineAsyncComponent, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
@@ -68,7 +65,7 @@ const { t } = useI18n({ useScope: 'global' })
 
 const BackPage = defineAsyncComponent(() => import('src/components/page/BackPage.vue'))
 
-const coderepo = useCodeRepoStore()
+const contact = useFrontendContactStore()
 const router = useRouter()
 
 const sender = ref('')
@@ -77,8 +74,8 @@ const body = ref('')
 const senderName = ref('')
 
 const onSubmit = () => {
-  coderepo.sendContactEmail({
-    UsedFor: MessageUsedFor.Contact,
+  contact.contactVIAEmail({
+    UsedFor: UsedFor.Contact,
     Sender: sender.value,
     Subject: subject.value,
     Body: body.value,
@@ -87,7 +84,7 @@ const onSubmit = () => {
       Error: {
         Title: t('MSG_SEND_EMAIL_FAIL'),
         Popup: true,
-        Type: NotificationType.Error
+        Type: NotifyType.Error
       }
     }
   }, () => {

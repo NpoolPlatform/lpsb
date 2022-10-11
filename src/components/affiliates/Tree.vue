@@ -15,6 +15,7 @@
       :first-child='idx === 0'
       :last-child='idx === referrals.length - 1'
       :referral='referral'
+      :class='[referrals.length === 1 ? "left-line" : ""]'
     />
   </div>
 </template>
@@ -37,3 +38,8 @@ const inviter = computed(() => {
 })
 
 </script>
+
+<style lang='sass' scoped>
+.left-line::before
+  height: 101px !important
+</style>

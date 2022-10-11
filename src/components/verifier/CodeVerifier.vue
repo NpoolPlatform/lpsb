@@ -48,16 +48,14 @@
 
 <script setup lang='ts'>
 import { defineProps, toRef, defineEmits, computed, watch, onMounted, ref, defineAsyncComponent } from 'vue'
-import { AccountType as OldAccountType, MessageUsedFor, useCodeRepoStore, validateVerificationCode } from 'npool-cli-v2'
-import { AccountType, useLocalUserStore } from 'npool-cli-v4'
+import { AccountType, useLocalUserStore, useFrontendVerifyStore, UsedFor, validateVerificationCode } from 'npool-cli-v4'
 
 const TimeoutSendBtn = defineAsyncComponent(() => import('src/components/button/TimeoutSendBtn.vue'))
 const Input = defineAsyncComponent(() => import('src/components/input/Input.vue'))
 
 interface Props {
   verifyMethod?: AccountType;
-  usedFor: MessageUsedFor;
-  toUsername?: string;
+  usedFor: UsedFor;
   account: string;
   accountType: AccountType;
   disabled?: boolean;
@@ -67,12 +65,11 @@ interface Props {
 const props = defineProps<Props>()
 const verifyMethod = toRef(props, 'verifyMethod')
 const usedFor = toRef(props, 'usedFor')
-const toUsername = toRef(props, 'toUsername')
 const disabled = toRef(props, 'disabled')
 const showCancel = toRef(props, 'showCancel')
 
 const logined = useLocalUserStore()
-const coderepo = useCodeRepoStore()
+const coderepo = useFrontendVerifyStore()
 
 const myVerifyMethod = computed(() => {
   if (verifyMethod.value?.length) {
@@ -168,11 +165,7 @@ const onCancelClick = () => {
 }
 
 const onSendCodeClick = () => {
-  coderepo.sendVerificationCode(
-    account.value,
-    myVerifyMethod.value.toLowerCase() as OldAccountType,
-    usedFor.value,
-    toUsername.value?.length ? toUsername.value : account.value)
+  coderepo.sendVerificationCode(account.value, myVerifyMethod.value, usedFor.value, logined.User.Username.length ? logined.User.Username : account.value)
 }
 
 onMounted(() => {
