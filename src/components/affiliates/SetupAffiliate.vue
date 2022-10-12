@@ -9,11 +9,7 @@
       </p>
       <div v-for='(_good, idx) in visibleGoodsArchivements(referral?.Archivements)' :key='idx'>
         <label>{{ _good.GoodName }} {{ $t('MSG_KOL_COMMISSION_RATE') }}:</label>
-        <select v-model='_good.CommissionPercent'>
-          <option v-for='kol in userKOLOptions(inviterGoodPercent(_good.GoodID))' :key='kol'>
-            {{ kol }}
-          </option>
-        </select>
+        <input type='number' v-model='_good.CommissionPercent' :min='0' :max='inviterGoodPercent(_good.GoodID)'>
       </div>
     </template>
     <template #append-submit>
@@ -36,6 +32,7 @@ import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 
 const FormPage = defineAsyncComponent(() => import('src/components/page/FormPage.vue'))
+// const Input = defineAsyncComponent(() => import('src/components/input/Input.vue'))
 
 // eslint-disable-next-line @typescript-eslint/unbound-method
 const { locale, t } = useI18n({ useScope: 'global' })
@@ -67,11 +64,11 @@ const inviter = computed(() => {
   return index < 0 ? undefined as unknown as LocalProductArchivement : localArchivement.Archivements[index]
 })
 
-const userKOLOptions = computed(() => (maxKOL: number) => {
-  const kolList = [30, 25, 15, 10, 5, 0]
-  let index = kolList.findIndex(kol => kol <= maxKOL)
-  return index === kolList.length - 1 || index === -1 ? [0] : kolList.splice(++index)
-})
+// const userKOLOptions = computed(() => (maxKOL: number) => {
+//   const kolList = [30, 25, 15, 10, 5, 0]
+//   let index = kolList.findIndex(kol => kol <= maxKOL)
+//   return index === kolList.length - 1 || index === -1 ? [0] : kolList.splice(++index)
+// })
 
 const inviterGoodPercent = (goodID: string) => {
   const good = inviter.value.Archivements.find((el) => el.GoodID === goodID)
