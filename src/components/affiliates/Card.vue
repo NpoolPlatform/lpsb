@@ -40,11 +40,12 @@
           <tr class='aff-info' v-for='(_good, idx) in visibleGoodsArchivements(referral.Archivements)' :key='idx'>
             <td><span class='aff-product'>{{ currency.formatCoinName(_good.CoinName) }}</span></td>
             <td v-if='_good.Editing'>
-              <select v-model='_good.CommissionPercent' class='kol-dropdown'>
+              <!-- <select v-model='_good.CommissionPercent' class='kol-dropdown'>
                 <option v-for='kol in userKOLOptions(inviterGoodPercent(_good.GoodID))' :key='kol'>
                   {{ kol }}
                 </option>
-              </select>
+              </select> -->
+              <input type='number' v-model='_good.CommissionPercent' :min='0' :max='inviterGoodPercent(_good.GoodID)'>
               <button @click='onSaveCommissionClick(referral,idx)'>
                 {{ $t('MSG_SAVE') }}
               </button>
@@ -182,11 +183,11 @@ const inviterGoodPercent = (goodID: string) => {
   return good === undefined ? 0 : good.CommissionPercent
 }
 
-const userKOLOptions = computed(() => (maxKOL: number) => {
-  const kolList = [30, 25, 15, 10, 5, 0]
-  let index = kolList.findIndex(kol => kol <= maxKOL)
-  return index === kolList.length - 1 || index === -1 ? [0] : kolList.splice(++index)
-})
+// const userKOLOptions = computed(() => (maxKOL: number) => {
+//   const kolList = [30, 25, 15, 10, 5, 0]
+//   let index = kolList.findIndex(kol => kol <= maxKOL)
+//   return index === kolList.length - 1 || index === -1 ? [0] : kolList.splice(++index)
+// })
 
 const goodOnline = (goodID: string) => {
   const index = good.AppGoods.findIndex((el) => el.GoodID === goodID)
@@ -214,20 +215,23 @@ const onSetCommissionClick = async (good: LocalArchivement) => {
 }
 
 const onSaveCommissionClick = (elem: LocalProductArchivement, idx:number) => {
-  if (elem.Archivements[idx].CommissionPercent > inviterGoodPercent(elem.Archivements[idx].GoodID)) {
-    elem.Archivements[idx].CommissionPercent = inviterGoodPercent(elem.Archivements[idx].GoodID)
+  if (visibleGoodsArchivements.value(referral.value.Archivements)[idx].CommissionPercent > inviterGoodPercent(visibleGoodsArchivements.value(referral.value.Archivements)[idx].GoodID)) {
+    visibleGoodsArchivements.value(referral.value.Archivements)[idx].CommissionPercent = inviterGoodPercent(visibleGoodsArchivements.value(referral.value.Archivements)[idx].GoodID)
     return
   }
-
-  elem.Archivements[idx].Editing = false
+  if (visibleGoodsArchivements.value(referral.value.Archivements)[idx].CommissionPercent < 0) {
+    visibleGoodsArchivements.value(referral.value.Archivements)[idx].CommissionPercent = 0
+    return
+  }
+  visibleGoodsArchivements.value(referral.value.Archivements)[idx].Editing = false
   inspire.createPurchaseAmountSetting({
     TargetUserID: referral.value.UserID,
     InviterName: baseuser.displayName(logined.User, locale.value as string),
     InviteeName: username.value,
     Info: {
-      GoodID: elem.Archivements[idx].GoodID,
-      CoinTypeID: elem.Archivements[idx].CoinTypeID,
-      Percent: elem.Archivements[idx].CommissionPercent,
+      GoodID: visibleGoodsArchivements.value(referral.value.Archivements)[idx].GoodID,
+      CoinTypeID: visibleGoodsArchivements.value(referral.value.Archivements)[idx].CoinTypeID,
+      Percent: visibleGoodsArchivements.value(referral.value.Archivements)[idx].CommissionPercent,
       Start: Math.ceil(Date.now() / 1000),
       End: 0
     },
