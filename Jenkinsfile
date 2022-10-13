@@ -308,7 +308,7 @@ pipeline {
           sed -i "s/uhub.service.ucloud.cn/$DOCKER_REGISTRY/g" k8s/01-lpsb-webui.yaml
 
           sed -i "s/lpsecretbase\\.com/lpsb\\.npool\\.top/g" k8s/02-ingress.yaml
-          sed -i "s/lpsecretbase-com/lpsb-npool-top/g}" k8s/02-ingress.yaml
+          sed -i "s/lpsecretbase-com/lpsb-npool-top/g" k8s/02-ingress.yaml
           kubectl apply -k k8s
         '''.stripIndent())
       }
