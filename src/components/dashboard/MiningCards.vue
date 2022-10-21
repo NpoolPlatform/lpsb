@@ -5,7 +5,7 @@
     :key='general.CoinTypeID'
     :general='general'
   />
-  <SpacemeshMockCard />
+  <!-- <SpacemeshMockCard /> -->
 </template>
 
 <script setup lang='ts'>
@@ -15,7 +15,7 @@ import { GoodGeneral } from 'src/localstore/good'
 import { IntervalKey } from 'src/const/const'
 
 const MiningCard = defineAsyncComponent(() => import('src/components/dashboard/MiningCard.vue'))
-const SpacemeshMockCard = defineAsyncComponent(() => import('src/components/dashboard/SpacemeshMockCard.vue'))
+// const SpacemeshMockCard = defineAsyncComponent(() => import('src/components/dashboard/SpacemeshMockCard.vue'))
 
 const profit = useProfitStore()
 
