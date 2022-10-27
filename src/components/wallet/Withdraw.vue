@@ -229,6 +229,7 @@ const needDisable = computed(() => (withdrawType.value === 'ExternalAddress' && 
 
 interface Query {
   coinTypeId: string;
+  type: string;
 }
 
 const localcoin = useLocalCoinStore()
@@ -239,6 +240,7 @@ const query = computed(() => route.query as unknown as Query)
 const coins = useCoinStore()
 const coinTypeId = computed(() => query.value.coinTypeId)
 const coin = computed(() => coins.getCoinByID(coinTypeId.value))
+const type = computed(() => query.value.type)
 const feeAmount = ref(0)
 const submitting = ref(false)
 
@@ -446,6 +448,9 @@ onMounted(() => {
 
   if (transferAccount.TransferAccounts.TransferAccounts.length === 0) {
     getTransferAccounts(0, 500)
+  }
+  if (type.value) {
+    withdrawType.value = type.value
   }
 })
 
