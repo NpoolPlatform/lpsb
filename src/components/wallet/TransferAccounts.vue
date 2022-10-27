@@ -67,7 +67,7 @@
 </template>
 
 <script setup lang='ts'>
-import { computed, defineAsyncComponent, onMounted, ref } from 'vue'
+import { computed, defineAsyncComponent, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { NotifyType, TransferAccount, useBaseUserStore, useFrontendTransferAccountStore } from 'npool-cli-v4'
 import { useRouter } from 'vue-router'
@@ -81,30 +81,6 @@ const transfers = computed(() => transferAccount.TransferAccounts.TransferAccoun
 
 const transferAccount = useFrontendTransferAccountStore()
 const baseuser = useBaseUserStore()
-
-const getTransferAccounts = (offset: number, limit: number) => {
-  transferAccount.getTransfers({
-    Offset: offset,
-    Limit: limit,
-    Message: {
-      Error: {
-        Title: t('MSG_GET_TRANSFER_ACCOUNTS_FAIL'),
-        Popup: true,
-        Type: NotifyType.Error
-      }
-    }
-  }, (transfers: Array<TransferAccount>, error: boolean) => {
-    if (error || transfers.length < limit) {
-      return
-    }
-    getTransferAccounts(limit + offset, limit)
-  })
-}
-onMounted(() => {
-  if (transferAccount.TransferAccounts.TransferAccounts.length === 0) {
-    getTransferAccounts(0, 500)
-  }
-})
 
 const router = useRouter()
 const onAddNewAddressClick = () => {
