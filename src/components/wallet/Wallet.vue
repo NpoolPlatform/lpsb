@@ -149,15 +149,7 @@ const getCurrencies = () => {
       }
     }
   }, () => {
-    account.getWithdrawAccounts({
-      Message: {
-        Error: {
-          Title: t('MSG_GET_WITHDRAW_ACCOUNTS_FAIL'),
-          Popup: true,
-          Type: NotificationType.Error
-        }
-      }
-    })
+    // TODO
   })
 }
 
@@ -215,6 +207,17 @@ onMounted(() => {
   }
   if (transferAccount.TransferAccounts.TransferAccounts.length === 0) {
     getTransferAccounts(0, 500)
+  }
+  if (account.Accounts.length === 0) {
+    account.getWithdrawAccounts({
+      Message: {
+        Error: {
+          Title: t('MSG_GET_WITHDRAW_ACCOUNTS_FAIL'),
+          Popup: true,
+          Type: NotificationType.Error
+        }
+      }
+    })
   }
 })
 

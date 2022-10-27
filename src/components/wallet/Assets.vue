@@ -159,6 +159,7 @@ const accounts = computed(() => account.Accounts.filter((el) => el.State === Rev
 
 const transferAccount = useFrontendTransferAccountStore()
 const transfers = computed(() => transferAccount.TransferAccounts.TransferAccounts)
+const getTargetAddress = computed(() => (ID:string) => accounts.value.find((el) => el.Account.CoinTypeID === ID))
 
 const onWithdrawClick = (asset: BenefitModel) => {
   submitting.value = true
@@ -175,11 +176,7 @@ const onWithdrawClick = (asset: BenefitModel) => {
       return
     }
 
-    const exist = accounts.value.find((account) => {
-      return account.Account.CoinTypeID === asset.CoinTypeID && account.State === ReviewState.Approved
-    })
-
-    if (exist) {
+    if (getTargetAddress.value(asset.CoinTypeID)) {
       void router.push({
         path: '/withdraw',
         query: {
