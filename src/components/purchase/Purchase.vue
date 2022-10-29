@@ -42,17 +42,17 @@
             </div>
             <h3>{{ $t('MSG_WHY_TITLE') }}?</h3>
             <p v-html='$t("MSG_WHY_CONTENT")' />
-            <!-- <div v-show='good?.Main?.Specs'>
-              <h3>{{ $t('MSG_OFFICIAL_SPECS', { COIN_NAME: good?.Main?.Name }) }}</h3>
+            <div v-show='targetCoin?.Specs'>
+              <h3>{{ $t('MSG_OFFICIAL_SPECS', { COIN_NAME: good?.CoinName }) }}</h3>
               <p>
-                <img class='content-image' :src='good?.Main?.Specs'>
+                <img class='content-image' :src='targetCoin?.Specs'>
               </p>
             </div>
             <p>
-              <a :href='good?.Main?.HomePage'>
-                {{ $t('MSG_HOMEPAGE_WITH_RIGHT_ARROW', { COIN_NAME: good?.Main?.Name }) }}
+              <a :href='targetCoin?.HomePage'>
+                {{ $t('MSG_HOMEPAGE_WITH_RIGHT_ARROW', { COIN_NAME: good?.CoinName }) }}
               </a>
-            </p> -->
+            </p>
           </div>
         </div>
       </div>
