@@ -7720,9 +7720,9 @@ npm-run-path@^4.0.0, npm-run-path@^4.0.1:
     path-key "^3.0.0"
 
 npool-cli-v2@^0.2.275:
-  version "0.2.295"
-  resolved "https://registry.yarnpkg.com/npool-cli-v2/-/npool-cli-v2-0.2.295.tgz#233fd220997f7ed1809c2a669436c0a5ee95d5c9"
-  integrity sha512-Cf5kASdAxZAzTnqBl7V2bpitPnVId0EGA9GpUKK4wvYvWD9tG+0sUlxiGnNyMCmarby8/jT5j9Rg9U8eLj2v9g==
+  version "0.2.307"
+  resolved "https://registry.yarnpkg.com/npool-cli-v2/-/npool-cli-v2-0.2.307.tgz#b1dbc9241ffbfae257b91133f894dd4e91c421e2"
+  integrity sha512-rtFvw2NMsIceu7yJKYwvRyWmryR7M3g2YqkXkEK+C1IoounmNWHa2lxZVdS4be/XJ7xpTYdhnJ7pIrXPccCEhQ==
   dependencies:
     "@quasar/extras" "^1.0.0"
     "@typescript-eslint/eslint-plugin" "^5.17.0"
@@ -7895,10 +7895,10 @@ npool-cli-v2@^0.2.303:
     wrappy "^1.0.2"
     yocto-queue "^0.1.0"
 
-npool-cli-v4@^0.3.271:
-  version "0.3.271"
-  resolved "https://registry.yarnpkg.com/npool-cli-v4/-/npool-cli-v4-0.3.271.tgz#7d5a58ab0bb98b4c3b7af5ebc9ac27a4b384a99d"
-  integrity sha512-Ua4yB+ho3vPmIjv1MmQoBbPsR2gXPtSQtkkvko/wL3yH01jmwBQEgh3d+Jpl0frXmYiMGKoX+agHkSziniPu+A==
+npool-cli-v4@^0.3.295:
+  version "0.3.295"
+  resolved "https://registry.yarnpkg.com/npool-cli-v4/-/npool-cli-v4-0.3.295.tgz#e8f09144b60956dc3463e6a48c377953eacb13da"
+  integrity sha512-/e0uJ8j1tFDJOp7Ko51icfXLDQeV5+/PgGD4Y0qxIlY37DkayGHFvittEcrMR83/PQHBClVMvgLTmD9M6qeA6Q==
   dependencies:
     "@quasar/extras" "^1.0.0"
     "@typescript-eslint/eslint-plugin" "^5.17.0"
