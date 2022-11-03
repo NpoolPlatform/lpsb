@@ -293,8 +293,7 @@ const coins = computed(() => {
   const btcCoins = [] as Array<Coin>
   const busdCoins = [] as Array<Coin>
 
-  // const targetCoin = coin.getCoinByID(target.value?.CoinTypeID)
-  coin.Coins.filter((coin) => coin.ForPay && !coin.PreSale /* && coin.ENV === targetCoin?.ENV */).forEach((el) => {
+  coin.Coins.filter((coin) => coin.ForPay && !coin.PreSale && coin.ENV === target?.value.CoinEnv).forEach((el) => {
     if (el.Name?.toLowerCase()?.includes('trc20')) {
       trc20Coins.push(el)
     } else if (el.Unit?.includes('BUSD')) {
