@@ -113,7 +113,7 @@ const kyc = useFrontendKYCStore()
 const localledger = useLocalLedgerStore()
 const submitting = ref(false)
 
-const balanceGenerals = computed(() => localledger.generals.filter((el) => !preSaleCoin(el.CoinTypeID) && !coinBlacklist(el.CoinTypeID)))
+const balanceGenerals = computed(() => localledger.generals.filter((el) => !preSaleCoin(el.CoinTypeID) && !coinBlacklist(el.CoinTypeID) && !el.CoinUnit?.toLowerCase()?.includes('busd')))
 
 const table = computed(() => [
   {
