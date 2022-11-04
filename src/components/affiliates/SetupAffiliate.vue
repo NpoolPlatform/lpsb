@@ -22,10 +22,9 @@
 <script setup lang='ts'>
 import {
   useInspireStore,
-  NotificationType,
-  useGoodStore
+  NotificationType
 } from 'npool-cli-v2'
-import { useLocalUserStore, useBaseUserStore, User } from 'npool-cli-v4'
+import { useLocalUserStore, useBaseUserStore, User, useAdminAppGoodStore, NotifyType, AppGood } from 'npool-cli-v4'
 import { LocalArchivement, LocalProductArchivement, useLocalArchivementStore } from 'src/localstore/affiliates'
 import { defineAsyncComponent, computed, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -64,24 +63,16 @@ const inviter = computed(() => {
   return index < 0 ? undefined as unknown as LocalProductArchivement : localArchivement.Archivements[index]
 })
 
-// const userKOLOptions = computed(() => (maxKOL: number) => {
-//   const kolList = [30, 25, 15, 10, 5, 0]
-//   let index = kolList.findIndex(kol => kol <= maxKOL)
-//   return index === kolList.length - 1 || index === -1 ? [0] : kolList.splice(++index)
-// })
-
+const good = useAdminAppGoodStore()
 const inviterGoodPercent = (goodID: string) => {
   const good = inviter.value.Archivements.find((el) => el.GoodID === goodID)
   return good === undefined ? 0 : good.CommissionPercent
 }
 
 const visibleGoodsArchivements = computed(() => (goodArchivements: Array<LocalArchivement>) => {
-  return goodArchivements.filter((el) => goodVisible(el.GoodID))
+  return goodArchivements.filter((el) => good.visible(el.GoodID))
 })
-const goodVisible = (goodID: string) => {
-  const index = good.AppGoods.findIndex((el) => el.GoodID === goodID)
-  return index < 0 ? false : good.AppGoods[index].Visible
-}
+
 const subusername = computed(() => {
   let name = referral.value?.EmailAddress
 
@@ -157,31 +148,30 @@ const onSubmit = () => {
   })
 }
 
-const good = useGoodStore()
-
 onMounted(() => {
-  good.getGoods({
+  if (good.AppGoods.AppGoods.length === 0) {
+    getAppGoods(0, 500)
+  }
+})
+
+const getAppGoods = (offset: number, limit: number) => {
+  good.getAppGoods({
+    Offset: offset,
+    Limit: limit,
     Message: {
       Error: {
-        Title: t('MSG_GET_GOODS_FAIL'),
+        Title: t('MSG_GET_APP_GOODS_FAIL'),
         Popup: true,
-        Type: NotificationType.Error
+        Type: NotifyType.Error
       }
     }
-  }, () => {
-    good.getAppGoods({
-      Message: {
-        Error: {
-          Title: t('MSG_GET_APP_GOODS_FAIL'),
-          Popup: true,
-          Type: NotificationType.Error
-        }
-      }
-    }, () => {
-      // TODO
-    })
+  }, (g: Array<AppGood>, error: boolean) => {
+    if (error || g.length < limit) {
+      return
+    }
+    getAppGoods(offset + limit, limit)
   })
-})
+}
 </script>
 
 <style lang='sass' scoped>
