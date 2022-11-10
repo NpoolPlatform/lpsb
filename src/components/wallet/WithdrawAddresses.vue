@@ -16,7 +16,7 @@
       <template #top>
         <div class='warning waring-gap'>
           <img src='font-awesome/warning.svg'>
-          <span v-html='$t("MSG_INTERNAL_TRANSFER_ADDRESS_WARNING")' />
+          <span v-html='$t("MSG_EXTERNAL_TRANSFER_ADDRESS_WARNING")' />
         </div>
       </template>
       <template #table-body='myProps'>
