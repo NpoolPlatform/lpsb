@@ -171,10 +171,8 @@ import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import {
   AppGood,
-  KYCState,
   NotifyType,
   useAdminAppGoodStore,
-  useFrontendKYCStore,
   useLocalUserStore
 } from 'npool-cli-v4'
 
@@ -304,7 +302,6 @@ const currency = useCurrencyStore()
 const router = useRouter()
 const logined = useLocalUserStore()
 
-const kyc = useFrontendKYCStore()
 const onPurchaseClick = () => {
   if (!logined.logined) {
     void router.push({
@@ -317,24 +314,16 @@ const onPurchaseClick = () => {
     })
     return
   }
-  kyc.getKYC({
-    Message: {}
-  }, (error: boolean) => {
-    if (error || kyc.KYC?.State !== KYCState.Approved) {
-      void router.push({ path: '/kyc' })
-      return
+  onPurchaseAmountFocusOut()
+  if (purchaseAmountError.value) {
+    return
+  }
+  void router.push({
+    path: '/payment',
+    query: {
+      coinTypeID: paymentCoin.value?.ID as string,
+      purchaseAmount: myPurchaseAmount.value
     }
-    onPurchaseAmountFocusOut()
-    if (purchaseAmountError.value) {
-      return
-    }
-    void router.push({
-      path: '/payment',
-      query: {
-        coinTypeID: paymentCoin.value?.ID as string,
-        purchaseAmount: myPurchaseAmount.value
-      }
-    })
   })
 }
 
