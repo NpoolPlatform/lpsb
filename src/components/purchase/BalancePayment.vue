@@ -38,7 +38,9 @@
                 @click='onPurchaseClick'
               />
             </div>
-            <input type='submit' value='Go to Wallet' class='submit submit-alt' @click='goWallet'>
+            <button class='alt submit' @click='goWallet'>
+              {{ $t('MSG_GO_WALLET') }}
+            </button>
           </form>
         </div>
       </div>
