@@ -308,6 +308,7 @@ onMounted(() => {
       // TODO
     })
   }
+
   if (coin.Coins.length === 0) {
     coin.getCoins({
       Message: {
@@ -319,6 +320,17 @@ onMounted(() => {
       }
     }, () => {
       // TODO
+    })
+  }
+  if (coins.value.length > 0) {
+    if (currencyFromOracle.value) {
+      selectedCoinCurrency.value = Math.min(currencyFromOracle.value.AppPriceVSUSDT, currencyFromOracle.value.PriceVSUSDT)
+      return
+    }
+    currency.getCoinCurrency(coin.getCoinByID(coinTypeID.value), Currency.USD, (usdCurrency: number) => {
+      if (usdCurrency > 0) {
+        selectedCoinCurrency.value = usdCurrency
+      }
     })
   }
 })
