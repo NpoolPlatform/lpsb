@@ -5,7 +5,7 @@
         <h3>{{ $t('MSG_ALEO_MINING_PURCHASE') }}</h3>
         <div class='info-flex'>
           <form action='javascript:void(0)'>
-            <label>{{ $t('MSG_SELECT_PAYMENT_CURRENCY') }} {{ currency }}</label>
+            <label>{{ $t('MSG_SELECT_PAYMENT_CURRENCY') }}</label>
             <select :name='$t("MSG_PAYMENT_METHOD")' v-model='selectedCoin' required>
               <option
                 v-for='myCoin in coins'
@@ -17,9 +17,17 @@
               </option>
             </select>
             <label>{{ $t('MSG_BALANCE') }}</label>
-            <div class='three-section'>
-              <span class='number'>{{ balance.toFixed(4) }}</span>
-              <span class='unit'>USDT</span>
+            <div class='three-section' v-if='isUSDCoin'>
+              <span class='number'>{{ usdBalance.toFixed(4) }}</span>
+              <span class='unit'>{{ selectedCoin?.Unit }}</span>
+            </div>
+            <div class='three-section' v-else>
+              <span class='number'>{{ general.getBalanceByID(coinTypeID) }}</span>
+              <span class='unit'>{{ selectedCoin?.Unit }}</span>
+              <span>&nbsp;({{ $t("MSG_APPROX") }}</span>
+              <span class='small number'>{{ usdBalance.toFixed(4) }}</span>
+              <span class='small unit'>USDT</span>
+              <span>)</span>
             </div>
             <label>{{ $t('MSG_PURCHASE_AMOUNT') }}</label>
             <Input
@@ -36,13 +44,25 @@
               @blur='onPurchaseAmountFocusOut'
             />
             <label>{{ $t('MSG_ALEO_DUE_AMOUNT') }}</label>
-            <div class='three-section'>
+            <div class='three-section' v-if='isUSDCoin'>
               <span class='number'>{{ paymentAmount }}</span>
               <span class='unit'>USDT</span>
             </div>
+            <div class='three-section' v-else>
+              <span class='number'>{{ usdToOtherAmount }}</span>
+              <span class='unit'>{{ selectedCoin?.Unit }}</span>
+              <span>&nbsp;(</span>
+              <span class='number small'>{{ paymentAmount }}</span>
+              <span class='unit small'>USDT</span>
+              <span>)</span>
+            </div>
+            <div class='warning' v-if='selectedCoin?.Unit === "BTC"'>
+              <img src='font-awesome/warning.svg'>
+              <span>{{ $t('MSG_COIN_USDT_EXCHANGE_RATE_TIP', { COIN_NAME: selectedCoin?.Unit }) }}</span>
+            </div>
             <div class='warning warning-pink' v-if='insufficientFunds'>
               <img src='font-awesome/warning.svg'>
-              <span>{{ $t("MSG_INSUFFICIENT_FUNDS") }} <a href='javascript:void(0)'>{{ $t("MSG_INSUFFICIENT_FUNDS_INFO") }}</a></span>
+              <span>{{ $t("MSG_INSUFFICIENT_FUNDS") }} {{ $t("MSG_INSUFFICIENT_FUNDS_INFO") }}</span>
             </div>
             <div class='submit-container'>
               <WaitingBtn
@@ -100,20 +120,13 @@ const purchaseAmount = ref(query.value.purchaseAmount)
 const coinTypeID = ref(query.value.coinTypeID)
 
 const coin = useCoinStore()
-const selectedCoin = computed({
-  get: () => coin.getCoinByID(coinTypeID.value),
-  set: (val: Coin) => {
-    coinTypeID.value = val.ID as string
-  }
-})
 const coins = computed(() => {
   const trc20Coins = [] as Array<Coin>
   const erc20Coins = [] as Array<Coin>
   const btcCoins = [] as Array<Coin>
   const busdCoins = [] as Array<Coin>
 
-  const targetCoin = coin.getCoinByID(coinTypeID.value)
-  coin.Coins.filter((coin) => coin.ForPay && !coin.PreSale && coin.ENV === targetCoin?.ENV).forEach((el) => {
+  coin.Coins.filter((coin) => coin.ForPay && !coin.PreSale && coin.ENV === targetGood.value?.CoinEnv).forEach((el) => {
     if (el.Name?.toLowerCase()?.includes('trc20')) {
       trc20Coins.push(el)
     } else if (el.Unit?.includes('BUSD')) {
@@ -131,6 +144,13 @@ const coins = computed(() => {
 
   return trc20Coins
 })
+
+const selectedCoin = computed({
+  get: () => coin.getCoinByID(coinTypeID.value),
+  set: (val: Coin) => {
+    coinTypeID.value = val.ID as string
+  }
+})
 const myCurrency = useCurrencyStore()
 const coinName = (c: Coin) => {
   if (c.Unit?.includes('BUSD')) {
@@ -142,6 +162,7 @@ const coinName = (c: Coin) => {
   }
   return myCurrency.formatCoinName(c.Name as string)
 }
+const isUSDCoin = computed(() => selectedCoin.value?.Unit?.includes('USD'))
 
 const good = useAdminAppGoodStore()
 const targetGood = computed(() => good.getGoodByID(goodID.value) as AppGood)
@@ -151,12 +172,13 @@ const total = computed(() => Math.min(targetGood.value?.PurchaseLimit, targetGoo
 const paymentAmount = computed(() => Number(goodPrice.value) * purchaseAmount.value)
 
 const general = useFrontendGeneralStore()
-const balance = computed(() => Number(general.getBalanceByID(coinTypeID.value)) * currency.value)
+const usdBalance = computed(() => Number(general.getBalanceByID(coinTypeID.value)) * currency.value)
+const usdToOtherAmount = computed(() => (Math.ceil(paymentAmount.value / currency.value * 10000) / 10000).toFixed(4))
 
 const oracle = useAdminOracleStore()
 const currency = computed(() => oracle.getCurrencyByID(coinTypeID.value))
 
-const insufficientFunds = computed(() => balance.value < paymentAmount.value)
+const insufficientFunds = computed(() => usdBalance.value < paymentAmount.value)
 
 const order = useFrontendOrderStore()
 const submitting = ref(false)
@@ -193,8 +215,8 @@ const onPurchaseClick = () => {
     if (error) {
       return
     }
-    general.$reset()
     order.$reset()
+    general.$reset()
     void router.push({
       path: '/dashboard'
     })
