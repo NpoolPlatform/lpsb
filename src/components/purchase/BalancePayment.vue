@@ -313,14 +313,6 @@ onMounted(() => {
     })
   }
 
-  if (oracle.Currencies.length === 0) {
-    oracle.getCurrencies({
-      Message: {}
-    }, () => {
-      // TODO
-    })
-  }
-
   if (coin.Coins.length === 0) {
     coin.getCoins({
       Message: {
@@ -331,22 +323,26 @@ onMounted(() => {
         }
       }
     }, () => {
-      currency.getAllCoinCurrencies({
-        Currencies: [Currency.USD],
-        Message: {
-          Error: {
-            Title: t('MSG_GET_CURRENCIES'),
-            Message: t('MSG_GET_CURRENCIES_FAIL'),
-            Popup: true,
-            Type: NotificationType.Error
-          }
-        }
+      oracle.getCurrencies({
+        Message: {}
       }, () => {
-        // TODO
+        currency.getAllCoinCurrencies({
+          Currencies: [Currency.USD],
+          Message: {
+            Error: {
+              Title: t('MSG_GET_CURRENCIES'),
+              Message: t('MSG_GET_CURRENCIES_FAIL'),
+              Popup: true,
+              Type: NotificationType.Error
+            }
+          }
+        }, () => {
+          setCurrency()
+        })
       })
-      setCurrency()
     })
   }
+
   if (coins.value.length > 0) {
     setCurrency()
   }

@@ -164,7 +164,8 @@ import {
   NotificationType,
   useCurrencyStore,
   Currency,
-  Coin
+  Coin,
+  useAdminOracleStore
 } from 'npool-cli-v2'
 import { defineAsyncComponent, defineProps, toRef, ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
@@ -339,6 +340,7 @@ onMounted(() => {
   }
 })
 
+const oracle = useAdminOracleStore()
 onMounted(() => {
   if (!target.value) {
     good.getAppGood({
@@ -367,7 +369,11 @@ onMounted(() => {
         }
       }
     }, () => {
-      // TODO
+      oracle.getCurrencies({
+        Message: {}
+      }, () => {
+        // TODO
+      })
     })
   }
 
