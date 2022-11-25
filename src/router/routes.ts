@@ -256,7 +256,20 @@ const routes: RouteRecordRaw[] = [
         }
       }, {
         path: 'payment',
-        component: () => import('pages/Payment.vue'),
+        component: () => import('pages/BalancePayment.vue'),
+        meta: {
+          ShowHeaderAnnouncement: true,
+          ShowMainHeader: true,
+          ShowBigLogo: true,
+          ShowFooterTop: true,
+          ShowSignHelper: true,
+          ShowTopTip: false,
+          NeedLogined: true,
+          ShowSideMenu: false
+        }
+      }, {
+        path: 'detail',
+        component: () => import('pages/OrderDetail.vue'),
         meta: {
           ShowHeaderAnnouncement: true,
           ShowMainHeader: true,
