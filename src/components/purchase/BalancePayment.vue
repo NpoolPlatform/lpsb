@@ -18,14 +18,14 @@
             </select>
             <label>{{ $t('MSG_BALANCE') }}</label>
             <div class='three-section' v-if='isUSDCoin'>
-              <span class='number'>{{ usdBalance.toFixed(4) }}</span>
+              <span class='number'>{{ parseFloat(usdBalance.toFixed(4)) }}</span>
               <span class='unit'>{{ selectedCoin?.Unit }}</span>
             </div>
             <div class='three-section' v-else>
               <span class='number'>{{ general.getBalanceByID(coinTypeID) }}</span>
               <span class='unit'>{{ selectedCoin?.Unit }}</span>
               <span>&nbsp;({{ $t("MSG_APPROX") }}</span>
-              <span class='small number'>{{ usdBalance.toFixed(4) }}</span>
+              <span class='small number'>{{ parseFloat(usdBalance.toFixed(4)) }}</span>
               <span class='small unit'>USDT</span>
               <span>)</span>
             </div>
@@ -49,7 +49,7 @@
               <span class='unit'>USDT</span>
             </div>
             <div class='three-section' v-else>
-              <span class='number'>{{ usdToOtherAmount }}</span>
+              <span class='number'>{{ parseFloat(usdToOtherAmount) }}</span>
               <span class='unit'>{{ selectedCoin?.Unit }}</span>
               <span>&nbsp;(</span>
               <span class='number small'>{{ paymentAmount }}</span>
@@ -280,6 +280,18 @@ const getGenerals = (offset:number, limit: number) => {
   })
 }
 
+const setCurrency = () => {
+  if (currencyFromOracle.value) {
+    selectedCoinCurrency.value = Math.min(currencyFromOracle.value.AppPriceVSUSDT, currencyFromOracle.value.PriceVSUSDT)
+    return
+  }
+  currency.getCoinCurrency(coin.getCoinByID(coinTypeID.value), Currency.USD, (usdCurrency: number) => {
+    if (usdCurrency > 0) {
+      selectedCoinCurrency.value = usdCurrency
+    }
+  })
+}
+
 onMounted(() => {
   general.$reset()
   if (general.Generals.Generals.length === 0) {
@@ -319,19 +331,24 @@ onMounted(() => {
         }
       }
     }, () => {
-      // TODO
+      currency.getAllCoinCurrencies({
+        Currencies: [Currency.USD],
+        Message: {
+          Error: {
+            Title: t('MSG_GET_CURRENCIES'),
+            Message: t('MSG_GET_CURRENCIES_FAIL'),
+            Popup: true,
+            Type: NotificationType.Error
+          }
+        }
+      }, () => {
+        // TODO
+      })
+      setCurrency()
     })
   }
   if (coins.value.length > 0) {
-    if (currencyFromOracle.value) {
-      selectedCoinCurrency.value = Math.min(currencyFromOracle.value.AppPriceVSUSDT, currencyFromOracle.value.PriceVSUSDT)
-      return
-    }
-    currency.getCoinCurrency(coin.getCoinByID(coinTypeID.value), Currency.USD, (usdCurrency: number) => {
-      if (usdCurrency > 0) {
-        selectedCoinCurrency.value = usdCurrency
-      }
-    })
+    setCurrency()
   }
 })
 
