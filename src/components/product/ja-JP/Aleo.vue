@@ -337,7 +337,8 @@ onMounted(() => {
   if (description.CoinDescriptions.CoinDescriptions.length === 0) {
     getDescriptions(0, 100)
   }
-  if (currency.Currencies.Currencies.length === 0) {
+  if (currency.Currencies.Currencies.length === 0 || currency.expired()) {
+    currency.$reset()
     getCurrencies(0, 100)
   }
 })
