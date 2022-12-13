@@ -24,7 +24,7 @@
           <p>
             <strong>Start of Mining: </strong>At the launch of the mainnet
             <a href='https://www.aleo.org/post/announcing-testnet-3' target='_blank'>
-              (scheduled for October 2022)
+              (scheduled at Q1 2023)
             </a>
           </p>
           <p><strong>Mining Period: </strong>365 days (after mainnet launch)</p>
