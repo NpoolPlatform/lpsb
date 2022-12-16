@@ -164,11 +164,13 @@ watch(userLogined, () => {
 
 const initialize = () => {
   if (logined.User?.InvitationCode?.length) {
-    inspire.getPurchaseAmountSettings({
-      Message: {}
-    }, () => {
+    if (inspire.PurchaseAmountSettings.length === 0) {
+      inspire.getPurchaseAmountSettings({
+        Message: {}
+      }, () => {
       // TODO
-    })
+      })
+    }
   }
 }
 
