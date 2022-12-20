@@ -283,7 +283,7 @@ const getCoins = (offset: number, limit: number) => {
 }
 
 const getCurrencies = (offset: number, limit: number) => {
-  currency.getCurrencies({
+  currency.getCoinCurrencies({
     Offset: offset,
     Limit: limit,
     Message: {}
