@@ -22,6 +22,7 @@
               label=''
               hide-label
               default
+              :name-index='0'
             />
           </form>
         </div>

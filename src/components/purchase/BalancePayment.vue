@@ -11,6 +11,8 @@
               :coins='coins'
               label=''
               hide-label
+              :name-index='1'
+              :tip-index='1'
             />
             <label>{{ $t('MSG_BALANCE') }}</label>
             <div class='three-section' v-if='paymentCoin?.StableUSD'>
