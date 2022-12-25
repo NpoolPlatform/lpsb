@@ -7,7 +7,7 @@
             <div class='product-page-icon'>
               <img :src='target?.Logo'>
             </div>
-            <h1>{{ target?.Name }}</h1>
+            <h1>{{ target ? coinLabel(target) : '' }}</h1>
           </div>
           <div class='withdraw'>
             <h3>{{ $t('MSG_ASSET_WITHDRAWAL') }}</h3>
@@ -190,7 +190,8 @@ import {
   useFrontendWithdrawStore,
   General,
   useFrontendDetailStore,
-  useAdminCurrencyStore
+  useAdminCurrencyStore,
+  AppCoin
 } from 'npool-cli-v4'
 import checkmark from 'src/assets/icon-checkmark.svg'
 import { getCoins, getCurrencies } from 'src/api/chain'
@@ -205,6 +206,14 @@ const WaitingBtn = defineAsyncComponent(() => import('src/components/button/Wait
 interface Query {
   coinTypeID: string;
   type: string;
+}
+
+const coinLabel = (asset: AppCoin) => {
+  let label = asset.Name
+  if (asset.DisplayNames.length > 2 && asset.DisplayNames[2].length > 0) {
+    label = asset.DisplayNames[2]
+  }
+  return label
 }
 
 const query = computed(() => route.query as unknown as Query)

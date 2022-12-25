@@ -24,7 +24,7 @@
           <q-td key='Blockchain' :props='myProps'>
             <LogoName
               :logo='myProps.row?.CoinLogo'
-              :name='myProps.row?.CoinName'
+              :name='myProps.row ? accountLabel(myProps.row): ""'
             />
           </q-td>
           <q-td key='Address' :props='myProps'>
@@ -101,6 +101,14 @@ const accounts = computed(() => account.withdrawAddress)
 
 const target = ref({} as Account)
 const showing = ref(false)
+
+const accountLabel = (acc: Account) => {
+  let label = acc.CoinName
+  if (acc.CoinDisplayNames.length > 2 && acc.CoinDisplayNames[2].length > 0) {
+    label = acc.CoinDisplayNames[2]
+  }
+  return label
+}
 
 const onRemove = (row: Account) => {
   showing.value = true
