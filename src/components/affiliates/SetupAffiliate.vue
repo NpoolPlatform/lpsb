@@ -21,17 +21,16 @@
 
 <script setup lang='ts'>
 import {
-  useInspireStore,
-  NotificationType
-} from 'npool-cli-v2'
-import {
   useLocalUserStore,
   useBaseUserStore,
   User,
   useAdminAppGoodStore,
   useFrontendArchivementStore,
   UserArchivement,
-  NotifyType
+  NotifyType,
+  useFrontendUserStore,
+  useFrontendCommissionStore,
+  SettleType
 } from 'npool-cli-v4'
 import { defineAsyncComponent, computed, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
@@ -73,7 +72,9 @@ const visibleGoodArchivements = computed(() => referral.value?.Archivements?.fil
 const backTimer = ref(-1)
 const submitting = ref(false)
 
-const inspire = useInspireStore()
+const user = useFrontendUserStore()
+const commission = useFrontendCommissionStore()
+
 const onSubmit = () => {
   submitting.value = true
   referral.value?.Archivements?.forEach((g) => {
@@ -85,18 +86,14 @@ const onSubmit = () => {
     }
   })
 
-  inspire.createInvitationCode({
+  user.updateUserKol({
     TargetUserID: referral.value?.UserID as string,
-    InviterName: baseUser.displayName(logined.User, locale.value as string),
-    InviteeName: username.value,
-    Info: {
-      UserID: referral.value?.UserID
-    },
+    Kol: true,
     Message: {
       Error: {
         Title: t('MSG_CREATE_INVITATION_CODE_FAIL'),
         Popup: true,
-        Type: NotificationType.Error
+        Type: NotifyType.Error
       }
     }
   }, (error: boolean) => {
@@ -109,23 +106,18 @@ const onSubmit = () => {
       void router.push({ path: '/affiliates' })
       return
     }
-    visibleGoodArchivements?.value?.forEach((good) => {
-      inspire.createPurchaseAmountSetting({
+    visibleGoodArchivements?.value?.forEach((row) => {
+      commission.createCommission({
         TargetUserID: referral.value?.UserID as string,
-        InviterName: baseUser.displayName(logined.User, locale.value as string),
-        InviteeName: username.value,
-        Info: {
-          GoodID: good.GoodID,
-          CoinTypeID: good.CoinTypeID,
-          Percent: good.CommissionPercent,
-          Start: Math.ceil(Date.now() / 1000),
-          End: 0
-        },
+        GoodID: row.GoodID,
+        SettleType: good.settleType(row.GoodID) as SettleType,
+        Value: `${row.CommissionPercent}`,
+        StartAt: Math.ceil(Date.now() / 1000),
         Message: {
           Error: {
             Title: t('MSG_CREATE_AMOUNT_SETTING_FAIL'),
             Popup: true,
-            Type: NotificationType.Error
+            Type: NotifyType.Error
           }
         }
       }, () => {
