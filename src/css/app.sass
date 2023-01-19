@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Noto+Sans+JP:wght@100;300;400;500;700;900&display=swap')
+@import url('https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,1000,2000,3000,4000,5000,6000,7000,8000,9001,1001,2001,3001,4001,5001,6001,7001,8001,900&family=Noto+Sans+JP:wght@100300400500700900&display=swap')
 
 /* COLORS */
 
@@ -9,8 +9,10 @@
   --blue-3: #4465f0
   --aqua-1: #3fc1d6
   --aqua-2: #3aedd8
+  --aqua-3: #29d6ff
   --green: #8cff7d
   --red: #db0000
+  --red-2: #ff5252
   --yellow-1: #ffeb00
   --yellow-2: #ffce00
   --dark-blue-1: #46484d
@@ -355,8 +357,8 @@ ul.language-picker li.selected
     color: var(--aqua-1)
     content: "\2727"
      /*hollow star*/
-     /* content: "\2726"; /*filled star*/
-     /* content: "\21e2"; /*dashed arrow*/
+     /* content: "\2726" /*filled star*/
+     /* content: "\21e2" /*dashed arrow*/
     display: inline-block
     margin-left: -32px
     width: 32px
@@ -694,6 +696,83 @@ h3.feature-title::after
     -webkit-background-clip: text
     -webkit-box-decoration-break: clone
     -webkit-text-fill-color: transparent
+
+/* TABLE */
+.info-table-container
+  background: var(--light-gray-11)
+  border-radius: 20px
+  box-shadow: 16px 16px 20px 0 var(--dark-blue-2-66)
+  padding: 24px
+
+.info-table-container .info-table-title
+  font-size: 24px
+  font-weight: 700
+  margin: 0 0 12px 0
+  padding: 0 0 0 16px
+  text-transform: uppercase
+
+.info-table-container .info-table-note
+  font-size: 14px
+  padding: 0 0 0 16px
+  margin: 16px 0
+
+.info-table
+  border-collapse: collapse
+  font-size: 18px
+  width: 100%
+
+.table-2-columns th,
+.table-2-columns td
+  width: 50%
+
+.info-table #aqua span,
+.info-table #aqua::before
+  color: var(--aqua-3)
+
+.info-table td#aqua::before
+  content: "\2713"
+
+.info-table #pink span,
+.info-table td#pink::before
+  color: var(--red-2)
+
+.info-table td#pink::before
+  content: "\2717"
+
+.info-table th
+  border-bottom: 3px solid var(--gray-1-55)
+  border-collapse: collapse
+  font-size: 28px
+  font-weight: 700
+  height: 48px
+  padding: 8px 16px
+  text-align: left
+
+.info-table td
+  border-bottom: 1px dashed var(--light-gray-33)
+  height: 48px
+  padding: 8px 16px
+  position: relative
+  text-align: left
+
+.info-table td::before
+  display: block
+  position: absolute
+  left: -4px
+
+.info-table th.table-highlight
+  border-top: 6px solid var(--yellow-2)
+  border-left: 6px solid var(--yellow-2)
+  border-right: 6px solid var(--yellow-2)
+
+.info-table td.table-highlight
+  border-left: 6px solid var(--yellow-2)
+  border-right: 6px solid var(--yellow-2)
+
+.info-table tr:last-of-type td.table-highlight
+  border-left: 6px solid var(--yellow-2)
+  border-right: 6px solid var(--yellow-2)
+  border-bottom: 6px solid var(--yellow-2)
 
 /* PRODUCTS */
 
