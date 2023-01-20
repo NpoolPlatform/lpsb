@@ -50,7 +50,7 @@
               <button
                 v-if='child'
                 :class='[ "alt", good.online(_good.GoodID) ? "" : "in-active" ]'
-                :disabled='!good.online(_good.GoodID)'
+                :disabled='!good.online(_good.GoodID)||!good.haveSale(good.getGoodByID(_good.GoodID) as AppGood)'
                 @click='(_good.Editing = true)'
               >
                 {{ $t('MSG_SET') }}
@@ -115,7 +115,8 @@ import {
   UserArchivement,
   useFrontendCommissionStore,
   SettleType,
-  NotifyType
+  NotifyType,
+  AppGood
 } from 'npool-cli-v4'
 import { useI18n } from 'vue-i18n'
 import { MyGoodArchivement } from 'src/localstore/ledger/types'
