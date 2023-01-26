@@ -289,6 +289,10 @@
           </div>
         </div>
 
+        <h3>Aleoロードマップ</h3>
+
+        <p><img class='project-promo-content' src='product/aleo/aleo-roadmap-jp.png'></p>
+
         <h3>メディア掲載実績</h3>
 
         <h4>全世界のトップメディアにAleoが掲載されています！</h4>
