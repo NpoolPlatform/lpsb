@@ -64,6 +64,7 @@
       <div class='three-section' v-if='good.haveSale(target)'>
         <h4>{{ $t("MSG_SALE_END_DATE") }}</h4>
         <span class='number'>{{ good.getSaleEndDate(target) }}</span>
+        <br>
         <span class='unit'>{{ good.getSaleEndTime(target) }} {{ $t("MSG_JST") }}</span>
         <div class='tooltip'>
           <img class='more-info' src='font-awesome/question.svg'><span>{{ $t('MSG_LEARN_MORE') }}</span>
@@ -95,8 +96,8 @@
             </thead>
             <tbody>
               <tr>
-                <td><strong>2023年1月27日 08:59 (日本時間) まで購入可能</strong><em>（2023-01-26 23:59 UTC）</em></td>
-                <td><strong>2023年1月27日 08:59 (日本時間) 以降に購入可能</strong><em>（2023-01-26 23:59 UTC）</em></td>
+                <td><strong>2023年02月03日 23:59 日本時間</strong> まで購入可能</td>
+                <td><strong>2023年02月03日 23:59 日本時間</strong> 以降に購入可能</td>
               </tr>
               <tr>
                 <td>プルーバーインセンティブを獲得</td>
@@ -105,7 +106,7 @@
             </tbody>
           </table>
           <p class='info-table-note'>
-            ※<a href='#Aleo Prover Incentive Program'>Aleoプルーバーインセンティブプログラム</a>の詳細を閲覧
+            ※<a @click='scrollTo("Aleo Prover Incentive Program")'>Aleoプルーバーインセンティブプログラム</a>の詳細を閲覧
           </p>
         </div>
 
@@ -288,6 +289,10 @@
           </div>
         </div>
 
+        <h3>Aleoロードマップ</h3>
+
+        <p><img class='project-promo-content' src='product/aleo/aleo-roadmap-jp.png'></p>
+
         <h3>メディア掲載実績</h3>
 
         <h4>全世界のトップメディアにAleoが掲載されています！</h4>
@@ -456,6 +461,7 @@ import { defineAsyncComponent, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { PriceCoinName } from 'npool-cli-v2'
 import { useI18n } from 'vue-i18n'
+import { scrollTo } from 'src/utils/scroll'
 
 import question from '../../../assets/question.svg'
 import lightbulb from '../../../assets/lightbulb.svg'
