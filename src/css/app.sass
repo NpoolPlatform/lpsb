@@ -19,6 +19,7 @@
   --dark-blue-2: #34363b
   --dark-blue-2-66: #34363b66
   --dark-blue-3: #20242c
+  --light-green-1: #e4f4f0
   --dark-green-1: #464d47
   --dark-green-2: #3a413d
   --dark-green-3: #40453e
@@ -720,6 +721,9 @@ h3.feature-title::after
   border-collapse: collapse
   font-size: 18px
   width: 100%
+
+.q-table tbody td
+  font-size: 16px
 
 .table-2-columns th,
 .table-2-columns td
@@ -2143,6 +2147,16 @@ h3.mining-title
     color: var(--aqua-1)
     filter: contrast(1.5)
     font-weight: 500
+  & .unit
+    color: var(--light-green-1)
+    filter: none
+    font-size: inherit
+    font-weight: 700
+    margin: 0
+    text-transform: unset
+
+  & .warning
+    margin: 12px 0 0 0
 
 /* AFFILIATES PAGE */
 
