@@ -1271,11 +1271,16 @@ h4#signature
   display: inline-block
   margin: 0 8px 0 0
   text-align: center
+  @media (max-width: $breakpoint-sm-max)
+    display: block
+    margin: -38px 0 6px 0
+    text-align: left
 
   & img
     vertical-align: middle
     height: 48px
     width: 48px
+    filter: drop-shadow(0 0 20px var(--light-green-2-33))
 
 .product-container h1
   display: inline-block
