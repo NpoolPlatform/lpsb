@@ -53,8 +53,12 @@
 .faq-menu-item img,
 div.up-button a img,
 .logo-display div,
+.logo-display img,
 .logo-feature img
   user-select: none
+
+.logo-display img:hover
+  filter: invert(1) opacity(1) drop-shadow(0 0 8px var(--white-77))
 
 html,
 body
@@ -335,7 +339,7 @@ ul.language-picker li.selected
   & p:not([class]) em
     background: linear-gradient(to left, var(--blue-1) 0, var(--yellow-2) 50%)
     background-clip: border-box
-    font-weight: 500
+    font-weight: 700
     -webkit-background-clip: text
     -webkit-box-decoration-break: clone
     -webkit-text-fill-color: transparent
@@ -343,7 +347,7 @@ ul.language-picker li.selected
   & p:not([class]) strong
     background: var(--yellow-2)
     background-clip: border-box
-    font-weight: 500
+    font-weight: 700
     -webkit-background-clip: text
     -webkit-box-decoration-break: clone
     -webkit-text-fill-color: transparent
@@ -704,6 +708,8 @@ h3.feature-title::after
   border-radius: 20px
   box-shadow: 16px 16px 20px 0 var(--dark-blue-2-66)
   padding: 24px
+  @media (max-width: $breakpoint-sm-max)
+    overflow-x: scroll
 
 .info-table-container .info-table-title
   font-size: 24px
@@ -721,6 +727,7 @@ h3.feature-title::after
   border-collapse: collapse
   font-size: 18px
   width: 100%
+  min-width: 480px
 
 .q-table tbody td
   font-size: 16px
@@ -865,6 +872,26 @@ h3.product-title
     margin: 24px 0 0 0
     height: auto
     width: 100%
+
+.label-gold
+  background: radial-gradient(ellipse farthest-corner at right bottom, #FEDB37 0%, #FDB931 8%, #be9132 30%, #c48b0a 40%, transparent 80%),radial-gradient(ellipse farthest-corner at left top, #FFFFFF 0%, #FFFFAC 8%, #edc34f 25%, #987525 62.5%, #816015 100%)
+  background-clip: border-box
+  filter: brightness(1.1) contrast(1.4) drop-shadow(0 0 6px #FDB931)
+  font-weight: 700
+  text-transform: uppercase
+  -webkit-background-clip: text
+  -webkit-box-decoration-break: clone
+  -webkit-text-fill-color: transparent
+
+.label-platinum
+  background: radial-gradient(ellipse farthest-corner at right bottom, #f5f5f5 0%, #c8cfd3 8%, #b7becb 30%, #a4acb7 40%, transparent 80%),radial-gradient(ellipse farthest-corner at left top, #FFFFFF 0%, #d3d9dd 8%, #b6c7db 25%, #747d8d 62.5%, #81868e 100%)
+  background-clip: border-box
+  filter: brightness(1.1) contrast(1.4) drop-shadow(0 0 6px #a7c5ea)
+  font-weight: 700
+  text-transform: uppercase
+  -webkit-background-clip: text
+  -webkit-box-decoration-break: clone
+  -webkit-text-fill-color: transparent
 
 /* COLUMNS */
 
@@ -1271,11 +1298,16 @@ h4#signature
   display: inline-block
   margin: 0 8px 0 0
   text-align: center
+  @media (max-width: $breakpoint-sm-max)
+    display: block
+    margin: -38px 0 6px 0
+    text-align: left
 
   & img
     vertical-align: middle
     height: 48px
     width: 48px
+    filter: drop-shadow(0 0 20px var(--light-green-2-33))
 
 .product-container h1
   display: inline-block
@@ -1371,13 +1403,17 @@ h4#signature
     width: 100%
 
 .product-detail-text
-  margin: 30px 0
+  margin: 0
+  width: 100%
 
   & h3
     margin: 48px 0 24px 0
 
   & h3::after
     width: 60%
+
+  & h3:first-of-type
+    margin-top: 0
 
 .product-container h4
   font-size: 18px
@@ -1393,6 +1429,9 @@ h4#signature
 
 .content .product-container ul
   font-size: 16px
+
+.content .product-container .info-table-container
+  box-shadow: none
 
 .product-container span
   font-size: 28px
