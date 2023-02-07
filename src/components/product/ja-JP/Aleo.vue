@@ -73,6 +73,7 @@
           </p>
         </div>
       </div>
+      <div class='hr' />
     </template>
     <template #product-detail>
       <div v-show='coinDescription'>
