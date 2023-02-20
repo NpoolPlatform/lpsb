@@ -1,5 +1,5 @@
 <template>
-  <header class='desktop'>
+  <header class='desktop1'>
     <img :src='logoText' class='attachment-large size-large logo  cursor-pointer' @click='onLogoClick'>
     <div class='nav'>
       <ul>
