@@ -43,8 +43,8 @@ const details = computed(() => detail.details)
 
 const transactionLabel = (asset: Detail) => {
   let label = asset.CoinName
-  if (asset.DisplayNames.length > 2 && asset.DisplayNames[2].length > 0) {
-    label = asset.DisplayNames[2]
+  if (asset.DisplayNames?.length > 2 && asset.DisplayNames?.[2]?.length > 0) {
+    label = asset.DisplayNames?.[2]
   }
   return label
 }
@@ -65,6 +65,8 @@ const transactionType = (tx: Detail) => {
           return 'MSG_TECHNIQUE_FEE_COMMISSION'
         case IOSubType.Deposit:
           return 'MSG_DEPOSIT'
+        case IOSubType.OrderRevoke:
+          return 'MSG_ORDER_REVOKE'
         default:
           return 'MSG_UNKNOWN'
       }
@@ -76,6 +78,8 @@ const transactionType = (tx: Detail) => {
           return 'MSG_WITHDRAWAL'
         case IOSubType.Transfer:
           return 'MSG_WITHDRAWAL'
+        case IOSubType.CommissionRevoke:
+          return 'MSG_COMMISSION_REVOKE'
         default:
           return 'MSG_UNKNOWN'
       }
