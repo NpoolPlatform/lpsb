@@ -465,8 +465,7 @@ import { scrollTo } from 'src/utils/scroll'
 
 import question from '../../../assets/question.svg'
 import lightbulb from '../../../assets/lightbulb.svg'
-import { DefaultGoodID } from 'src/const/const'
-import { AppGood, NotifyType, useAdminAppGoodStore, useAdminCoinDescriptionStore, CoinDescriptionUsedFor, useAdminCurrencyStore } from 'npool-cli-v4'
+import { AppGood, NotifyType, useAdminAppGoodStore, useAdminCoinDescriptionStore, CoinDescriptionUsedFor, useAdminCurrencyStore, useAdminAppCoinStore } from 'npool-cli-v4'
 import { getCurrencies, getDescriptions } from 'src/api/chain'
 
 // eslint-disable-next-line @typescript-eslint/unbound-method
@@ -479,11 +478,16 @@ interface Query {
   purchaseAmount: number;
 }
 
-// const { locale } = useI18n({ useScope: 'global' })
-
 const route = useRoute()
 const query = computed(() => route.query as unknown as Query)
-const goodID = computed(() => query.value.goodId?.length ? query.value.goodId : DefaultGoodID)
+
+const coin = useAdminAppCoinStore()
+
+// Use CoinUnit to find GoodID from AppCoin
+const coinUnit = 'ALEO'
+const defaultGoodID = computed(() => coin.getGoodIDByCoinUnit(coinUnit))
+
+const goodID = computed(() => query.value.goodId?.length ? query.value.goodId : defaultGoodID.value)
 const purchaseAmount = computed(() => query.value.purchaseAmount)
 
 const good = useAdminAppGoodStore()
@@ -495,19 +499,21 @@ const description = useAdminCoinDescriptionStore()
 const coinDescription = computed(() => description.getCoinDescriptionByCoinUsedFor(target.value?.CoinTypeID, CoinDescriptionUsedFor.ProductPage))
 
 onMounted(() => {
-  good.getAppGood({
-    GoodID: goodID.value,
-    Message: {
-      Error: {
-        Title: t('MSG_GET_GOOD'),
-        Message: t('MSG_GET_GOOD_FAIL'),
-        Popup: true,
-        Type: NotifyType.Error
+  if (goodID.value?.length > 0) {
+    good.getAppGood({
+      GoodID: goodID.value,
+      Message: {
+        Error: {
+          Title: t('MSG_GET_GOOD'),
+          Message: t('MSG_GET_GOOD_FAIL'),
+          Popup: true,
+          Type: NotifyType.Error
+        }
       }
-    }
-  }, () => {
+    }, () => {
     // TODO
-  })
+    })
+  }
 
   if (description.CoinDescriptions.CoinDescriptions.length === 0) {
     getDescriptions(0, 100)
