@@ -20,12 +20,13 @@
 
 <script setup lang='ts'>
 import {
+  computed,
   defineAsyncComponent,
   defineEmits,
   defineProps,
   toRef
 } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 
 interface Props {
   label: string;
@@ -37,6 +38,13 @@ interface Props {
 const props = defineProps<Props>()
 const label = toRef(props, 'label')
 
+interface Query {
+  path: string;
+}
+const route = useRoute()
+const query = computed(() => route.query as unknown as Query)
+const _path = computed(() => query.value.path)
+
 const BackPage = defineAsyncComponent(() => import('src/components/page/BackPage.vue'))
 
 const emit = defineEmits<{(e: 'submit'): void}>()
@@ -47,6 +55,10 @@ const onSubmit = () => {
 const router = useRouter()
 
 const onCancel = () => {
+  if (_path.value && _path.value?.length > 0) {
+    void router.push({ path: _path.value })
+    return
+  }
   void router.push({ path: '/dashboard' })
 }
 
