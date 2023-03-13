@@ -54,10 +54,6 @@ const detail = useFrontendDetailStore()
 const miningRewards = computed(() => detail.MiningRewards.MiningRewards)
 
 onMounted(() => {
-  if (miningRewards.value?.length === 0) {
-    getMiningRewards(0, 100)
-  }
-
   if (profit.Profits.Profits.length === 0) {
     getProfits(0, 100)
   }
@@ -101,10 +97,6 @@ onMounted(() => {
   if (currency.Currencies.Currencies.length === 0 || currency.expired()) {
     currency.$reset()
     getCurrencies(0, 10)
-  }
-
-  if (miningRewards.value?.length === 0) {
-    getMiningRewards(0, 100)
   }
 
   if (miningRewards.value?.length === 0) {
