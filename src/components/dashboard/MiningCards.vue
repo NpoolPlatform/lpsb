@@ -35,5 +35,11 @@ const goodProfits = computed(() => Array.from(profit.GoodProfits.GoodProfits).ma
     Last30DaysUSDInComing: currency.getUSDCurrency(el.CoinTypeID) * profit.getIntervalGoodProfitInComing(IntervalKey.LastMonth, el.CoinTypeID),
     TotalEstimatedDailyReward: Number(el.Units) * Number(good.getGoodByID(el.GoodID)?.DailyRewardAmount)
   } as MyGoodProfit
+}).sort((a, b) => {
+  if (a.GoodUnit.localeCompare(b.GoodUnit, 'zh-CN')) {
+    return a.GoodUnit.localeCompare(b.GoodUnit, 'zh-CN')
+  } else {
+    return a.Units > b.Units ? -1 : 1
+  }
 }))
 </script>
