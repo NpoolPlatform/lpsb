@@ -256,6 +256,12 @@ const remainHours = ref(23)
 const remainMinutes = ref(59)
 const remainSeconds = ref(59)
 
+const goIndexPage = () => {
+  if (!target.value?.EnableProductPage) {
+    void router.push({ path: '/' })
+  }
+}
+
 onMounted(() => {
   ticker.value = window.setInterval(() => {
     const now = Math.floor(Date.now() / 1000) // UTC时间
@@ -267,6 +273,7 @@ onMounted(() => {
     if (remainDays.value > 99) {
       remainDays.value = 99
     }
+    goIndexPage()
   }, 1000)
 
   if (coin.AppCoins.AppCoins.length === 0) {
