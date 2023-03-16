@@ -291,7 +291,6 @@ onMounted(() => {
     if (remainDays.value > 99) {
       remainDays.value = 99
     }
-    goIndexPage()
   }, 1000)
 
   if (coin.AppCoins.AppCoins.length === 0) {
