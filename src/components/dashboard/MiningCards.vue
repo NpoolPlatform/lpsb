@@ -33,7 +33,14 @@ const goodProfits = computed(() => Array.from(profit.GoodProfits.GoodProfits).ma
     Last24HoursUSDInComing: currency.getUSDCurrency(el.CoinTypeID) * profit.getIntervalGoodProfitInComing(IntervalKey.LastDay, el.CoinTypeID),
     Last30DaysInComing: profit.getIntervalGoodProfitInComing(IntervalKey.LastMonth, el.CoinTypeID),
     Last30DaysUSDInComing: currency.getUSDCurrency(el.CoinTypeID) * profit.getIntervalGoodProfitInComing(IntervalKey.LastMonth, el.CoinTypeID),
-    TotalEstimatedDailyReward: Number(el.Units) * Number(good.getGoodByID(el.GoodID)?.DailyRewardAmount)
+    TotalEstimatedDailyReward: Number(el.Units) * Number(good.getGoodByID(el.GoodID)?.DailyRewardAmount),
+    GoodSaleEndAt: good.getGoodByID(el.GoodID)?.SaleEndAt
   } as MyGoodProfit
+}).sort((a, b) => {
+  if (a.CoinUnit.localeCompare(b.CoinUnit, 'zh-CN')) {
+    return a.CoinUnit.localeCompare(b.CoinUnit, 'zh-CN')
+  } else {
+    return a.GoodSaleEndAt > b.GoodSaleEndAt ? -1 : 1
+  }
 }))
 </script>
