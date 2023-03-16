@@ -149,7 +149,7 @@
 
 <script setup lang='ts'>
 import { PriceCoinName } from 'npool-cli-v2'
-import { defineAsyncComponent, defineProps, toRef, ref, computed, onMounted, onUnmounted } from 'vue'
+import { defineAsyncComponent, defineProps, toRef, ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import warning from 'src/assets/warning.svg'
 import {
@@ -262,7 +262,25 @@ const goIndexPage = () => {
   }
 }
 
+const showMe = ref(false)
+
+watch(target, () => {
+  if (!target.value) {
+    return
+  }
+  if (target.value && !target.value.EnableProductPage) {
+    goIndexPage()
+    return
+  }
+  showMe.value = true
+})
+
 onMounted(() => {
+  if (target.value && !target.value.EnableProductPage) {
+    goIndexPage()
+    return
+  }
+
   ticker.value = window.setInterval(() => {
     const now = Math.floor(Date.now() / 1000) // UTC时间
     const remain = endTime.value - now >= 0 ? endTime.value - now : 0
