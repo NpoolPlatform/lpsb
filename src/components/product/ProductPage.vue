@@ -258,7 +258,7 @@ const remainSeconds = ref(59)
 
 const goIndexPage = () => {
   if (!target.value?.EnableProductPage) {
-    void router.push({ path: '/' })
+    void router.push({ path: '/dashboard' })
   }
 }
 
