@@ -251,7 +251,7 @@ onMounted(() => {
 
   if (currency.Currencies.Currencies.length === 0 || currency.expired()) {
     currency.$reset()
-    getCurrencies(0, 100)
+    getCurrencies(0, 10)
   }
 })
 
