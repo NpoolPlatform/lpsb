@@ -542,7 +542,7 @@ const router = useRouter()
 
 watch(defaultGoodID, () => {
   if (defaultGoodID.value === InvalidID) {
-    void router.push({ path: '/' })
+    void router.push({ path: '/dashboard' })
   }
 })
 
@@ -556,7 +556,7 @@ onMounted(() => {
   }
 
   if (defaultGoodID.value === InvalidID) {
-    void router.push({ path: '/' })
+    void router.push({ path: '/dashboard' })
     return
   }
 
