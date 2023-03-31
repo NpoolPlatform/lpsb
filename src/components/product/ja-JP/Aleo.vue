@@ -489,16 +489,15 @@
 </template>
 
 <script setup lang='ts'>
-import { defineAsyncComponent, computed, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
+import { defineAsyncComponent, computed, onMounted, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { PriceCoinName } from 'npool-cli-v2'
 import { useI18n } from 'vue-i18n'
 import { scrollTo } from 'src/utils/scroll'
 
 import question from '../../../assets/question.svg'
 // import lightbulb from '../../../assets/lightbulb.svg'
-import { DefaultGoodID } from 'src/const/const'
-import { AppGood, NotifyType, useAdminAppGoodStore, useAdminCoinDescriptionStore, CoinDescriptionUsedFor, useAdminCurrencyStore } from 'npool-cli-v4'
+import { AppGood, NotifyType, useAdminAppGoodStore, useAdminCoinDescriptionStore, CoinDescriptionUsedFor, useAdminCurrencyStore, useAdminAppCoinStore, InvalidID } from 'npool-cli-v4'
 import { getCurrencies, getDescriptions } from 'src/api/chain'
 
 // eslint-disable-next-line @typescript-eslint/unbound-method
@@ -511,11 +510,24 @@ interface Query {
   purchaseAmount: number;
 }
 
-// const { locale } = useI18n({ useScope: 'global' })
-
 const route = useRoute()
 const query = computed(() => route.query as unknown as Query)
-const goodID = computed(() => query.value.goodId?.length ? query.value.goodId : DefaultGoodID)
+
+const coin = useAdminAppCoinStore()
+// Use CoinUnit to find GoodID from AppCoin
+const coinUnit = 'ALEO'
+const defaultGoodID = computed(() => {
+  if (coin.AppCoins.AppCoins?.length === 0) {
+    return `${InvalidID}_`
+  }
+  const goodID = coin.getGoodIDByCoinUnit(coinUnit)
+  if (!goodID) {
+    return InvalidID
+  }
+  return goodID
+})
+
+const goodID = computed(() => query.value.goodId?.length ? query.value.goodId : defaultGoodID.value)
 const purchaseAmount = computed(() => query.value.purchaseAmount)
 
 const good = useAdminAppGoodStore()
@@ -526,7 +538,32 @@ const currency = useAdminCurrencyStore()
 const description = useAdminCoinDescriptionStore()
 const coinDescription = computed(() => description.getCoinDescriptionByCoinUsedFor(target.value?.CoinTypeID, CoinDescriptionUsedFor.ProductPage))
 
+const router = useRouter()
+
+watch(defaultGoodID, () => {
+  if (defaultGoodID.value === InvalidID) {
+    void router.push({ path: '/dashboard' })
+  }
+})
+
 onMounted(() => {
+  if (description.CoinDescriptions.CoinDescriptions.length === 0) {
+    getDescriptions(0, 100)
+  }
+  if (currency.Currencies.Currencies.length === 0 || currency.expired()) {
+    currency.$reset()
+    getCurrencies(0, 10)
+  }
+
+  if (defaultGoodID.value === InvalidID) {
+    void router.push({ path: '/dashboard' })
+    return
+  }
+
+  if (defaultGoodID.value === `${InvalidID}_`) {
+    return
+  }
+
   good.getAppGood({
     GoodID: goodID.value,
     Message: {
@@ -540,14 +577,6 @@ onMounted(() => {
   }, () => {
     // TODO
   })
-
-  if (description.CoinDescriptions.CoinDescriptions.length === 0) {
-    getDescriptions(0, 100)
-  }
-  if (currency.Currencies.Currencies.length === 0 || currency.expired()) {
-    currency.$reset()
-    getCurrencies(0, 10)
-  }
 })
 
 </script>
