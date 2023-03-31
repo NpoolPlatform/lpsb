@@ -34,7 +34,6 @@ const orders = computed(() => order.orders)
 const detail = useFrontendDetailStore()
 const good = useAdminAppGoodStore()
 const getDeservedRatio = computed(() => (goodID: string) => 1 - Number(good.getGoodByID(goodID)?.TechnicalFeeRatio) / 100)
-
 interface ExportOrder {
   CreatedAt: string;
   ProductType: string;
@@ -49,7 +48,6 @@ interface ExportOrder {
   ProfitCurrency: string;
   OrderStatus: OrderState;
 }
-
 const exportOrders = computed(() => Array.from(orders.value).map((el) => {
   return {
     CreatedAt: new Date(el.CreatedAt * 1000).toISOString()?.replace('T', ' ')?.replace('.000Z', ' UTC'),
@@ -66,7 +64,6 @@ const exportOrders = computed(() => Array.from(orders.value).map((el) => {
     OrderStatus: el.State
   } as ExportOrder
 }))
-
 const onExportClick = () => {
   const output = stringify(exportOrders.value, {
     header: true,
