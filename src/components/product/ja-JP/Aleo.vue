@@ -497,7 +497,7 @@ import { scrollTo } from 'src/utils/scroll'
 
 import question from '../../../assets/question.svg'
 // import lightbulb from '../../../assets/lightbulb.svg'
-import { AppGood, NotifyType, useAdminAppGoodStore, useAdminCoinDescriptionStore, CoinDescriptionUsedFor, useAdminCurrencyStore, useAdminAppCoinStore } from 'npool-cli-v4'
+import { AppGood, NotifyType, useAdminAppGoodStore, useAdminCoinDescriptionStore, CoinDescriptionUsedFor, useAdminCurrencyStore, useAdminAppCoinStore, InvalidID } from 'npool-cli-v4'
 import { getCurrencies, getDescriptions } from 'src/api/chain'
 
 // eslint-disable-next-line @typescript-eslint/unbound-method
@@ -516,7 +516,16 @@ const query = computed(() => route.query as unknown as Query)
 const coin = useAdminAppCoinStore()
 // Use CoinUnit to find GoodID from AppCoin
 const coinUnit = 'ALEO'
-const defaultGoodID = computed(() => coin.getGoodIDByCoinUnit(coinUnit))
+const defaultGoodID = computed(() => {
+  if (coin.AppCoins.AppCoins?.length === 0) {
+    return `${InvalidID}_`
+  }
+  const goodID = coin.getGoodIDByCoinUnit(coinUnit)
+  if (!goodID) {
+    return InvalidID
+  }
+  return goodID
+})
 
 const goodID = computed(() => query.value.goodId?.length ? query.value.goodId : defaultGoodID.value)
 const purchaseAmount = computed(() => query.value.purchaseAmount)
@@ -530,29 +539,14 @@ const description = useAdminCoinDescriptionStore()
 const coinDescription = computed(() => description.getCoinDescriptionByCoinUsedFor(target.value?.CoinTypeID, CoinDescriptionUsedFor.ProductPage))
 
 const router = useRouter()
-watch(goodID, () => {
-  if (!goodID.value || goodID.value?.length === 0) {
-    void router.push({ path: '/dashboard' })
+
+watch(defaultGoodID, () => {
+  if (defaultGoodID.value === InvalidID) {
+    void router.push({ path: '/' })
   }
 })
 
 onMounted(() => {
-  if (goodID.value?.length > 0) {
-    good.getAppGood({
-      GoodID: goodID.value,
-      Message: {
-        Error: {
-          Title: t('MSG_GET_GOOD'),
-          Message: t('MSG_GET_GOOD_FAIL'),
-          Popup: true,
-          Type: NotifyType.Error
-        }
-      }
-    }, () => {
-    // TODO
-    })
-  }
-
   if (description.CoinDescriptions.CoinDescriptions.length === 0) {
     getDescriptions(0, 100)
   }
@@ -560,9 +554,29 @@ onMounted(() => {
     currency.$reset()
     getCurrencies(0, 10)
   }
-  if (!goodID.value || goodID.value?.length === 0) {
-    void router.push({ path: '/dashboard' })
+
+  if (defaultGoodID.value === InvalidID) {
+    void router.push({ path: '/' })
+    return
   }
+
+  if (defaultGoodID.value === `${InvalidID}_`) {
+    return
+  }
+
+  good.getAppGood({
+    GoodID: goodID.value,
+    Message: {
+      Error: {
+        Title: t('MSG_GET_GOOD'),
+        Message: t('MSG_GET_GOOD_FAIL'),
+        Popup: true,
+        Type: NotifyType.Error
+      }
+    }
+  }, () => {
+    // TODO
+  })
 })
 
 </script>
