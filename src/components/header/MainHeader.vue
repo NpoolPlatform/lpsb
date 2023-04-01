@@ -97,6 +97,7 @@ import { useI18n } from 'vue-i18n'
 import userAvatar from '../../assets/user-circle.svg'
 import {
   NotifyType,
+  useFrontendAppStore,
   useFrontendUserStore,
   useLocalUserStore
 } from 'npool-cli-v4'
@@ -171,6 +172,18 @@ onMounted(() => {
     setTimeout(() => {
       initialize()
     }, 2000)
+  }
+})
+
+const app = useFrontendAppStore()
+watch(() => app.App?.Maintaining, () => {
+  if (app.App?.Maintaining) {
+    void router.push({ path: '/maintenance' })
+  }
+})
+onMounted(() => {
+  if (app.App?.Maintaining) {
+    void router.push({ path: '/maintenance' })
   }
 })
 
