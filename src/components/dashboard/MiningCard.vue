@@ -44,7 +44,7 @@
         <div class='line'>
           <span class='label'>{{ $t('MSG_TECHNIQUE_SERVICE_FEE') }}:</span>
           <span class='value'>
-            {{ goodProfit?.CoinPreSale ? '*' : parseFloat((goodProfit.Last24HoursInComing * 0.2)?.toFixed(4)) }}
+            {{ goodProfit?.CoinPreSale ? '*' : parseFloat((goodProfit.Last24HoursInComing / 0.8 * 0.2)?.toFixed(4)) }}
             <span class='unit'>{{ goodProfit?.CoinUnit }} (20%)</span>
           </span>
         </div>
@@ -147,7 +147,6 @@ const onExpandClick = () => {
 
 const detail = useFrontendDetailStore()
 const miningDetails = computed(() => detail.MiningRewards.MiningRewards.filter((el) => el.GoodID === goodProfit?.value?.GoodID))
-
 interface ExportMiningReward {
   CreatedAt: string;
   Units: string;
@@ -174,8 +173,13 @@ const exportMiningRewards = computed(() => {
   keys.sort().forEach((key) => {
     let units = 0
     let netRewardAmount = 0
+    const orderIDs = [] as Array<string>
     rowMap.get(key)?.forEach((el) => {
-      units += Number(el.Units)
+      const result = orderIDs.find((item) => item === el.OrderID)
+      if (!result) {
+        units += Number(el.Units)
+        orderIDs.push(el.OrderID)
+      }
       netRewardAmount += Number(el.RewardAmount)
       cumulativeTotal += Number(el.RewardAmount) / deservedRatio.value
     })
