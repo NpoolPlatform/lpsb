@@ -1,6 +1,6 @@
 <template>
   <FormPage @submit='onSubmit' :label='label' :submit-text='submitText' :submitting='submitting'>
-    <template #top-right>
+    <template #top-center>
       <div class='email-phone-selector'>
         <div :class='["top", loginWithEmail ? "selected" : ""]' @click='onSwitcherClick(true)'>
           <img src='font-awesome/email.svg'><span>{{ $t('MSG_SWITCH_REGISTER_WITH_EMAIL') }}</span>
