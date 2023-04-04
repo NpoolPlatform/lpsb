@@ -19,7 +19,7 @@
 import { computed, defineAsyncComponent } from 'vue'
 import { formatTime, PriceCoinName } from 'npool-cli-v2'
 import { useI18n } from 'vue-i18n'
-import { useFrontendOrderStore, Order, useAdminAppGoodStore, OrderState, useFrontendDetailStore } from 'npool-cli-v4'
+import { useFrontendOrderStore, Order, useAdminAppGoodStore, OrderState, useFrontendDetailStore, GoodType } from 'npool-cli-v4'
 import { stringify } from 'csv-stringify/sync'
 import saveAs from 'file-saver'
 
@@ -32,8 +32,10 @@ const order = useFrontendOrderStore()
 const orders = computed(() => order.orders)
 
 const detail = useFrontendDetailStore()
+
 const good = useAdminAppGoodStore()
 const getDeservedRatio = computed(() => (goodID: string) => 1 - Number(good.getGoodByID(goodID)?.TechnicalFeeRatio) / 100)
+
 interface ExportOrder {
   CreatedAt: string;
   ProductType: string;
@@ -48,10 +50,20 @@ interface ExportOrder {
   ProfitCurrency: string;
   OrderStatus: OrderState;
 }
-const exportOrders = computed(() => Array.from(orders.value).map((el) => {
+
+const getGoodType = computed(() => (goodID:string) => {
+  const _good = good.getGoodByID(goodID)
+  return _good?.GoodType === GoodType.GoodTypeClassicMining || _good?.GoodType === GoodType.GoodTypeUnionMining ? 'Mining' : _good?.GoodType
+})
+
+const exportOrders = computed(() => Array.from(orders.value.filter((el) => el.State === OrderState.PAID ||
+  el.State === OrderState.IN_SERVICE ||
+  el.State === OrderState.EXPIRED ||
+  el.State === OrderState.WAIT_START
+)).map((el) => {
   return {
     CreatedAt: new Date(el.CreatedAt * 1000).toISOString()?.replace('T', ' ')?.replace('.000Z', ' UTC'),
-    ProductType: good.getGoodByID(el.GoodID)?.GoodType,
+    ProductType: getGoodType.value(el.GoodID),
     ProductName: good.getGoodByID(el?.GoodID)?.DisplayNames?.[3] ? t(good.getGoodByID(el?.GoodID)?.DisplayNames?.[3] as string) : el.GoodName,
     PurchaseAmount: el.Units,
     UnitType: t(el.GoodUnit),
@@ -61,7 +73,7 @@ const exportOrders = computed(() => Array.from(orders.value).map((el) => {
     MiningPeriod: el.GoodServicePeriodDays,
     CumulativeProfit: detail.getMiningRewardsByOrderID(el.ID) / getDeservedRatio.value(el.GoodID),
     ProfitCurrency: good.getGoodByID(el.GoodID)?.CoinUnit,
-    OrderStatus: el.State
+    OrderStatus: order.getOrderState(el)?.startsWith('MSG') ? t(order.getOrderState(el)) : t('MSG_AWAITING_CONFIRMATION')
   } as ExportOrder
 }))
 const onExportClick = () => {
