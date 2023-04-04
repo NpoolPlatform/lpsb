@@ -7,6 +7,9 @@
             {{ $t(label) }}
           </h2>
           <q-space />
+          <div class='top-center'>
+            <slot name='top-center' />
+          </div>
           <div class='top-right'>
             <slot name='top-right' />
           </div>
@@ -53,4 +56,11 @@ const onSubmit = () => {
   margin-right: -48px
 .incr
   max-width: 490px
+.top-center
+  width: 100%
+h2.form-title
+  width: 100%
+
+h2::after
+  background: linear-gradient(to right, transparent 0, #e1eeef 10%, transparent 100%)
 </style>
