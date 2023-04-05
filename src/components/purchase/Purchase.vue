@@ -317,7 +317,7 @@ const onSubmit = throttle(() => {
 
   odr.createOrder({
     GoodID: goodId.value,
-    Units: purchaseAmount.value,
+    Units: purchaseAmount.value.toString(),
     PaymentCoinID: paymentCoin.value?.ID as string,
     PayWithBalanceAmount: `${inputBalance.value}`,
     Message: {
