@@ -23,6 +23,12 @@
   --dark-green-1: #464d47
   --dark-green-2: #3a413d
   --dark-green-3: #40453e
+  --green-1: #54e280
+  --green-2: #1ec498
+  --light-green-1: #e4f4f0
+  --light-green-2: #e1eeef
+  --light-green-2-11: #e1eeef11
+  --light-green-2-33: #e1eeef33
   --dark-violet: #2e3040
   --gray-1: #8d8d8d
   --gray-1-55: #8d8d8d55
@@ -230,6 +236,8 @@ button.in-active
 button.in-active:hover
   border-radius: 18px
 
+button.small:hover
+  border-radius: 2px
 /* HEADER & NAVIGATION */
 
 header.mobile
@@ -731,6 +739,8 @@ h3.feature-title::after
 
 .q-table tbody td
   font-size: 16px
+  @media (max-width: $breakpoint-sm-max)
+    font-size: 12px
 
 .table-2-columns th,
 .table-2-columns td
@@ -1203,6 +1213,70 @@ p.skip-registration
   &:last-child
     margin: 0
 
+/* SIGN IN */
+input.sign-in
+  margin: 24px 0 0 0
+  width: 100%
+
+.sign-in-sub-box
+  display: flex
+  flex-wrap: wrap
+  justify-content: space-between
+  width: 100%
+  & p
+    margin: 14px 0 0 0
+
+.email-phone-selector
+  background: var(--light-green-2-11)
+  border: 1px solid var(--light-green-2-33)
+  border-radius: 18px
+  margin: 12px 0 24px 0
+
+  & .divider
+    background: linear-gradient(to left, transparent -50%, var(--light-green-2) 50%, transparent 150%)
+    box-shadow: 0 2px 2px 0 var(--dark-blue-1)
+    opacity: .5
+    height: 1px
+    width: 100%
+
+  & .top
+    border-radius: 18px 18px 0 0
+
+  & .bottom
+    border-radius: 0 0 18px 18px
+
+.email-phone-selector .top,
+.email-phone-selector .bottom
+  align-items: center
+  cursor: pointer
+  display: flex
+  flex-wrap: wrap
+  justify-content: flex-start
+  padding: 16px
+  transition: all ease-in-out .1s
+
+.email-phone-selector .top:hover,
+.email-phone-selector .bottom:hover
+  background: var(--light-green-2-33)
+
+.email-phone-selector .selected
+  background: var(--light-green-2-33)
+
+  & span
+    filter: contrast(2) opacity(1)
+
+.email-phone-selector span
+  filter: opacity(.7)
+  font-size: 18px
+  font-weight: 500
+  margin: 0 8px
+
+.email-phone-selector .top img,
+.email-phone-selector .bottom img
+  filter: invert(35%) sepia(45%) saturate(600%) hue-rotate(114deg) brightness(100%) contrast(95%)
+  max-height: 24px
+  max-width: 24px
+
 /* CONTACT FORM */
 
 .contact-page
@@ -1294,14 +1368,15 @@ h4#signature
   overflow: hidden
   position: relative
 
-.product-page-icon
-  display: inline-block
-  margin: 0 8px 0 0
-  text-align: center
-  @media (max-width: $breakpoint-sm-max)
-    display: block
-    margin: -38px 0 6px 0
-    text-align: left
+.product-title-container
+  .product-page-icon
+    display: inline-block
+    margin: 0 8px 0 0
+    text-align: center
+    @media (max-width: $breakpoint-sm-max)
+      display: block
+      margin: -38px 0 6px 0
+      text-align: left
 
   & img
     vertical-align: middle
@@ -2445,6 +2520,9 @@ h3.mining-title
   display: flex
   justify-content: flex-end
   flex-wrap: wrap
+  @media (max-width: $breakpoint-sm-max)
+    margin: 24px 0
+    width: 100%
 
 .buttons button,
 .buttons button.alt
@@ -2453,6 +2531,9 @@ h3.mining-title
   height: auto
   margin: 0 0 0 12px
   padding: 8px 20px
+  @media (max-width: $breakpoint-sm-max)
+    margin: 0
+    width: 100%
 
 .buttons button:hover,
 .buttons button.alt:hover

@@ -73,6 +73,7 @@
           </p>
         </div>
       </div>
+      <div class='hr' />
     </template>
     <template #product-detail>
       <div v-show='coinDescription'>
@@ -90,18 +91,38 @@
           <table class='info-table table-2-columns'>
             <thead>
               <tr>
-                <th><span class='label-platinum'>プラチナ</span></th>
-                <th><span class='label-gold'>ゴールド</span></th>
+                <th><span class='label-platinum'>Aleoプラチナ</span></th>
+                <th><span class='label-gold'>Aleoゴールド</span></th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <td><strong>2023年02月03日 23:59 日本時間</strong> まで購入可能</td>
-                <td><strong>2023年02月03日 23:59 日本時間</strong> 以降に購入可能</td>
+                <td>ファーストバッチマイニング</td>
+                <td>ファーストバッチマイニング</td>
               </tr>
               <tr>
-                <td>プルーバーインセンティブを獲得</td>
-                <td>プルーバーインセンティブ獲得不可</td>
+                <td v-html='$t("MSG_ALEO_PURCHASE_DURATION")' />
+                <td v-html='$t("MSG_ALEO_GOLD_PURCHASE_DURATION")' />
+              </tr>
+              <tr>
+                <td>プルーバーテストネット報酬をもらえる<br>*750万クレジット(全体の30％)</td>
+                <td>プルーバーテストネット報酬は<strong>もらえない</strong></td>
+              </tr>
+              <tr>
+                <td>ベリファイアーテストネット報酬ももらえる可能性がある<br>*1750万クレジット(全体の70％の予測)</td>
+                <td><strong>ベリファイアーテストネット報酬はもらえる可能性がある<br>*1750万クレジット（全体の70％の予測）</strong></td>
+              </tr>
+              <tr>
+                <td>1口あたりのハッシュパワー：<strong><br>プルーフ/秒M</strong></td>
+                <td>未定</td>
+              </tr>
+              <tr>
+                <td v-html='$t("MSG_ALEO_TIME_PERIOD")' />
+                <td v-html='$t("MSG_ALEO_GOLD_TIME_PERIOD")' />
+              </tr>
+              <tr>
+                <td>1口あたりのAleoクレジット獲得枚数:<br><strong>まだ計測中、最終的な獲得クレジット数は、アカウントにてご確認ください。</strong></td>
+                <td>未定</td>
               </tr>
             </tbody>
           </table>
@@ -109,6 +130,18 @@
             ※<a @click='scrollTo("Aleo Prover Incentive Program")'>Aleoプルーバーインセンティブプログラム</a>の詳細を閲覧
           </p>
         </div>
+
+        <h3>Aleoゴールド: メインネットのローンチ前にAleoトークンを獲得しよう!</h3>
+
+        <p>Aleoのプルーバーテストネット報酬プログラムは終了しましたが、プロシオンユーザーは今度はAleoゴールドを購入することができます。</p>
+
+        <p>Aleoは、<strong>まだ1750万テストネット報酬を配布する必要があります</strong>。次の「ベリファイヤー」テストネット報酬プログラムの詳細の発表を楽しみにお待ちください。</p>
+
+        <p>プロシオンのAleoプラチナは、早期購入者への特典を提供しました。</p>
+
+        <p><strong>まだこのファーストバッチマイニングを購入していない方は、次のチャンスをお見逃しなく!</strong></p>
+
+        <p>これらの「ベリファイヤー」テストネット報酬プログラムは、メインネットのAleoトークンへの部分的に交換可能となり、私たちのパートナーHpoolは、すべてのAleo購入者のためにテストネット報酬プログラムに参加し続けています。</p>
 
         <h3>プロシオンのプロジェクト選定基準</h3>
 
@@ -379,7 +412,6 @@
 
         <ul>
           <li>Aleoは、テストネット3のインセンティブとして2500万Aleoテストネット報酬を確保しています。Aleoテストネット報酬インセンティブプログラムの最初の部分は、「プルーバー」に焦点が当てられます。 「プルーバーインセンティブプログラム（テストネット報酬インセンティブプログラム）」は、750万テストネット報酬（2500万Aleoテストネット報酬全体の30%）を占めます。</li>
-          <li>「プルーバーインセンティブプログラム（テストネット報酬インセンティブプログラム）」の期間は、2023年1月26日23時59分（UTC）まで、または750万テストネット報酬が全て分配されるまで（どちらか早い方）の期間となります。</li>
           <li>メインネットローンチ時、Aleoテストネット報酬は5:1（20%）の割合でAleoトークンに交換可能です。ファーストバッチマイニング参加者のみが対象のボーナスです。</li>
         </ul>
 
@@ -427,7 +459,7 @@
           </li>
         </ul>
       </div>
-      <div id='help' class='product-sidebar-section'>
+      <!-- <div id='help' class='product-sidebar-section'>
         <h3 class='form-title'>
           {{ $t('MSG_PRODUCT_FAQ') }}
         </h3>
@@ -451,7 +483,7 @@
             </a>
           </li>
         </ul>
-      </div>
+      </div> -->
     </template>
   </ProductPage>
 </template>
@@ -464,7 +496,7 @@ import { useI18n } from 'vue-i18n'
 import { scrollTo } from 'src/utils/scroll'
 
 import question from '../../../assets/question.svg'
-import lightbulb from '../../../assets/lightbulb.svg'
+// import lightbulb from '../../../assets/lightbulb.svg'
 import { AppGood, NotifyType, useAdminAppGoodStore, useAdminCoinDescriptionStore, CoinDescriptionUsedFor, useAdminCurrencyStore, useAdminAppCoinStore, InvalidID } from 'npool-cli-v4'
 import { getCurrencies, getDescriptions } from 'src/api/chain'
 
@@ -482,7 +514,6 @@ const route = useRoute()
 const query = computed(() => route.query as unknown as Query)
 
 const coin = useAdminAppCoinStore()
-
 // Use CoinUnit to find GoodID from AppCoin
 const coinUnit = 'ALEO'
 const defaultGoodID = computed(() => {
@@ -523,6 +554,7 @@ onMounted(() => {
     currency.$reset()
     getCurrencies(0, 10)
   }
+
   if (defaultGoodID.value === InvalidID) {
     void router.push({ path: '/dashboard' })
     return

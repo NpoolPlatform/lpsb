@@ -1,5 +1,5 @@
 <template>
-  <div class='row'>
+  <div class='row no-wrap'>
     <div class='column justify-center'>
       <img class='table-coin-icon' :src='logo'>
     </div>
@@ -23,8 +23,11 @@ const logo = toRef(props, 'logo')
 
 </script>
 <style lang='sass' scoped>
-  .table-coin-icon
-    width: 24px
-    height: 24px
-    margin-right: 10px
+.table-coin-icon
+  width: 24px
+  height: 24px
+  margin-right: 10px
+.no-wrap
+  @media (max-width: $breakpoint-sm-max)
+    white-space: nowrap
   </style>
