@@ -1,15 +1,14 @@
 <template>
   <FormPage @submit='onSubmit' label='MSG_RESET_PASSWORD' submit-text='MSG_SUBMIT'>
-    <template #top-right>
-      <div class='switcher' @click='onSwitcherClick'>
-        <q-icon
-          class='icon'
-          size='1.5em'
-          :name='signupMethod === AccountType.Email ? "smartphone" : "email"'
-        />
-        <q-tooltip anchor='center end'>
-          {{ signupMethod === AccountType.Email ? $t('MSG_SWITCH_REGISTER_WITH_MOBILE') : $t('MSG_SWITCH_REGISTER_WITH_EMAIL') }}
-        </q-tooltip>
+    <template #top-center>
+      <div class='email-phone-selector'>
+        <div :class='["top", loginWithEmail ? "selected" : ""]' @click='onSwitcherClick(true)'>
+          <img src='font-awesome/email.svg'><span>{{ $t('MSG_SWITCH_REGISTER_WITH_EMAIL') }}</span>
+        </div>
+        <div class='divider' />
+        <div :class='["bottom", !loginWithEmail ? "selected" : ""]' @click='onSwitcherClick(false)'>
+          <img src='font-awesome/phone.svg'><span>{{ $t('MSG_SWITCH_REGISTER_WITH_MOBILE') }}</span>
+        </div>
       </div>
     </template>
     <template #form-body>
@@ -152,7 +151,12 @@ const onConfirmPasswordFocusOut = () => {
 }
 
 const signupMethod = ref(AccountType.Email)
-const onSwitcherClick = () => {
+const loginWithEmail = ref(true)
+const onSwitcherClick = (flag: boolean) => {
+  if (flag === loginWithEmail.value) {
+    return
+  }
+  loginWithEmail.value = flag
   switch (signupMethod.value) {
     case AccountType.Email:
       signupMethod.value = AccountType.Mobile
