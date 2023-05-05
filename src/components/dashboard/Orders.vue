@@ -94,7 +94,7 @@ const onExportClick = () => {
       OrderStatus: `${t('MSG_ORDER_STATUS_IN_TEMPLATE')}`
     }
   })
-  const blob = new Blob([output], { type: 'text/plain;charset=utf-8' })
+  const blob = new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), output], { type: 'text/plain;charset=utf-8' })
   const filename = 'orders-' + formatTime(new Date().getTime() / 1000) + '.csv'
   saveAs(blob, filename)
 }
