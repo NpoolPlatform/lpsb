@@ -286,6 +286,8 @@ const table = computed(() => [
   margin-right: 9px
 .word-wrapper
   word-wrap: break-word
-.asset-button button
-  border-radius: 8px
+.asset-button
+  text-align: right
+  & button
+    border-radius: 8px
 </style>
