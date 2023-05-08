@@ -27,6 +27,7 @@ const goodProfits = computed(() => Array.from(profit.GoodProfits.GoodProfits).ma
   const now = Math.floor(Date.now() / 1000)
   const remain = now - _good?.ServiceStartAt >= 0 ? now - _good?.ServiceStartAt : 0
   const daysMined = Math.floor(remain / 24 / 60 / 60)
+  const daysRemaining = el.GoodServicePeriodDays - daysMined > 0 ? el.GoodServicePeriodDays - daysMined : 0
   return {
     ...el,
     Units: el.Units,
@@ -41,7 +42,7 @@ const goodProfits = computed(() => Array.from(profit.GoodProfits.GoodProfits).ma
     GoodSaleEndAt: good.getGoodByID(el.GoodID)?.SaleEndAt,
     MiningStartDate: good.getJSTDate(_good?.ServiceStartAt, 'YYYY-MM-DD'),
     DaysMined: daysMined,
-    DaysRemaining: el.GoodServicePeriodDays - daysMined
+    DaysRemaining: daysRemaining
   } as MyGoodProfit
 }).sort((a, b) => {
   if (a.CoinUnit.localeCompare(b.CoinUnit, 'zh-CN')) {
