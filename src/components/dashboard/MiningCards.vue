@@ -10,7 +10,7 @@
 
 <script setup lang='ts'>
 import { computed, defineAsyncComponent } from 'vue'
-import { useAdminAppCoinStore, useAdminAppGoodStore, useAdminCurrencyStore, useFrontendProfitStore } from 'npool-cli-v4'
+import { AppGood, useAdminAppCoinStore, useAdminAppGoodStore, useAdminCurrencyStore, useFrontendProfitStore } from 'npool-cli-v4'
 import { IntervalKey } from 'src/const/const'
 import { MyGoodProfit } from 'src/localstore/ledger/types'
 
@@ -23,6 +23,11 @@ const good = useAdminAppGoodStore()
 
 const profit = useFrontendProfitStore()
 const goodProfits = computed(() => Array.from(profit.GoodProfits.GoodProfits).map((el) => {
+  const _good = good.getGoodByID(el.GoodID) as AppGood
+  const now = Math.floor(Date.now() / 1000)
+  const remain = now - _good?.ServiceStartAt >= 0 ? now - _good?.ServiceStartAt : 0
+  const daysMined = Math.floor(remain / 24 / 60 / 60)
+  const daysRemaining = el.GoodServicePeriodDays - daysMined > 0 ? el.GoodServicePeriodDays - daysMined : 0
   return {
     ...el,
     Units: el.Units,
@@ -34,7 +39,10 @@ const goodProfits = computed(() => Array.from(profit.GoodProfits.GoodProfits).ma
     Last30DaysInComing: profit.getGoodIntervalProfitInComing(IntervalKey.LastMonth, el.CoinTypeID, el.GoodID),
     Last30DaysUSDInComing: currency.getUSDCurrency(el.CoinTypeID) * profit.getGoodIntervalProfitInComing(IntervalKey.LastMonth, el.CoinTypeID, el.GoodID),
     TotalEstimatedDailyReward: Number(el.Units) * Number(good.getGoodByID(el.GoodID)?.DailyRewardAmount),
-    GoodSaleEndAt: good.getGoodByID(el.GoodID)?.SaleEndAt
+    GoodSaleEndAt: good.getGoodByID(el.GoodID)?.SaleEndAt,
+    MiningStartDate: good.getJSTDate(_good?.ServiceStartAt, 'YYYY-MM-DD'),
+    DaysMined: daysMined > el.GoodServicePeriodDays ? el.GoodServicePeriodDays : daysMined,
+    DaysRemaining: daysRemaining
   } as MyGoodProfit
 }).sort((a, b) => {
   if (a.CoinUnit.localeCompare(b.CoinUnit, 'zh-CN')) {

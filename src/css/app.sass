@@ -1368,15 +1368,15 @@ h4#signature
   overflow: hidden
   position: relative
 
-.product-title-container
-  .product-page-icon
-    display: inline-block
-    margin: 0 8px 0 0
-    text-align: center
-    @media (max-width: $breakpoint-sm-max)
-      display: block
-      margin: -38px 0 6px 0
-      text-align: left
+.product-title-container .product-page-icon,
+.mining-heading .product-page-icon
+  display: inline-block
+  margin: 0 8px 0 0
+  text-align: center
+  @media (max-width: $breakpoint-sm-max)
+    display: block
+    margin: -38px 0 6px 0
+    text-align: left
 
   & img
     vertical-align: middle
@@ -1764,6 +1764,18 @@ img.product-banner
   background: linear-gradient(to bottom right, var(--yellow-1) -50%, var(--blue-3) 150%)
   border-radius: 8px
   height: 100%
+
+.content > .project-aleo,
+.content > .project-aleo .product-title-container
+  background: #12141d
+
+.content > .project-aleo .project-title-section,
+.content > .project-aleo .product-title-container::before,
+.content > .project-aleo .product-title-container::after
+  box-shadow: 0 20px 0 0 #12141d
+
+.content > .project-aleo
+  color: #ffffff
 
 /* SPACEMESH BRAND COLORS */
 

@@ -14,16 +14,16 @@
           />
         </q-td>
         <q-td key='Balance' :props='myProps'>
-          {{ myProps.row.Balance?.toFixed(4) }} {{ myProps.row.CoinUnit }}
+          {{ util.getLocaleString(myProps.row.Balance?.toFixed(4)) }} {{ myProps.row.CoinUnit }}
         </q-td>
         <!-- <q-td key='Last24HoursBalance' :props='myProps'>
           {{ myProps.row.Last24HoursBalance?.toFixed(4) }}{{ myProps.row.CoinUnit }}
         </q-td> -->
         <q-td key='TotalUSDTValue' :props='myProps'>
-          {{ myProps.row.TotalUSDValue?.toFixed(4) }}
+          {{ util.getLocaleString(myProps.row.TotalUSDValue?.toFixed(4)) }}
         </q-td>
         <q-td key='TotalJPYValue' :props='myProps'>
-          {{ myProps.row.TotalJPYValue?.toFixed(4) }}
+          {{ util.getLocaleString(myProps.row.TotalJPYValue?.toFixed(4)) }}
         </q-td>
         <q-td key='ActionButtons' :props='myProps' class='asset-button'>
           <button :class='["small", "alt", (myProps.row.Balance <= 0.0001 || submitting || depositClick || myProps.row.CoinDisabled) ? "in-active" : ""]' @click='onWithdrawClick(myProps.row)' :disabled='myProps.row.Balance <= 0.0001 || submitting || depositClick || myProps.row.CoinDisabled'>
@@ -94,6 +94,7 @@ import {
   useFrontendKYCStore,
   useFrontendTransferAccountStore,
   useFrontendUserAccountStore,
+  useLocaleStringStore,
   useNotificationStore
 } from 'npool-cli-v4'
 import { IntervalKey } from 'src/const/const'
@@ -119,6 +120,8 @@ const assetLabel = (asset: General) => {
   }
   return label
 }
+
+const util = useLocaleStringStore()
 
 const router = useRouter()
 const coin = useAdminAppCoinStore()
@@ -286,6 +289,8 @@ const table = computed(() => [
   margin-right: 9px
 .word-wrapper
   word-wrap: break-word
-.asset-button button
-  border-radius: 8px
+.asset-button
+  text-align: right
+  & button
+    border-radius: 8px
 </style>

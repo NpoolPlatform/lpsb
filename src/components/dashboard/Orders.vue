@@ -19,7 +19,7 @@
 import { computed, defineAsyncComponent } from 'vue'
 import { formatTime, PriceCoinName } from 'npool-cli-v2'
 import { useI18n } from 'vue-i18n'
-import { useFrontendOrderStore, Order, useAdminAppGoodStore, OrderState, useFrontendDetailStore, GoodType } from 'npool-cli-v4'
+import { useFrontendOrderStore, Order, useAdminAppGoodStore, OrderState, useFrontendDetailStore, GoodType, useLocaleStringStore } from 'npool-cli-v4'
 import { stringify } from 'csv-stringify/sync'
 import saveAs from 'file-saver'
 
@@ -94,10 +94,12 @@ const onExportClick = () => {
       OrderStatus: `${t('MSG_ORDER_STATUS_IN_TEMPLATE')}`
     }
   })
-  const blob = new Blob([output], { type: 'text/plain;charset=utf-8' })
-  const filename = 'orders-' + formatTime(new Date().getTime() / 1000) + '.csv'
+  const blob = new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), output], { type: 'text/plain;charset=utf-8' })
+  const filename = t('MSG_ORDER_HISTORY') + '-' + formatTime(new Date().getTime() / 1000) + '.csv'
   saveAs(blob, filename)
 }
+
+const util = useLocaleStringStore()
 
 const table = computed(() => [
   {
@@ -116,19 +118,19 @@ const table = computed(() => [
     name: 'Total',
     label: t('MSG_PURCHASE_AMOUNT'),
     align: 'center',
-    field: (row: Order) => `${parseFloat(row.Units)} ${t(row.GoodUnit)}`
+    field: (row: Order) => `${util.getLocaleString(parseFloat(row.Units))} ${t(row.GoodUnit)}`
   },
   {
     name: 'Price',
     label: t('MSG_PRICE'),
     align: 'center',
-    field: (row: Order) => (Number(row.PaymentAmount) + Number(row.PayWithBalanceAmount)).toString() + ' ' + PriceCoinName
+    field: (row: Order) => util.getLocaleString((Number(row.PaymentAmount) + Number(row.PayWithBalanceAmount))) + ' ' + PriceCoinName
   },
   {
     name: 'Period',
     label: t('MSG_PERIOD'),
     align: 'center',
-    field: (row: Order) => row.GoodServicePeriodDays.toString() + t('MSG_DAY')
+    field: (row: Order) => util.getLocaleString(row.GoodServicePeriodDays) + t('MSG_DAY')
   },
   {
     name: 'State',

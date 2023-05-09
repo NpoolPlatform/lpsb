@@ -14,12 +14,12 @@
             <div class='info-flex'>
               <div class='three-section'>
                 <h4>{{ $t('MSG_AVAILABLE_FOR_WITHDRAWAL') }}:</h4>
-                <span class='number'>{{ balance }}</span>
+                <span class='number'>{{ util.getLocaleString(balance) }}</span>
                 <span class='unit'>{{ target?.Unit }}</span>
               </div>
               <div v-if='withdrawType === "ExternalAddress"' class='three-section'>
                 <h4>{{ $t('MSG_TRANSACTION_FEE') }}:</h4>
-                <span class='number'>{{ feeAmount }}</span>
+                <span class='number'>{{ util.getLocaleString(feeAmount) }}</span>
                 <span class='unit'>{{ target?.Unit }}</span>
               </div>
               <div class='full-section'>
@@ -40,8 +40,8 @@
               </div>
               <div class='three-section'>
                 <h4>{{ $t('MSG_AMOUNT_WILL_RECEIVE') }}:</h4>
-                <span v-if='withdrawType === "ExternalAddress"' class='number'>{{ receiveAmount }}</span>
-                <span v-else class='number'>{{ amount > 0 ? amount.toFixed(4) : 0 }}</span>
+                <span v-if='withdrawType === "ExternalAddress"' class='number'>{{ util.getLocaleString(receiveAmount) }}</span>
+                <span v-else class='number'>{{ amount > 0 ? util.getLocaleString(amount.toFixed(4)) : 0 }}</span>
                 <span class='unit'>{{ target?.Unit }}</span>
               </div>
 
@@ -155,7 +155,7 @@
     <div class='product-container content-glass popup-container'>
       <div class='popup'>
         <div class='form-container content-glass'>
-          <div class='confirmation'>
+          <div class='confirmation content'>
             <h3>{{ $t('MSG_WITHDRAW_WAITING_TITLE') }}</h3>
             <p v-html='$t("MSG_WITHDRAW_WAITING_CONTENT_1")' />
             <p v-html='$t("MSG_WITHDRAW_WAITING_CONTENT_2")' />
@@ -191,7 +191,8 @@ import {
   General,
   useFrontendDetailStore,
   useAdminCurrencyStore,
-  AppCoin
+  AppCoin,
+  useLocaleStringStore
 } from 'npool-cli-v4'
 import checkmark from 'src/assets/icon-checkmark.svg'
 import { getCoins, getCurrencies } from 'src/api/chain'
@@ -207,6 +208,8 @@ interface Query {
   coinTypeID: string;
   type: string;
 }
+
+const util = useLocaleStringStore()
 
 const coinLabel = (asset: AppCoin) => {
   let label = asset.Name
