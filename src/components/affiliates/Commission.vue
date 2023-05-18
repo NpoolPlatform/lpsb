@@ -2,7 +2,7 @@
   <h2>{{ $t('MSG_COMMISSION') }}</h2>
   <div class='earnings-summary'>
     <div class='earnings-figure'>
-      <span class='amount'>{{ util.getLocaleString(Math.floor(totalCommission), false, 4) }}</span>
+      <span class='amount'>{{ util.getLocaleString(totalCommission, 2) }}</span>
       <span class='unit'>{{ PriceCoinName }}</span>
       <div class='hr' />
       <h4 class='description'>
@@ -10,7 +10,7 @@
       </h4>
     </div>
     <div class='earnings-figure'>
-      <span class='amount'>{{ util.getLocaleString(Math.floor(commissionJPY)) }}</span>
+      <span class='amount'>{{ util.getLocaleString(commissionJPY) }}</span>
       <span class='unit'>JPY</span>
       <div class='hr' />
       <h4 class='description'>
@@ -36,10 +36,12 @@ const totalCommission = computed(() => {
   inviter.value?.Archivements.forEach((el) => {
     total += Number(el.TotalCommission)
   })
-  return total
+  return (Math.floor(total * 100)) / 100
 })
 
 const currency = useAdminCurrencyStore()
-const commissionJPY = computed(() => totalCommission.value * currency.getJPYCurrency())
+const commissionJPY = computed(() => {
+  return Math.floor(totalCommission.value * currency.getJPYCurrency())
+})
 
 </script>
