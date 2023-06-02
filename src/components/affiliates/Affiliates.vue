@@ -18,7 +18,20 @@
 </template>
 
 <script setup lang='ts'>
-import { useLocalUserStore, useAdminAppGoodStore, NotifyType, AppGood, useAdminAppCoinStore, useFrontendArchivementStore, UserArchivement, useAdminCurrencyStore, CurrencyType, useFrontendCommissionStore, Commission, SettleType } from 'npool-cli-v4'
+import {
+  useLocalUserStore,
+  useAdminAppGoodStore,
+  NotifyType,
+  AppGood,
+  useAdminAppCoinStore,
+  useFrontendArchivementStore,
+  UserArchivement,
+  useFrontendCommissionStore,
+  Commission,
+  SettleType,
+  useAdminFiatCurrencyStore,
+  FiatType
+} from 'npool-cli-v4'
 import { QAjaxBar } from 'quasar'
 import { getCoins } from 'src/api/chain'
 import { defineAsyncComponent, onMounted } from 'vue'
@@ -36,8 +49,7 @@ const user = useLocalUserStore()
 const archivement = useFrontendArchivementStore()
 const good = useAdminAppGoodStore()
 const coin = useAdminAppCoinStore()
-const currency = useAdminCurrencyStore()
-
+const fiat = useAdminFiatCurrencyStore()
 const commission = useFrontendCommissionStore()
 
 onMounted(() => {
@@ -51,14 +63,10 @@ onMounted(() => {
     getCoins(0, 100)
   }
 
-  if (!currency.LegalCurrencies.get(CurrencyType.JPY)) {
-    currency.getLegalCurrencies({
-      CurrencyType: CurrencyType.JPY,
-      Message: {}
-    }, () => {
-      // TODO
-    })
+  if (fiat.CoinFiatCurrencies.CoinFiatCurrencies.length === 0) {
+    getFiatCurrency()
   }
+
   if (commission.Commissions.Commissions.length === 0) {
     getCommissions(0, 100)
   }
@@ -118,6 +126,16 @@ const getCommissions = (offset: number, limit: number) => {
       return
     }
     getCommissions(offset + limit, limit)
+  })
+}
+
+const getFiatCurrency = () => {
+  fiat.getFiatCurrency({
+    FiatName: FiatType.JPY,
+    Message: {
+    }
+  }, () => {
+    // TODO
   })
 }
 </script>
