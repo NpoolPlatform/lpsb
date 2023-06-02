@@ -19,7 +19,14 @@ const MiningCard = defineAsyncComponent(() => import('src/components/dashboard/M
 
 const currency = useAdminCurrencyStore()
 const coin = useAdminAppCoinStore()
+
 const good = useAdminAppGoodStore()
+const getTBD = computed(() => (goodID:string) => {
+  const _good = good.getGoodByID(goodID)
+  if (!_good) return '*'
+  console.log(_good.Descriptions)
+  return _good?.Descriptions?.[5]?.length > 0 ? _good?.Descriptions?.[5] : '*'
+})
 
 const profit = useFrontendProfitStore()
 const goodProfits = computed(() => Array.from(profit.GoodProfits.GoodProfits).map((el) => {
@@ -40,7 +47,7 @@ const goodProfits = computed(() => Array.from(profit.GoodProfits.GoodProfits).ma
     Last30DaysUSDInComing: currency.getUSDCurrency(el.CoinTypeID) * profit.getGoodIntervalProfitInComing(IntervalKey.LastMonth, el.CoinTypeID, el.GoodID),
     TotalEstimatedDailyReward: Number(el.Units) * Number(good.getGoodByID(el.GoodID)?.DailyRewardAmount),
     GoodSaleEndAt: good.getGoodByID(el.GoodID)?.SaleEndAt,
-    MiningStartDate: _good?.ServiceStartAt > Math.ceil(Date.now() / 1000) ? '*' : good.getJSTDate(_good?.ServiceStartAt, 'YYYY-MM-DD'),
+    MiningStartDate: _good?.ServiceStartAt > Math.ceil(Date.now() / 1000) ? getTBD.value(el.GoodID) : good.getJSTDate(_good?.ServiceStartAt, 'YYYY-MM-DD'),
     DaysMined: daysMined > el.GoodServicePeriodDays ? el.GoodServicePeriodDays : daysMined,
     DaysRemaining: daysRemaining
   } as MyGoodProfit
