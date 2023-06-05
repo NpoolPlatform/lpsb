@@ -220,7 +220,7 @@ const setCurrency = () => {
 }
 
 watch(coinTypeID, () => {
-  getCurrency(coinTypeID.value)
+  getCoinCurrency(coinTypeID.value)
 })
 
 onMounted(() => {
@@ -254,6 +254,8 @@ onMounted(() => {
   if (currency.Currencies.Currencies.length === 0) {
     getCurrencies(0, 500)
   }
+
+  getCoinCurrency(coinTypeID.value)
 })
 
 const getGenerals = (offset:number, limit: number) => {
@@ -309,8 +311,8 @@ const getCurrencies = (offset: number, limit: number) => {
   })
 }
 
-const getCurrency = (coinTypeID: string) => {
-  currency.getCurrency({
+const getCoinCurrency = (coinTypeID: string) => {
+  currency.getCoinCurrency({
     CoinTypeID: coinTypeID,
     Message: {}
   }, (error: boolean) => {
