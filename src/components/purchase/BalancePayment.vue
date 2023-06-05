@@ -95,7 +95,7 @@ import {
   useAdminAppCoinStore,
   AppCoin,
   useAdminCurrencyStore,
-  Currency,
+  CoinCurrency,
   useLocaleStringStore
 } from 'npool-cli-v4'
 import { defineAsyncComponent, onMounted, ref, computed, watch } from 'vue'
@@ -251,9 +251,8 @@ onMounted(() => {
     setCurrency()
   }
 
-  if (currency.Currencies.Currencies.length === 0 || currency.expired()) {
-    currency.$reset()
-    getCurrencies(0, 10)
+  if (currency.Currencies.Currencies.length === 0) {
+    getCurrencies(0, 500)
   }
 })
 
@@ -297,11 +296,11 @@ const getCoins = (offset: number, limit: number) => {
 }
 
 const getCurrencies = (offset: number, limit: number) => {
-  currency.getCoinCurrencies({
+  currency.getCurrencies({
     Offset: offset,
     Limit: limit,
     Message: {}
-  }, (error: boolean, rows: Array<Currency>) => {
+  }, (error: boolean, rows: Array<CoinCurrency>) => {
     if (error || rows.length <= 0) {
       if (!error) setCurrency()
       return
