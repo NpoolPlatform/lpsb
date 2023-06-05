@@ -220,7 +220,7 @@ const setCurrency = () => {
 }
 
 watch(coinTypeID, () => {
-  setCurrency()
+  getCurrency(coinTypeID.value)
 })
 
 onMounted(() => {
@@ -306,6 +306,19 @@ const getCurrencies = (offset: number, limit: number) => {
       return
     }
     getCurrencies(offset + limit, limit)
+  })
+}
+
+const getCurrency = (coinTypeID: string) => {
+  currency.getCurrency({
+    CoinTypeID: coinTypeID,
+    Message: {}
+  }, (error: boolean) => {
+    if (error) {
+      selectedCoinCurrency.value = undefined as unknown as number
+      return
+    }
+    setCurrency()
   })
 }
 </script>
