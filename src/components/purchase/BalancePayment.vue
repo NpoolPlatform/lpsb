@@ -315,11 +315,7 @@ const getCoinCurrency = (coinTypeID: string) => {
   currency.getCoinCurrency({
     CoinTypeID: coinTypeID,
     Message: {}
-  }, (error: boolean) => {
-    if (error) {
-      selectedCoinCurrency.value = undefined as unknown as number
-      return
-    }
+  }, () => {
     setCurrency()
   })
 }
