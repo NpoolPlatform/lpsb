@@ -26,12 +26,13 @@ import { SecondsEachDay } from 'npool-cli-v2'
 import {
   Account,
   AccountUsedFor,
-  CurrencyType,
+  FiatType,
   General,
   NotifyType,
   TransferAccount,
   useAdminAppCoinStore,
   useAdminCurrencyStore,
+  useAdminFiatCurrencyStore,
   useFrontendGeneralStore,
   useFrontendTransferAccountStore,
   useFrontendUserAccountStore
@@ -56,6 +57,7 @@ const coin = useAdminAppCoinStore()
 const account = useFrontendUserAccountStore()
 const transfer = useFrontendTransferAccountStore()
 const currency = useAdminCurrencyStore()
+const fiat = useAdminFiatCurrencyStore()
 
 onMounted(() => {
   if (general.Generals.Generals.length === 0) {
@@ -77,18 +79,12 @@ onMounted(() => {
   if (transfer.TransferAccounts.TransferAccounts.length === 0) {
     getTransfers(0, 100)
   }
-  if (currency.Currencies.Currencies.length === 0 || currency.expired()) {
-    currency.$reset()
-    getCurrencies(0, 10)
+  if (currency.Currencies.Currencies.length === 0) {
+    getCurrencies(0, 500)
   }
 
-  if (!currency.LegalCurrencies.get(CurrencyType.JPY)) {
-    currency.getLegalCurrencies({
-      CurrencyType: CurrencyType.JPY,
-      Message: {}
-    }, () => {
-    // TODO
-    })
+  if (fiat.CoinFiatCurrencies.CoinFiatCurrencies.length === 0) {
+    getFiatCurrency()
   }
 })
 
@@ -166,6 +162,16 @@ const getUserAccounts = (offset: number, limit: number) => {
   }, (accounts: Array<Account>, error: boolean) => {
     if (error || accounts.length < limit) return
     getUserAccounts(offset + limit, limit)
+  })
+}
+
+const getFiatCurrency = () => {
+  fiat.getFiatCurrency({
+    FiatName: FiatType.JPY,
+    Message: {
+    }
+  }, () => {
+    // TODO
   })
 }
 </script>
