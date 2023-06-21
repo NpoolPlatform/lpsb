@@ -22,6 +22,15 @@
         <q-td key='IOType' :props='myProps'>
           {{ $t(transactionType(myProps.row)) }}
         </q-td>
+        <q-td key='TransactionID' :props='myProps'>
+          <span v-if='myProps.row.IOSubType === IOSubType.Withdrawal'>
+            {{ myProps.row.ShortTransactionID }}
+            <img class='copy-button copy-btn' src='font-awesome/copy.svg' @click='onCopyTxIDClick(myProps.row)'>
+          </span>
+          <span v-else>
+            {{ t('MSG_TXID_NA') }}
+          </span>
+        </q-td>
       </q-tr>
     </template>
   </ShowSwitchTable>
@@ -30,7 +39,8 @@
 <script setup lang='ts'>
 import { computed, defineAsyncComponent, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { Detail, formatTime, IOSubType, IOType, NotifyType, useFrontendDetailStore, useLocaleStringStore } from 'npool-cli-v4'
+import { Detail, formatTime, IOSubType, IOType, NotifyType, useFrontendDetailStore, useLocaleStringStore, useNotificationStore } from 'npool-cli-v4'
+import copy from 'copy-to-clipboard'
 
 const ShowSwitchTable = defineAsyncComponent(() => import('src/components/table/ShowSwitchTable.vue'))
 const LogoName = defineAsyncComponent(() => import('src/components/logo/LogoName.vue'))
@@ -41,7 +51,46 @@ const { t } = useI18n({ useScope: 'global' })
 const util = useLocaleStringStore()
 
 const detail = useFrontendDetailStore()
-const details = computed(() => detail.details)
+const _details = computed(() => detail.details)
+
+interface IOExtra {
+  WithdrawID: string;
+  TransactionID: string;
+  CID: string;
+  TransactionFee: string;
+  AccountID: string;
+}
+
+interface MyDetail extends Detail {
+  TransactionID: string;
+  ShortTransactionID: string;
+}
+
+const notification = useNotificationStore()
+const onCopyTxIDClick = (row: MyDetail) => {
+  copy(row?.TransactionID)
+  notification.Notifications.push({
+    Title: t('MSG_TRANSACTION_ID_COPIED'),
+    Message: t('MSG_COPY_TRANSACTION_ID_SUCCESS'),
+    Popup: true,
+    Type: NotifyType.Success
+  })
+}
+
+const details = computed(() => {
+  const rows = [] as Array<MyDetail>
+  _details.value?.forEach((el) => {
+    let row = {} as MyDetail
+    row = { ...el, ...{ TransactionID: '', ShortTransactionID: '' } }
+    if (el.IOSubType === IOSubType.Withdrawal) {
+      const extra = JSON.parse(el.IOExtra) as IOExtra
+      row.TransactionID = extra.CID
+      row = { ...el, ...{ TransactionID: extra.CID, ShortTransactionID: `${row.TransactionID?.substring(0, 6)}...` } }
+    }
+    rows.push(row)
+  })
+  return rows
+})
 
 const transactionLabel = (asset: Detail) => {
   let label = asset.CoinName
@@ -123,6 +172,12 @@ const table = computed(() => [
   {
     name: 'IOType',
     label: t('MSG_TYPE'),
+    align: 'center',
+    field: () => (row: Detail) => transactionType(row)
+  },
+  {
+    name: 'TransactionID',
+    label: t('MSG_TRANSACTION_ID'),
     align: 'center',
     field: () => (row: Detail) => transactionType(row)
   }
