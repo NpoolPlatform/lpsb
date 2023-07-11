@@ -156,7 +156,7 @@ const onCodeVerify = (code: string) => {
     CoinTypeID: selectedCoinTypeID.value,
     Address: address.value,
     Memo: _memo,
-    Account: account.value,
+    Account: accountType.value === AccountType.Google ? undefined as unknown as string : account.value,
     AccountType: accountType.value as unknown as SignMethodType,
     VerificationCode: code,
     Labels: labels.value?.split(','),
