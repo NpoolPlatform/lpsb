@@ -1,12 +1,12 @@
 <template>
-  <div class='content order-page'>
+  <div class='content order-page' v-if='showMe'>
     <div :class='[ "product-container content-glass project", projectClass ]'>
       <div class='product-title-section project-title-section' :style='{"background-image": "url(" + bgImg + ")"}'>
         <div class='product-title-container'>
           <div class='product-page-icon'>
             <img :src='target?.CoinLogo'>
           </div>
-          <h1 v-html='target?.DisplayNames?.[1]?.length > 0 ? $t(target?.DisplayNames?.[1]) : target?.GoodName' />
+          <h1 v-html='target?.DisplayNames?.[1]? $t(target?.DisplayNames?.[1]) : target?.GoodName' />
         </div>
       </div>
       <!-- mobile start -->
@@ -15,7 +15,7 @@
           {{ $t('MSG_MINING_PURCHASE') }}
         </h3>
         <form action='javascript:void(0)' id='purchase'>
-          <div class='full-section' v-if='good.haveSale(target)'>
+          <!-- <div class='full-section' v-if='good.haveSale(target)'>
             <h4>{{ $t("MSG_SALE_END_DATE") }}</h4>
             <span class='number'>{{ remainDays }}</span>
             <span class='unit'> {{ $t("MSG_DAYS") }} </span>
@@ -24,7 +24,7 @@
             <span class='number'>{{ remainMinutes }}</span>
 
             <span class='unit'>{{ $t("MSG_MINUTES") }} </span>
-          </div>
+          </div> -->
           <h4>{{ $t('MSG_PURCHASE_AMOUNT') }}</h4>
           <Input
             v-model:value='myPurchaseAmount'
@@ -46,8 +46,8 @@
             label=''
             hide-label
             default
-            :name-index='1'
             :tip-index='1'
+            :name-index='1'
           />
           <div class='warning' v-if='showRateTip'>
             <img :src='warning'>
@@ -62,7 +62,7 @@
               label='MSG_PURCHASE'
               type='submit'
               class='submit-btn'
-              :disabled='submitting'
+              :disabled='submitting || !target?.EnablePurchase || !good.haveSale(target) || good.getPurchaseLimit(target) <= 0'
               :waiting='submitting'
               @click='onPurchaseClick'
             />
@@ -80,14 +80,14 @@
           </div>
         </div>
       </div>
-      <!-- mobile end -->
+      <!-- pc start -->
       <div class='product-sidebar'>
         <div id='product-form' class='product-sidebar-section'>
           <h3 class='form-title'>
             {{ $t('MSG_MINING_PURCHASE') }}
           </h3>
           <form action='javascript:void(0)' id='purchase'>
-            <div class='full-section' v-if='good.haveSale(target)'>
+            <!-- <div class='full-section' v-if='good.haveSale(target)'>
               <h4>{{ $t("MSG_SALE_END_DATE") }}</h4>
               <span class='number'>{{ remainDays }}</span>
               <span class='unit'> {{ $t("MSG_DAYS") }} </span>
@@ -95,7 +95,7 @@
               <span class='unit'>{{ $t("MSG_HOURS") }} </span>
               <span class='number'>{{ remainMinutes }}</span>
               <span class='unit'>{{ $t("MSG_MINUTES") }} </span>
-            </div>
+            </div> -->
             <h4>{{ $t('MSG_PURCHASE_AMOUNT') }}</h4>
             <Input
               v-model:value='myPurchaseAmount'
@@ -117,8 +117,8 @@
               label=''
               hide-label
               default
-              :name-index='1'
               :tip-index='1'
+              :name-index='1'
             />
             <div class='warning' v-if='showRateTip'>
               <img :src='warning'>
@@ -133,7 +133,7 @@
                 label='MSG_PURCHASE'
                 type='submit'
                 class='submit-btn'
-                :disabled='submitting'
+                :disabled='submitting || !target?.EnablePurchase || !good.haveSale(target) || good.getPurchaseLimit(target) <= 0'
                 :waiting='submitting'
                 @click='onPurchaseClick'
               />
@@ -250,18 +250,18 @@ const onPurchaseClick = () => {
   })
 }
 
-const endTime = computed(() => target?.value?.SaleEndAt)
+const goIndexPage = () => {
+  if (!target.value?.EnableProductPage) {
+    void router.push({ path: '/' })
+  }
+}
+
+const endTime = computed(() => target.value?.SaleEndAt)
 const ticker = ref(-1)
 const remainDays = ref(27)
 const remainHours = ref(23)
 const remainMinutes = ref(59)
 const remainSeconds = ref(59)
-
-const goIndexPage = () => {
-  if (!target.value?.EnableProductPage) {
-    void router.push({ path: '/dashboard' })
-  }
-}
 
 const showMe = ref(false)
 
@@ -273,17 +273,26 @@ watch(target, () => {
     goIndexPage()
     return
   }
+
   showMe.value = true
 })
 
 onMounted(() => {
+  if (coin.AppCoins.AppCoins.length === 0) {
+    getCoins(0, 100)
+  }
+
   if (target.value && !target.value.EnableProductPage) {
     goIndexPage()
     return
   }
 
+  if (target.value && target.value.EnableProductPage) {
+    showMe.value = true
+  }
+
   ticker.value = window.setInterval(() => {
-    const now = Math.floor(Date.now() / 1000) // UTC时间
+    const now = Math.floor(Date.now() / 1000)
     const remain = endTime.value - now >= 0 ? endTime.value - now : 0
     remainDays.value = Math.floor(remain / 24 / 60 / 60)
     remainHours.value = Math.floor((remain - remainDays.value * 24 * 60 * 60) / 60 / 60)
@@ -293,10 +302,6 @@ onMounted(() => {
       remainDays.value = 99
     }
   }, 1000)
-
-  if (coin.AppCoins.AppCoins.length === 0) {
-    getCoins(0, 100)
-  }
 })
 
 onUnmounted(() => {

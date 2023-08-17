@@ -13,6 +13,7 @@
               hide-label
               :name-index='1'
               :tip-index='1'
+              :default='false'
             />
             <label>{{ $t('MSG_BALANCE') }}</label>
             <div class='three-section' v-if='paymentCoin?.StableUSD'>
@@ -110,9 +111,9 @@ const Input = defineAsyncComponent(() => import('src/components/input/Input.vue'
 const CoinSelector = defineAsyncComponent(() => import('src/components/coin/CoinSelector.vue'))
 
 interface Query {
-  goodID: string;
-  purchaseAmount: number;
-  coinTypeID: string;
+  goodID: string
+  purchaseAmount: number
+  coinTypeID: string
 }
 
 const router = useRouter()

@@ -105,7 +105,7 @@ import chevrons from '../../assets/chevrons.svg'
 const { t } = useI18n({ useScope: 'global' })
 
 interface Props {
-  profit: MyGoodProfit;
+  profit: MyGoodProfit
 }
 
 const util = useLocaleStringStore()
@@ -149,13 +149,13 @@ const onExpandClick = () => {
 const detail = useFrontendDetailStore()
 const miningDetails = computed(() => detail.MiningRewards.MiningRewards.filter((el) => el.GoodID === goodProfit?.value?.GoodID))
 interface ExportMiningReward {
-  CreatedAt: string;
-  Units: string;
-  RewardAmount: string;
-  TechServiceFee: number;
-  NetRewards: number;
-  RewardAmountPerUnit: number;
-  CumulativeTotal: number;
+  CreatedAt: string
+  Units: string
+  RewardAmount: string
+  TechServiceFee: number
+  NetRewards: number
+  RewardAmountPerUnit: number
+  CumulativeTotal: number
 }
 const exportMiningRewards = computed(() => {
   const rowMap = new Map<string, Array<MiningReward>>()

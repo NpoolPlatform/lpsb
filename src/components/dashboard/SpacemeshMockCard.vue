@@ -14,14 +14,14 @@
     </div>
     <div class='top-line-summary'>
       <div class='top-line-item'>
-        <span class='label'>{{ $t('MSG_EARNINGS') }}:</span>
-        <span class='value'>{{ util.getLocaleString(_totalEarningCoin.toFixed(2)) }} {{ target?.Unit }}</span>
-        <span class='sub-value'>(* {{ PriceCoinName }})</span>
+        <span class='label'>{{ $t('MSG_EARNINGS') }}: </span>
+        <span class='value'>{{ util.getLocaleString(_totalEarningCoin?.toFixed(4)) }} {{ target?.Unit }}</span>
+        <span class='sub-value'> (* {{ PriceCoinName }})</span>
       </div>
       <div class='top-line-item'>
-        <span class='label'>{{ $t('MSG_LAST_24_HOURS') }}:</span>
-        <span class='value'>{{ util.getLocaleString(_last24HoursEarningCoin.toFixed(2)) }} {{ target?.Unit }}</span>
-        <span class='sub-value'>(* {{ PriceCoinName }})</span>
+        <span class='label'>{{ $t('MSG_LAST_24_HOURS') }}: </span>
+        <span class='value'>{{ util.getLocaleString(_last24HoursEarningCoin?.toFixed(4)) }} {{ target?.Unit }}</span>
+        <span class='sub-value'> (* {{ PriceCoinName }})</span>
       </div>
       <div class='top-line-item'>
         <span class='label'>{{ $t('MSG_CAPACITY') }}:</span>
@@ -32,15 +32,15 @@
       <div class='detailed-summary' v-show='!short'>
         <div class='line'>
           <span class='label'>{{ $t('MSG_30_DAYS_AVERAGE_OUTPUT') }}:</span>
-          <span class='value'>{{ util.getLocaleString(_last30DaysDailyEarningCoin.toFixed(2)) }} {{ target?.Unit }}</span>
+          <span class='value'>{{ util.getLocaleString(_last30DaysDailyEarningCoin?.toFixed(4)) }} {{ target?.Unit }}</span>
         </div>
         <div class='line'>
           <span class='label'>{{ $t('MSG_TECHNIQUE_SERVICE_FEE') }}:</span>
-          <span class='value'>{{ util.getLocaleString((_last24HoursEarningCoin * 0.2).toFixed(2)) }} {{ target?.Unit }} (20%)</span>
+          <span class='value'>{{ util.getLocaleString((_last24HoursEarningCoin * 0.2)?.toFixed(4)) }} {{ target?.Unit }} (20%)</span>
         </div>
         <div class='line'>
           <span class='label'>{{ $t('MSG_30_DAYS_AVERAGE_NET_OUTPUT') }}:</span>
-          <span class='value'>{{ util.getLocaleString((_last30DaysDailyEarningCoin * 0.8).toFixed(2)) }} {{ target?.Unit }}</span>
+          <span class='value'>{{ util.getLocaleString((_last30DaysDailyEarningCoin * 0.8)?.toFixed(4)) }} {{ target?.Unit }}</span>
         </div>
         <div class='line'>
           <span class='label'>{{ $t('MSG_SERVICE_PERIOD') }}:</span>
@@ -48,7 +48,7 @@
         </div>
         <div class='line'>
           <span class='label'>{{ $t('MSG_NETWORK_DAILY_OUTPUT') }}:</span>
-          <span class='value'>{{ util.getLocaleString(daily.toFixed(2)) }} {{ target?.Unit }}</span>
+          <span class='value'>{{ util.getLocaleString(daily?.toFixed(2)) }} {{ target?.Unit }}</span>
         </div>
       </div>
     </q-slide-transition>
@@ -67,11 +67,8 @@
 </template>
 
 <script setup lang='ts'>
-import {
-  NotificationType
-} from 'npool-cli-v2'
-import { AppCoin, useAdminAppCoinStore, useAdminAppGoodStore, useFrontendProfitStore, PriceCoinName, useLocaleStringStore } from 'npool-cli-v4'
-import { useMockSpacemeshStore } from 'src/teststore'
+import { AppCoin, useAdminAppCoinStore, useAdminAppGoodStore, useFrontendProfitStore, PriceCoinName, NotifyType, useLocaleStringStore } from 'npool-cli-v4'
+import { spacemesh } from 'src/teststore'
 import { computed, onMounted, ref, onUnmounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
@@ -85,7 +82,7 @@ const { t } = useI18n({ useScope: 'global' })
 const util = useLocaleStringStore()
 
 const coin = useAdminAppCoinStore()
-const target = computed(() => coin.getAvailableCoins().find((el) => el.Name?.toLowerCase()?.includes('spacemesh')) as AppCoin)
+const target = computed(() => coin.AppCoins.AppCoins.find((el) => el.Name?.toLowerCase()?.includes('spacemesh')) as AppCoin)
 
 const profit = useFrontendProfitStore()
 const goodProfits = computed(() => profit.GoodProfits.GoodProfits.filter((el) => el.CoinTypeID === target?.value?.CoinTypeID))
@@ -97,19 +94,19 @@ const totalUnits = computed(() => goodProfits.value?.length ? goodProfits.value?
 const good = useAdminAppGoodStore()
 const total = computed(() => goodProfits.value?.length ? good.getGoodByID(goodProfits.value?.[0].GoodID)?.Total : 0)
 const unitsRatio = computed(() => goodProfits.value?.length && total.value ? Number(totalUnits.value) / Number(total.value) : 0)
-const daily = computed(() => spacemesh.getNetworkDailyOutput)
+const daily = computed(() => _spacemesh.getNetworkDailyOutput)
 
 const short = ref(true)
 
-const spacemesh = useMockSpacemeshStore()
+const _spacemesh = spacemesh.useMockSpacemeshStore()
 const _last24HoursEarningCoin = computed(() => {
-  return spacemesh.getLastDaysAvgOutput(unitsRatio.value, spacemesh.NetworkInfo?.epoch?.stats?.current?.accounts * 1.3)
+  return _spacemesh.getLastDaysAvgOutput(unitsRatio.value, _spacemesh.accounts * 1.3)
 })
 const _last30DaysDailyEarningCoin = computed(() => {
-  return spacemesh.get30DaysAvgOutput(unitsRatio.value, spacemesh.NetworkInfo?.epoch?.stats?.current?.accounts * 1.3)
+  return _spacemesh.get30DaysAvgOutput(unitsRatio.value, _spacemesh.accounts * 1.3)
 })
 const _totalEarningCoin = computed(() => {
-  return spacemesh.getEarning(unitsRatio.value, spacemesh.NetworkInfo?.epoch?.stats?.current?.accounts * 1.3)
+  return _spacemesh.getEarning(unitsRatio.value, _spacemesh.accounts * 1.3)
 })
 
 const ticker = ref(-1)
@@ -137,23 +134,26 @@ onUnmounted(() => {
 })
 
 const updater = () => {
-  spacemesh.getNetworks({
+  _spacemesh.getNetworks({
     Message: {
       Error: {
         Title: t('MSG_GET_SPACEMESH_NETWORKS'),
         Message: t('MSG_GET_SPACEMESH_NETWORKS_FAIL'),
-        Popup: true,
-        Type: NotificationType.Error
+        Popup: false,
+        Type: NotifyType.Error
       }
     }
-  }, () => {
-    spacemesh.getNetworkInfo({
+  }, (error: boolean) => {
+    if (error) {
+      return
+    }
+    _spacemesh.getEpochs({
       Message: {
         Error: {
           Title: t('MSG_GET_SPACEMESH_NETWORK_INFOS'),
           Message: t('MSG_GET_SPACEMESH_NETWORK_INFOS_FAIL'),
-          Popup: true,
-          Type: NotificationType.Error
+          Popup: false,
+          Type: NotifyType.Error
         }
       }
     }, () => {
@@ -162,3 +162,15 @@ const updater = () => {
   })
 }
 </script>
+<style lang='sass' scoped>
+.mining-summary .warning
+  background: #fc4468
+  border: 0
+  font-size: 20px
+  padding: 12px
+  margin: 24px 0
+
+.mining-summary .warning span
+  font-size: 16px
+  line-height: 24px
+</style>
