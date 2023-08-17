@@ -1,6 +1,6 @@
 <template>
   <div
-    :class='["affiliate content-glass", child ? "child" : "", firstChild ? "first-child" : "", lastChild ? "last-child" : ""]'
+    :class='["affiliate content-glass", child ? "child" : "", firstChild ? "first-child" : "", lastChild ? "last-child" : "", firstAndLastChild? "first-and-last-child": ""]'
   >
     <div class='aff-top'>
       <h3 class='aff-name'>
@@ -148,6 +148,7 @@ interface Props {
   child: boolean
   firstChild: boolean
   lastChild: boolean
+  firstAndLastChild: boolean
   referral: achievement.Achievement
 }
 
@@ -155,6 +156,7 @@ const props = defineProps<Props>()
 const child = toRef(props, 'child')
 const firstChild = toRef(props, 'firstChild')
 const lastChild = toRef(props, 'lastChild')
+const firstAndLastChild = toRef(props, 'firstAndLastChild')
 const target = toRef(props, 'referral')
 const referral = ref(target.value)
 
@@ -240,3 +242,8 @@ const onSaveCommissionClick = (row: MyGoodAchievement) => {
   })
 }
 </script>
+
+<style lang='sass' scoped>
+.first-and-last-child::before
+  height: 100px !important
+</style>

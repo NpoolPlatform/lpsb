@@ -6,6 +6,7 @@
       :child='false'
       :first-child='false'
       :last-child='false'
+      :first-and-last-child='false'
       :referral='inviter'
     />
     <Card
@@ -15,6 +16,7 @@
       :first-child='idx === 0'
       :last-child='idx === invitees.length - 1'
       :referral='referral'
+      :first-and-last-child='invitees?.length === 1'
     />
   </div>
 </template>
