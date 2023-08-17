@@ -9,10 +9,12 @@
       </p>
       <div v-for='(_good, idx) in visibleGoodAchievements' :key='idx'>
         <label>{{ _good.GoodName }} {{ $t('MSG_KOL_COMMISSION_RATE') }}:</label>
-        <KolOption
-          v-model:percent='_good.CommissionValue' :max='getGoodCommissionValue(_good.GoodID)' ignore-style
-          :disabled='!good.haveSale(good.getGoodByID(_good.GoodID) as AppGood)'
-        />
+        <input
+          type='number'
+          v-model='_good.CommissionValue'
+          :min='0'
+          :max='getGoodCommissionValue(_good.GoodID)'
+        >
       </div>
     </template>
     <template #append-submit>
@@ -29,8 +31,7 @@ import {
   User,
   useAdminAppGoodStore,
   NotifyType,
-  useFrontendUserStore,
-  AppGood
+  useFrontendUserStore
 } from 'npool-cli-v4'
 import { defineAsyncComponent, computed, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
@@ -42,7 +43,6 @@ import { commission, achievement } from 'src/teststore'
 const { locale, t } = useI18n({ useScope: 'global' })
 
 const FormPage = defineAsyncComponent(() => import('src/components/page/FormPage.vue'))
-const KolOption = defineAsyncComponent(() => import('src/components/affiliates/KolOption.vue'))
 
 interface Query {
   userID: string
