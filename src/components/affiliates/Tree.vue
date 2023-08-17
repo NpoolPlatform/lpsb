@@ -6,6 +6,7 @@
       :child='false'
       :first-child='false'
       :last-child='false'
+      :first-and-last-child='false'
       :referral='inviter'
     />
     <Card
@@ -15,24 +16,21 @@
       :first-child='idx === 0'
       :last-child='idx === invitees.length - 1'
       :referral='referral'
+      :first-and-last-child='invitees?.length === 1'
     />
   </div>
 </template>
 
 <script setup lang='ts'>
 import { computed, defineAsyncComponent } from 'vue'
-import { useFrontendArchivementStore, useLocalUserStore } from 'npool-cli-v4'
+import { useLocalUserStore } from 'npool-cli-v4'
+import { achievement } from 'src/teststore'
 
 const Card = defineAsyncComponent(() => import('src/components/affiliates/Card.vue'))
 
 const logined = useLocalUserStore()
 
-const archivement = useFrontendArchivementStore()
-const inviter = computed(() => archivement.getArchivementByUserID(logined?.User?.ID))
-const invitees = computed(() => archivement.getInviteesArchivements(logined.User?.ID).sort((a, b) => a.InvitedAt > b.InvitedAt ? 1 : -1))
+const _achievement = achievement.useAchievementStore()
+const inviter = computed(() => _achievement.achievement(logined?.User?.ID))
+const invitees = computed(() => _achievement.inviteeAchievements(logined.User?.ID).sort((a, b) => a.InvitedAt > b.InvitedAt ? 1 : -1))
 </script>
-
-<style lang='sass' scoped>
-.left-line::before
-  height: 101px !important
-</style>

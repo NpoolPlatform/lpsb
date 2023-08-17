@@ -506,8 +506,8 @@ const { t } = useI18n({ useScope: 'global' })
 const ProductPage = defineAsyncComponent(() => import('src/components/product/ProductPage.vue'))
 
 interface Query {
-  goodId: string;
-  purchaseAmount: number;
+  goodId: string
+  purchaseAmount: number
 }
 
 const util = useLocaleStringStore()

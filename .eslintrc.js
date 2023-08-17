@@ -116,7 +116,6 @@ module.exports = {
     '@typescript-eslint/explicit-function-return-type': 'off',
     '@typescript-eslint/explicit-module-boundary-types': 'off',
     '@typescript-eslint/no-unused-vars': ['error'],
-    semi: ['error', 'never'],
     '@typescript-eslint/semi': 'off',
     'no-unexpected-multiline': 'error',
 
@@ -127,12 +126,30 @@ module.exports = {
       },
       singleline: {
         delimiter: 'semi',
-        requireLast: false
+        requireLast: true
+      },
+       "overrides": {
+        "interface": {
+          "multiline": {
+            "delimiter": "none",
+            "requireLast": true
+          }
+        }
       },
       multilineDetection: 'brackets'
     }],
 
     // allow debugger during development only
-    'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off'
+    'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
+    'semi': 'off',
+    "vue/max-attributes-per-line": ["error", {
+      "singleline": {
+        "max": 4
+      },
+      "multiline": {
+        "max": 4
+      }
+    }],
+    "func-call-spacing": ["error", "never"]
   }
 }

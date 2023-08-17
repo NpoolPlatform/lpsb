@@ -7,14 +7,14 @@
       <p class='aff-email'>
         {{ subUsername }}
       </p>
-      <div v-for='(_good, idx) in visibleGoodArchivements' :key='idx'>
+      <div v-for='(_good, idx) in visibleGoodAchievements' :key='idx'>
         <label>{{ _good.GoodName }} {{ $t('MSG_KOL_COMMISSION_RATE') }}:</label>
         <input
           type='number'
-          v-model='_good.CommissionPercent'
+          v-model='_good.CommissionValue'
           :min='0'
-          :max='getGoodPercent(_good.GoodID)'
-          :disabled='!good.haveSale(good.getGoodByID(_good.GoodID) as AppGood)'
+          :max='getGoodCommissionValue(_good.GoodID)'
+          :disabled='!good.enableSetCommission(_good.GoodID) || !good.haveSale(good.getGoodByID(_good.GoodID) as AppGood)'
         >
       </div>
     </template>
@@ -31,65 +31,73 @@ import {
   useBaseUserStore,
   User,
   useAdminAppGoodStore,
-  useFrontendArchivementStore,
-  UserArchivement,
   NotifyType,
   useFrontendUserStore,
-  useFrontendCommissionStore,
-  SettleType,
   AppGood
 } from 'npool-cli-v4'
 import { defineAsyncComponent, computed, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { getAppGoods } from 'src/api/good'
+import { commission, achievement } from 'src/teststore'
+
 // eslint-disable-next-line @typescript-eslint/unbound-method
 const { locale, t } = useI18n({ useScope: 'global' })
 
 const FormPage = defineAsyncComponent(() => import('src/components/page/FormPage.vue'))
 
 interface Query {
-  userID: string;
+  userID: string
 }
 
 const route = useRoute()
 const router = useRouter()
 const query = computed(() => route.query as unknown as Query)
 
-const archivement = useFrontendArchivementStore()
-const referral = computed(() => archivement.getArchivementByUserID(query.value?.userID))
+const _achievement = achievement.useAchievementStore()
+const referral = computed(() => _achievement.achievement(query.value?.userID))
 
 const baseUser = useBaseUserStore()
 const username = computed(() => baseUser.displayName({
   FirstName: referral.value?.FirstName,
   LastName: referral.value?.LastName
 } as User, locale.value as string))
-const subUsername = computed(() => archivement.subUsername(referral.value as UserArchivement))
+const subUsername = computed(() => referral.value?.EmailAddress?.length ? referral.value?.EmailAddress : referral.value?.PhoneNO)
 
 const logined = useLocalUserStore()
 
 const good = useAdminAppGoodStore()
-const getGoodPercent = computed(() => (goodID: string) => {
-  const inviterArchivement = archivement.getArchivementByUserID(logined?.User.ID)
-  return archivement.getInviterGoodPercent(inviterArchivement as UserArchivement, goodID)
+const getGoodCommissionValue = computed(() => (goodID: string) => {
+  return Number(_achievement.inviterGoodCommissionValue(logined?.User.ID, goodID))
+})
+const getGoodCommissionSettleMode = computed(() => (goodID: string) => {
+  return _achievement.inviterGoodCommissionSettleMode(logined?.User.ID, goodID) as commission.SettleMode
+})
+const getGoodCommissionSettleAmountType = computed(() => (goodID: string) => {
+  return _achievement.inviterGoodCommissionSettleAmountType(logined?.User.ID, goodID) as commission.SettleAmountType
+})
+const getGoodCommissionSettleInterval = computed(() => (goodID: string) => {
+  return _achievement.inviterGoodCommissionSettleInterval(logined?.User.ID, goodID) as commission.SettleInterval
+})
+const getGoodCommissionThreshold = computed(() => (goodID: string) => {
+  return _achievement.inviterGoodCommissionThreshold(logined?.User.ID, goodID)
 })
 
-const visibleGoodArchivements = computed(() => referral.value?.Archivements?.filter((el) => good.visible(el.GoodID)))
+const visibleGoodAchievements = computed(() => referral.value?.Achievements?.filter((el) => good.visible(el.GoodID)))
 
 const backTimer = ref(-1)
 const submitting = ref(false)
 
 const user = useFrontendUserStore()
-const commission = useFrontendCommissionStore()
-
+const _commission = commission.useCommissionStore()
 const onSubmit = () => {
   submitting.value = true
-  referral.value?.Archivements?.forEach((g) => {
-    if (g.CommissionPercent > getGoodPercent.value(g.GoodID)) {
-      g.CommissionPercent = getGoodPercent.value(g.GoodID)
+  referral.value?.Achievements?.forEach((g) => {
+    if (Number(g.CommissionValue) > getGoodCommissionValue.value(g.GoodID)) {
+      g.CommissionValue = getGoodCommissionValue.value(g.GoodID).toString()
     }
-    if (g.CommissionPercent < 0) {
-      g.CommissionPercent = 0
+    if (Number(g.CommissionValue) < 0) {
+      g.CommissionValue = '0'
     }
   })
 
@@ -108,21 +116,34 @@ const onSubmit = () => {
     if (error) {
       return
     }
-    if (visibleGoodArchivements.value?.length === 0) {
-      archivement.$reset()
+    if (visibleGoodAchievements.value?.length === 0) {
+      _achievement.$reset()
       void router.push({ path: '/affiliates' })
       return
     }
-    visibleGoodArchivements?.value?.forEach((row) => {
-      commission.createCommission({
+
+    visibleGoodAchievements?.value?.forEach((row) => {
+      switch (getGoodCommissionSettleAmountType.value(row.GoodID)) {
+        case commission.SettleAmountType.SettleByAmount:
+          break
+        case commission.SettleAmountType.SettleByPercent:
+          break
+        default:
+          return
+      }
+      _commission.createCommission({
         TargetUserID: referral.value?.UserID as string,
         GoodID: row.GoodID,
-        SettleType: good.settleType(row.GoodID) as SettleType,
-        Value: `${row.CommissionPercent}`,
+        SettleType: commission.SettleType.GoodOrderPayment,
+        SettleAmountType: getGoodCommissionSettleAmountType.value(row.GoodID),
+        SettleMode: getGoodCommissionSettleMode.value(row.GoodID),
+        SettleInterval: getGoodCommissionSettleInterval.value(row.GoodID),
+        Threshold: getGoodCommissionThreshold.value(row.GoodID),
+        AmountOrPercent: `${row.CommissionValue}`,
         StartAt: Math.ceil(Date.now() / 1000),
         Message: {
           Error: {
-            Title: t('MSG_CREATE_AMOUNT_SETTING_FAIL'),
+            Title: t('MSG_CREATE_COMMISSION_FAIL'),
             Popup: true,
             Type: NotifyType.Error
           }
@@ -132,7 +153,7 @@ const onSubmit = () => {
           window.clearTimeout(backTimer.value)
         }
         backTimer.value = window.setTimeout(() => {
-          archivement.$reset()
+          _achievement.$reset()
           void router.push({ path: '/affiliates' })
         }, 1000)
       })
@@ -144,27 +165,27 @@ onMounted(() => {
   if (good.AppGoods.AppGoods.length === 0) {
     getAppGoods(0, 500)
   }
-  if (archivement.Archivements.Archivements.length === 0) {
-    getArchivements(0, 100)
+  if (_achievement.Achievements.length === 0) {
+    getAchievements(0, 100)
   }
 })
 
-const getArchivements = (offset: number, limit: number) => {
-  archivement.getGoodArchivements({
+const getAchievements = (offset: number, limit: number) => {
+  _achievement.getAchievements({
     Offset: offset,
     Limit: limit,
     Message: {
       Error: {
-        Title: t('MSG_GET_COIN_ARCHIVEMENT_FAIL'),
+        Title: t('MSG_GET_COIN_ACHIEVEMENT_FAIL'),
         Popup: true,
         Type: NotifyType.Error
       }
     }
-  }, (error: boolean, rows: Array<UserArchivement>) => {
-    if (error || rows.length < limit) {
+  }, (error: boolean, rows?: Array<achievement.Achievement>) => {
+    if (error || !rows?.length) {
       return
     }
-    getArchivements(offset + limit, limit)
+    getAchievements(offset + limit, limit)
   })
 }
 </script>

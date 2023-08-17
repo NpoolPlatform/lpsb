@@ -54,12 +54,12 @@ const TimeoutSendBtn = defineAsyncComponent(() => import('src/components/button/
 const Input = defineAsyncComponent(() => import('src/components/input/Input.vue'))
 
 interface Props {
-  verifyMethod?: AccountType;
-  usedFor: UsedFor;
-  account: string;
-  accountType: AccountType;
-  disabled?: boolean;
-  showCancel?: boolean;
+  verifyMethod?: AccountType
+  usedFor: UsedFor
+  account: string
+  accountType: AccountType
+  disabled?: boolean
+  showCancel?: boolean
 }
 
 const props = defineProps<Props>()

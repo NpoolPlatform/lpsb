@@ -174,7 +174,7 @@ const PurchasePage = defineAsyncComponent(() => import('src/components/purchase/
 const PaymentState = defineAsyncComponent(() => import('src/components/purchase/PaymentState.vue'))
 
 interface Query {
-  orderId: string;
+  orderId: string
 }
 
 // eslint-disable-next-line @typescript-eslint/unbound-method

@@ -9,33 +9,16 @@
     <Table />
     <div class='hr' />
   </div>
-  <q-ajax-bar
-    ref='progress'
-    position='top'
-    color='blue-3'
-    size='6px'
-  />
+  <q-ajax-bar ref='progress' position='top' color='blue-3' size='6px' />
 </template>
 
 <script setup lang='ts'>
-import {
-  useLocalUserStore,
-  useAdminAppGoodStore,
-  NotifyType,
-  AppGood,
-  useAdminAppCoinStore,
-  useFrontendArchivementStore,
-  UserArchivement,
-  useFrontendCommissionStore,
-  Commission,
-  SettleType,
-  useAdminFiatCurrencyStore,
-  FiatType
-} from 'npool-cli-v4'
+import { useLocalUserStore, useAdminAppGoodStore, NotifyType, AppGood, useAdminAppCoinStore, useAdminFiatCurrencyStore, FiatType } from 'npool-cli-v4'
 import { QAjaxBar } from 'quasar'
 import { getCoins } from 'src/api/chain'
 import { defineAsyncComponent, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { commission, achievement } from 'src/teststore'
 
 // eslint-disable-next-line @typescript-eslint/unbound-method
 const { t } = useI18n({ useScope: 'global' })
@@ -46,15 +29,15 @@ const Tree = defineAsyncComponent(() => import('src/components/affiliates/Tree.v
 const Table = defineAsyncComponent(() => import('src/components/affiliates/Table.vue'))
 
 const user = useLocalUserStore()
-const archivement = useFrontendArchivementStore()
+const _achievement = achievement.useAchievementStore()
 const good = useAdminAppGoodStore()
 const coin = useAdminAppCoinStore()
 const fiat = useAdminFiatCurrencyStore()
-const commission = useFrontendCommissionStore()
 
+const _commission = commission.useCommissionStore()
 onMounted(() => {
-  if (archivement.Archivements.Archivements.length === 0) {
-    getArchivements(0, 100)
+  if (_achievement.Achievements.length === 0) {
+    getAchievements(0, 100)
   }
   if (good.AppGoods.AppGoods.length === 0) {
     getAppGoods(0, 500)
@@ -66,8 +49,7 @@ onMounted(() => {
   if (fiat.CoinFiatCurrencies.CoinFiatCurrencies.length === 0) {
     getFiatCurrency()
   }
-
-  if (commission.Commissions.Commissions.length === 0) {
+  if (_commission.Commissions.length === 0) {
     getCommissions(0, 100)
   }
 })
@@ -90,42 +72,22 @@ const getAppGoods = (offset: number, limit: number) => {
     getAppGoods(offset + limit, limit)
   })
 }
-const getArchivements = (offset: number, limit: number) => {
-  archivement.getGoodArchivements({
+const getAchievements = (offset: number, limit: number) => {
+  _achievement.getAchievements({
     Offset: offset,
     Limit: limit,
     Message: {
       Error: {
-        Title: t('MSG_GET_COIN_ARCHIVEMENT_FAIL'),
+        Title: t('MSG_GET_COIN_ACHIEVEMENT_FAIL'),
         Popup: true,
         Type: NotifyType.Error
       }
     }
-  }, (error: boolean, rows: Array<UserArchivement>) => {
-    if (error || rows.length < limit) {
+  }, (error: boolean, rows?: Array<achievement.Achievement>) => {
+    if (error || !rows?.length) {
       return
     }
-    getArchivements(offset + limit, limit)
-  })
-}
-
-const getCommissions = (offset: number, limit: number) => {
-  commission.getCommissions({
-    Offset: offset,
-    Limit: limit,
-    SettleType: SettleType.GoodOrderPercent,
-    Message: {
-      Error: {
-        Title: t('MSG_GET_PURCHASE_AMOUNT_SETTINGS_FAIL'),
-        Popup: true,
-        Type: NotifyType.Error
-      }
-    }
-  }, (error: boolean, rows: Array<Commission>) => {
-    if (error || rows.length < limit) {
-      return
-    }
-    getCommissions(offset + limit, limit)
+    getAchievements(offset + limit, limit)
   })
 }
 
@@ -136,6 +98,28 @@ const getFiatCurrency = () => {
     }
   }, () => {
     // TODO
+  })
+}
+
+const getCommissions = (offset: number, limit: number) => {
+  _commission.getCommissions({
+    Offset: offset,
+    Limit: limit,
+    Message: {
+      Error: {
+        Title: t('MSG_GET_COMMISSIONS_FAIL'),
+        Popup: true,
+        Type: NotifyType.Error
+      }
+    }
+  }, (error: boolean, rows?: Array<commission.Commission>) => {
+    if (error) {
+      return
+    }
+    if (!rows?.length) {
+      return
+    }
+    getCommissions(offset + limit, limit)
   })
 }
 </script>

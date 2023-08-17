@@ -66,13 +66,13 @@ import { AccountType } from 'npool-cli-v4'
 import { defineAsyncComponent, ref, defineProps, toRef, defineEmits, watch, onMounted } from 'vue'
 
 interface Props {
-  label: string;
-  accountType: string;
-  account: string;
-  accountError: boolean;
-  password: string;
-  submitText: string;
-  submitting?: boolean;
+  label: string
+  accountType: string
+  account: string
+  accountError: boolean
+  password: string
+  submitText: string
+  submitting?: boolean
 }
 
 const props = defineProps<Props>()
