@@ -14,6 +14,7 @@
           v-model='_good.CommissionValue'
           :min='0'
           :max='getGoodCommissionValue(_good.GoodID)'
+          :disabled='!good.enableSetCommission(_good.GoodID) || !good.haveSale(good.getGoodByID(_good.GoodID) as AppGood)'
         >
       </div>
     </template>
@@ -31,7 +32,8 @@ import {
   User,
   useAdminAppGoodStore,
   NotifyType,
-  useFrontendUserStore
+  useFrontendUserStore,
+  AppGood
 } from 'npool-cli-v4'
 import { defineAsyncComponent, computed, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
