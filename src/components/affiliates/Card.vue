@@ -46,7 +46,7 @@
               />
             </td>
             <td v-if='_good.Editing'>
-              <KolOption v-model:percent='_good.CommissionValue' :max='getGoodCommissionValue(_good.GoodID)' />
+              <input type='number' v-model='_good.CommissionValue' :min='0' :max='getGoodCommissionValue(_good.GoodID)'>
               <button @click='onSaveCommissionClick(_good)'>
                 {{ $t('MSG_SAVE') }}
               </button>
@@ -126,7 +126,7 @@
 import {
   PriceCoinName
 } from 'npool-cli-v2'
-import { ref, toRef, defineProps, computed, defineAsyncComponent } from 'vue'
+import { ref, toRef, defineProps, computed } from 'vue'
 import chevrons from '../../assets/chevrons.svg'
 import {
   useBaseUserStore,
@@ -143,8 +143,6 @@ import { commission, achievement } from 'src/teststore'
 
 // eslint-disable-next-line @typescript-eslint/unbound-method
 const { locale, t } = useI18n({ useScope: 'global' })
-
-const KolOption = defineAsyncComponent(() => import('src/components/affiliates/KolOption.vue'))
 
 interface Props {
   child: boolean

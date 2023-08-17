@@ -9,7 +9,7 @@
     <Table />
     <div class='hr' />
   </div>
-  <q-ajax-bar ref='progress' position='top' color='green-2' size='6px' />
+  <q-ajax-bar ref='progress' position='top' color='blue-3' size='6px' />
 </template>
 
 <script setup lang='ts'>
