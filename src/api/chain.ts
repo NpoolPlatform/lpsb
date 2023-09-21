@@ -2,13 +2,14 @@ import { appcoin, appcoindescription, coincurrency, coincurrencybase } from 'src
 
 const coin = appcoin.useAppCoinStore()
 
-export const getCoins = (offset: number, limit: number) => {
+export const getCoins = (offset: number, limit: number, done?: () => void) => {
   coin.getAppCoins({
     Offset: offset,
     Limit: limit,
     Message: {}
   }, (error: boolean, rows?: Array<appcoin.AppCoin>) => {
     if (error || !rows?.length) {
+      if (!error) done?.()
       return
     }
     getCoins(offset + limit, limit)
