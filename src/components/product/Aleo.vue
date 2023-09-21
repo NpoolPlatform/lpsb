@@ -149,7 +149,7 @@
 import { defineAsyncComponent, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
-import question from '../../../assets/question.svg'
+import question from '../../assets/question.svg'
 // import lightbulb from '../../../assets/lightbulb.svg'
 import { appgood, notify, appcoin, appcoindescription, coincurrency, utils, constant, _locale } from 'src/npoolstore'
 import { getCoins, getCurrencies, getDescriptions } from 'src/api/chain'
