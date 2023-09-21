@@ -16,18 +16,16 @@
 </template>
 
 <script setup lang='ts'>
-
-import { useLocaleStore, useAdminAppLangStore, AppLang } from 'npool-cli-v4'
+import { applang, _locale, g11nbase } from 'src/npoolstore'
 import { computed } from 'vue'
 
-const lang = useAdminAppLangStore()
-const langs = computed(() => lang.AppLangs.AppLangs)
+const lang = applang.useAppLangStore()
+const langs = computed(() => lang.langs(undefined))
 
-const locale = useLocaleStore()
-const curLang = computed(() => locale.AppLang?.Lang)
+const locale = _locale.useLocaleStore()
+const curLang = computed(() => locale.lang())
 
-const onLangClick = (language: AppLang) => {
+const onLangClick = (language: g11nbase.AppLang) => {
   locale.setLang(language)
 }
-
 </script>
