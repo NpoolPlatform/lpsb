@@ -1,16 +1,17 @@
 <script setup lang='ts'>
 import { useI18n } from 'vue-i18n'
-import { onMounted } from 'vue'
+import { computed, onMounted } from 'vue'
 import { app, appgood, notify } from 'src/npoolstore'
 // eslint-disable-next-line @typescript-eslint/unbound-method
 const { t } = useI18n({ useScope: 'global' })
 
 const good = appgood.useAppGoodStore()
+const goods = computed(() => good.goods())
 
 const application = app.useApplicationStore()
 
 onMounted(() => {
-  if (!good.goods(undefined)) {
+  if (!goods.value?.length) {
     getAppGoods(0, 100)
   }
   getApplication()
