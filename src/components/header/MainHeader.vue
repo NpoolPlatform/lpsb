@@ -91,7 +91,7 @@ import { notify, user, localapp } from 'src/npoolstore'
 
 import logoText from '../../assets/logo-text.png'
 import logo from '../../assets/logo-icon.png'
-import userAvatar from '../../assets/icon-user.svg'
+import userAvatar from '../../assets/user-circle.svg'
 
 const LangSwitcher = defineAsyncComponent(() => import('src/components/lang/LangSwitcher.vue'))
 const SignHelper = defineAsyncComponent(() => import('src/components/header/SignHelper.vue'))
