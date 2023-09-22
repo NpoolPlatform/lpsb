@@ -150,7 +150,6 @@
         />
       </div>
     </div>
-    <!-- <input type='submit' :value='$t("MSG_SAVE_CHANGES")' class='account-field'> -->
     <div class='save-changes'>
       <WaitingBtn
         label='MSG_SAVE_CHANGES'
@@ -168,6 +167,7 @@ import { defineAsyncComponent, ref, computed } from 'vue'
 import { notify, utils, user } from 'src/npoolstore'
 import warning from '../../assets/warning.svg'
 const Input = defineAsyncComponent(() => import('src/components/input/Input.vue'))
+const WaitingBtn = defineAsyncComponent(() => import('src/components/button/WaitingBtn.vue'))
 
 const logined = user.useLocalUserStore()
 
