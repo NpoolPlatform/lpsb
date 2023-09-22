@@ -6,7 +6,7 @@ import {
   createWebHistory
 } from 'vue-router'
 import routes from './routes'
-import { loginInterceptor } from 'npool-cli-v4/utils'
+import { loginInterceptor } from 'src/npoolstore/utils/intercepter'
 import { useSettingStore } from 'src/localstore'
 import { BaseMenu } from 'src/menus/menus'
 import { useLocalAppStore } from 'src/localstore/app'
