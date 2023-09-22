@@ -1,6 +1,6 @@
 <template>
   <ul class='language-picker'>
-    <div>
+    <div v-if='langs.length > 1'>
       <li
         v-for='language in langs'
         :class='[ curLang === language.Lang ? "selected" : "" ]'
