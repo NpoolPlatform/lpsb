@@ -220,7 +220,7 @@ const onPurchaseClick = () => {
       path: '/signin',
       query: {
         target: '/product/aleo',
-        appGoodId: appGoodID.value,
+        appGoodID: appGoodID.value,
         purchaseAmount: myPurchaseAmount.value
       }
     })
@@ -234,7 +234,7 @@ const onPurchaseClick = () => {
   void router.push({
     path: '/payment',
     query: {
-      goodID: target.value?.GoodID,
+      appGoodID: appGoodID.value,
       coinTypeID: selectedCoinID.value,
       purchaseAmount: myPurchaseAmount.value
     }
