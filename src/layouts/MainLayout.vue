@@ -21,7 +21,7 @@ import { defineAsyncComponent, onMounted, computed, watch } from 'vue'
 import { useSettingStore } from 'src/localstore'
 import { useRouter } from 'vue-router'
 import 'src/api/app'
-import { _locale, notify, requesterror, user, applang, sdk } from 'src/npoolstore'
+import { _locale, notify, requesterror, user } from 'src/npoolstore'
 
 const MainHeader = defineAsyncComponent(() => import('src/components/header/MainHeader.vue'))
 const Footer = defineAsyncComponent(() => import('src/components/footer/Footer.vue'))
@@ -39,17 +39,6 @@ const errorswitcher = requesterror.useErrorStore()
 const trigger = computed(() => errorswitcher.ErrorTrigger)
 
 const logined = user.useLocalUserStore()
-const lang = applang.useAppLangStore()
-
-watch([() => logined.User?.SelectedLangID, lang.langs(sdk.AppID.value)], () => {
-  if (logined.selectedLangID?.length) {
-    const _lang = lang.lang(undefined, logined.selectedLangID)
-    if (!_lang) {
-      return
-    }
-    locale.setLang(_lang)
-  }
-})
 
 const router = useRouter()
 
