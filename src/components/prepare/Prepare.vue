@@ -1,7 +1,8 @@
 <script setup lang='ts'>
 import { useI18n } from 'vue-i18n'
 import { computed, onMounted } from 'vue'
-import { app, appgood, notify } from 'src/npoolstore'
+import { app, appgood, notify, appcoin } from 'src/npoolstore'
+import { getCoins } from 'src/api/chain'
 // eslint-disable-next-line @typescript-eslint/unbound-method
 const { t } = useI18n({ useScope: 'global' })
 
@@ -10,11 +11,18 @@ const goods = computed(() => good.goods())
 
 const application = app.useApplicationStore()
 
+const coin = appcoin.useAppCoinStore()
+
 onMounted(() => {
   if (!goods.value?.length) {
     getAppGoods(0, 100)
   }
   getApplication()
+  if (!coin.coins(undefined)?.length) {
+    getCoins(0, 100, () => {
+      // TODO
+    })
+  }
 })
 
 const getAppGoods = (offset: number, limit: number) => {
@@ -51,4 +59,5 @@ const getApplication = () => {
     // TODO
   })
 }
+
 </script>

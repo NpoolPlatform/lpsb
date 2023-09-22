@@ -152,6 +152,7 @@ import { useRoute, useRouter } from 'vue-router'
 import question from '../../assets/question.svg'
 // import lightbulb from '../../../assets/lightbulb.svg'
 import { appgood, notify, appcoin, appcoindescription, coincurrency, utils, constant, _locale } from 'src/npoolstore'
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { getCoins, getCurrencies, getDescriptions } from 'src/api/chain'
 
 const ProductPage = defineAsyncComponent(() => import('src/components/product/ProductPage.vue'))
@@ -163,11 +164,18 @@ interface Query {
   purchaseAmount: number
 }
 
+const route = useRoute()
+
 const good = appgood.useAppGoodStore()
 const target = computed(() => good.good(undefined, appGoodID.value as string))
 
 const query = computed(() => route.query as unknown as Query)
 const appGoodID = computed(() => query.value?.appGoodID || coin.defaultGoodID(undefined, coinUnit))
+
+const coin = appcoin.useAppCoinStore()
+// Use CoinUnit to find AppGoodID from AppCoin
+const coinUnit = 'ALEO'
+
 const _good = computed(() => good.good(undefined, appGoodID.value as string))
 
 const getGood = () => {
@@ -175,7 +183,7 @@ const getGood = () => {
     return
   }
   if (!appGoodID.value) {
-    void router.push({ path: '/' })
+    void router.push({ path: '/dashboard' })
     return
   }
   good.getAppGood({
@@ -190,7 +198,7 @@ const getGood = () => {
     }
   }, () => {
     if (!_good.value) {
-      void router.push({ path: '/' })
+      void router.push({ path: '/dashboard' })
     }
   })
 }
@@ -198,11 +206,6 @@ const getGood = () => {
 const locale = _locale.useLocaleStore()
 const __locale = computed(() => locale.locale())
 
-const route = useRoute()
-
-const coin = appcoin.useAppCoinStore()
-// Use CoinUnit to find AppGoodID from AppCoin
-const coinUnit = 'ALEO'
 const purchaseAmount = computed(() => query.value.purchaseAmount)
 
 const currency = coincurrency.useCurrencyStore()
