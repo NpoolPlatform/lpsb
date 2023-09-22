@@ -178,13 +178,13 @@ const getGoodCommissionSettleMode = computed(() => (appGoodID: string) => {
   return _achievement.settleMode(undefined, logined?.User.ID, undefined, appGoodID) as commission.SettleMode
 })
 const getGoodCommissionSettleAmountType = computed(() => (appGoodID: string) => {
-  return _achievement.settleAmountType(undefined, logined?.User.ID, appGoodID) as commission.SettleAmountType
+  return _achievement.settleAmountType(undefined, logined?.User.ID, undefined, appGoodID) as commission.SettleAmountType
 })
 const getGoodCommissionSettleInterval = computed(() => (appGoodID: string) => {
-  return _achievement.settleInterval(undefined, logined?.User.ID, appGoodID) as commission.SettleInterval
+  return _achievement.settleInterval(undefined, logined?.User.ID, undefined, appGoodID) as commission.SettleInterval
 })
 const getGoodCommissionThreshold = computed(() => (appGoodID: string) => {
-  return _achievement.threshold(undefined, logined?.User.ID, appGoodID)
+  return _achievement.threshold(undefined, logined?.User.ID, undefined, appGoodID)
 })
 
 const showDetailSummary = ref(false)
@@ -196,6 +196,7 @@ const _commission = commission.useCommissionStore()
 const commissions = computed(() => _commission.commissions(undefined, referral.value.UserID))
 
 const onSaveCommissionClick = (row: MyGoodAchievement) => {
+  console.log('--------', row.AppGoodID)
   if (Number(row.CommissionValue) > getGoodCommissionValue.value(row.AppGoodID)) {
     row.CommissionValue = getGoodCommissionValue.value(row.AppGoodID).toString()
   }
