@@ -24,7 +24,7 @@ const lang = applang.useAppLangStore()
 const langs = computed(() => lang.langs(undefined))
 
 const locale = _locale.useLocaleStore()
-const curLang = computed(() => locale.lang())
+const curLang = computed(() => locale.AppLang?.Lang)
 
 const logined = user.useLocalUserStore()
 const _user = user.useUserStore()

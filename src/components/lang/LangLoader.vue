@@ -10,7 +10,7 @@ const messages = computed(() => _message.messages(undefined, langID.value))
 
 watch(langID, () => {
   if (messages.value.length === 0) {
-    getMessages(0, 100, langID.value)
+    getMessages(0, 500, langID.value)
   }
 })
 
