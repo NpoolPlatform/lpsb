@@ -55,7 +55,7 @@ const subUsername = computed(() => referral.value?.EmailAddress?.length ? referr
 const logined = user.useLocalUserStore()
 
 const getGoodCommissionValue = computed(() => (appGoodID: string) => {
-  return _achievement.commission(undefined, logined?.User.ID, undefined, appGoodID)
+  return _achievement.commissionPercent(undefined, logined?.User.ID, undefined, appGoodID)
 })
 const getGoodCommissionSettleMode = computed(() => (appGoodID: string) => {
   return _achievement.settleMode(undefined, logined?.User.ID, undefined, appGoodID) as commission.SettleMode

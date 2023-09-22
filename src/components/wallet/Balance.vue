@@ -32,7 +32,6 @@ const logined = user.useLocalUserStore()
 const totalUSDTBalance = computed(() => {
   let total = 0
   general.ledgers(undefined, logined.loginedUserID).forEach((el) => {
-    if (Number(el.Spendable) === 0) return
     total += Number(el.Spendable) * _coincurrency.currency(el.CoinTypeID)
   })
   return Math.round(total)
