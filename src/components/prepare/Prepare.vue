@@ -1,10 +1,7 @@
 <script setup lang='ts'>
-import { useI18n } from 'vue-i18n'
 import { computed, onMounted } from 'vue'
 import { app, appgood, notify, appcoin } from 'src/npoolstore'
 import { getCoins } from 'src/api/chain'
-// eslint-disable-next-line @typescript-eslint/unbound-method
-const { t } = useI18n({ useScope: 'global' })
 
 const good = appgood.useAppGoodStore()
 const goods = computed(() => good.goods())
@@ -49,8 +46,8 @@ const getApplication = () => {
   application.getApp({
     Message: {
       Error: {
-        Title: t('MSG_GET_APP'),
-        Message: t('MSG_GET_APP_FAIL'),
+        Title: 'MSG_GET_APP',
+        Message: 'MSG_GET_APP_FAIL',
         Popup: true,
         Type: notify.NotifyType.Error
       }
