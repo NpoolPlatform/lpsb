@@ -105,9 +105,9 @@
                 </td>
                 <td>
                   <span class='aff-number'>
-                    {{ utils.formatTime(__commission.CreatedAt, 'YYYY/MM/DD', 9) }}
+                    <span class='aff-number'>{{ utils.formatTime(__commission.StartAt, 'YYYY/MM/DD', 9) }}</span>
                     <span class='unit'>
-                      {{ utils.formatTime(__commission.CreatedAt, 'HH:mm:ss', 9) }}
+                      {{ ' ' + utils.formatTime(__commission.StartAt, 'HH:mm:ss', 9) }}
                     </span>
                   </span>
                 </td>

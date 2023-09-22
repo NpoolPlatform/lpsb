@@ -35,7 +35,7 @@ const getAppLangs = (offset: number, limit: number) => {
       }
     }
   }, (error: boolean, rows: Array<g11nbase.AppLang>) => {
-    if (error || rows.length < limit) {
+    if (error || !rows.length) {
       return
     }
     getAppLangs(offset + limit, limit)
