@@ -26,27 +26,15 @@
 </template>
 
 <script setup lang='ts'>
-import {
-  useFrontendUserStore,
-  AccountType,
-  NotifyType,
-  useLocalUserStore,
-  User,
-  SignMethodType,
-  validateVerificationCode
-} from 'npool-cli-v4'
+import { user, appuserbase, notify, utils } from 'src/npoolstore'
 import { defineAsyncComponent, ref } from 'vue'
-import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
-
-// eslint-disable-next-line @typescript-eslint/unbound-method
-const { t } = useI18n({ useScope: 'global' })
 
 const UpdatePage = defineAsyncComponent(() => import('src/components/user/UpdatePage.vue'))
 const Input = defineAsyncComponent(() => import('src/components/input/Input.vue'))
 
 const oldAccount = ref('')
-const oldAccountType = ref(AccountType.Email)
+const oldAccountType = ref(appuserbase.SignMethodType.Email)
 const oldVerificationCode = ref('')
 const oldVerificationCodeError = ref(false)
 
@@ -56,32 +44,40 @@ const onVerificationCodeFocusIn = () => {
   verificationCodeError.value = false
 }
 const onVerificationCodeFocusOut = () => {
-  verificationCodeError.value = !validateVerificationCode(myVerificationCode.value)
+  verificationCodeError.value = !utils.validateVerificationCode(myVerificationCode.value)
 }
 
 const router = useRouter()
-const user = useFrontendUserStore()
-const logined = useLocalUserStore()
+const _user = user.useUserStore()
 
 const onSubmit = () => {
   if (verificationCodeError.value || oldVerificationCodeError.value) {
     return
   }
-  user.updateUser({
-    Account: logined.User.LoginAccount,
-    AccountType: logined.User.LoginAccountType,
+  let _oldAccountType = appuserbase.SignMethodType.Email
+  switch (oldAccountType.value) {
+    case appuserbase.SignMethodType.Mobile:
+      _oldAccountType = appuserbase.SignMethodType.Mobile
+      break
+    case appuserbase.SignMethodType.Google:
+      _oldAccountType = appuserbase.SignMethodType.Google
+      break
+  }
+  _user.updateUser({
+    Account: oldAccount.value,
+    AccountType: _oldAccountType,
     VerificationCode: oldVerificationCode.value,
-    NewAccountType: AccountType.Google as unknown as SignMethodType,
+    NewAccountType: appuserbase.SignMethodType.Google,
     NewVerificationCode: myVerificationCode.value,
     Message: {
       Error: {
-        Title: t('MSG_UPDATE_ACCOUNT'),
-        Message: t('MSG_UPDATE_ACCOUNT_FAIL'),
+        Title: 'MSG_UPDATE_ACCOUNT',
+        Message: 'MSG_UPDATE_ACCOUNT_FAIL',
         Popup: true,
-        Type: NotifyType.Error
+        Type: notify.NotifyType.Error
       }
     }
-  }, (u: User, error: boolean) => {
+  }, (error: boolean) => {
     if (error) {
       return
     }
@@ -90,7 +86,6 @@ const onSubmit = () => {
 
   return false
 }
-
 </script>
 
 <style lang='sass' scoped>

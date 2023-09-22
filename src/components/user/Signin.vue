@@ -36,7 +36,7 @@
         v-model:account-type='verifyAccountType'
         v-model:verify-method='verifyMethod'
         @verify='onCodeVerify'
-        :used-for='UsedFor.Signin'
+        :used-for='basetypes.EventType.Signin'
         :disabled='submitting'
       />
     </div>
@@ -44,24 +44,8 @@
 </template>
 
 <script setup lang='ts'>
+import { user, notify, appuserbase, app, kyc, basetypes, coderepo, utils, constant, localapp } from 'src/npoolstore'
 
-import {
-  useFrontendUserStore,
-  NotifyType,
-  User,
-  AccountType,
-  useFrontendAppStore,
-  useLocalUserStore,
-  SigninVerifyType,
-  useFrontendKYCStore,
-  KYCState,
-  UsedFor,
-  useFrontendVerifyStore,
-  encryptPassword,
-  GoogleTokenType
-} from 'npool-cli-v4'
-
-import { AppID } from 'src/const/const'
 import { defineAsyncComponent, ref, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useReCaptcha } from 'vue-recaptcha-v3'
@@ -82,48 +66,49 @@ const target = computed(() => query.value?.target)
 
 const accountError = ref(false)
 const account = ref('')
-const accountType = ref(AccountType.Email)
+const accountType = ref(appuserbase.SignMethodType.Email)
 const password = ref('')
 
 const verifyAccount = ref('')
-const verifyAccountType = ref(AccountType.Email)
+const verifyAccountType = ref(appuserbase.SignMethodType.Email)
 
-const coderepo = useFrontendVerifyStore()
+const _coderepo = coderepo.useCodeRepoStore()
 const recaptcha = useReCaptcha()
-const app = useFrontendAppStore()
-const kyc = useFrontendKYCStore()
+const _app = app.useApplicationStore()
+const _localapp = localapp.useLocalApplicationStore()
+const _kyc = kyc.useKYCStore()
 
 const router = useRouter()
 
 const verifying = ref(false)
-const verifyMethod = ref(AccountType.Email)
+const verifyMethod = ref(appuserbase.SigninVerifyType.Email)
 
 const onMenuHide = () => {
   verifying.value = false
 }
 
-const user = useFrontendUserStore()
-const logined = useLocalUserStore()
+const _user = user.useUserStore()
+const logined = user.useLocalUserStore()
 
 const logging = ref(false)
 
 const onSubmit = throttle(() => {
-  coderepo.getGoogleToken({
+  _coderepo.getGoogleToken({
     Recaptcha: recaptcha,
-    Req: GoogleTokenType.Login,
+    Req: constant.GoogleTokenType.Login,
     Message: {
       Error: {
-        Title: t('MSG_GET_GOOGLE_TOKEN'),
-        Message: t('MSG_GET_GOOGLE_TOKEN_FAIL'),
+        Title: 'MSG_GET_GOOGLE_TOKEN',
+        Message: 'MSG_GET_GOOGLE_TOKEN_FAIL',
         Popup: true,
-        Type: NotifyType.Error
+        Type: notify.NotifyType.Error
       }
     }
   }, (token: string) => {
     logging.value = true
-    user.login({
+    _user.login({
       Account: account.value,
-      PasswordHash: encryptPassword(password.value),
+      PasswordHash: utils.encryptPassword(password.value),
       AccountType: accountType.value,
       ManMachineSpec: token,
       EnvironmentSpec: 'NOT USED',
@@ -132,12 +117,12 @@ const onSubmit = throttle(() => {
           Title: t('MSG_SIGNIN'),
           Message: t('MSG_SIGNIN_FAIL'),
           Popup: true,
-          Type: NotifyType.Error
+          Type: notify.NotifyType.Error
         }
       }
-    }, (u: User, error: boolean) => {
-      logging.value = false
+    }, (error: boolean) => {
       if (error) {
+        logging.value = false
         return
       }
       verify()
@@ -146,15 +131,14 @@ const onSubmit = throttle(() => {
 
   return false
 }, 1000)
-
 const verify = () => {
-  app.getApp({
-    AppID: AppID,
+  _app.getApp({
     Message: {
       Error: {
-        Title: t('MSG_GET_APP_FAIL'),
+        Title: 'MSG_GET_APP',
+        Message: 'MSG_GET_APP_FAIL',
         Popup: true,
-        Type: NotifyType.Error
+        Type: notify.NotifyType.Error
       }
     }
   }, () => {
@@ -163,7 +147,7 @@ const verify = () => {
 }
 
 const _verify = () => {
-  if (!app.App.SigninVerifyEnable) {
+  if (!_localapp.myApp?.SigninVerifyEnable) {
     if (target.value?.length) {
       void router.push({
         path: target.value,
@@ -178,23 +162,30 @@ const _verify = () => {
 
   verifying.value = true
 
-  if (logined.User?.GoogleAuthVerified && logined.User?.SigninVerifyType === SigninVerifyType.Google) {
-    verifyMethod.value = AccountType.Google
+  if (logined.User?.GoogleAuthVerified && logined.User?.SigninVerifyType === appuserbase.SigninVerifyType.Google) {
+    verifyMethod.value = appuserbase.SigninVerifyType.Google
     return
   }
   if (logined.User?.EmailAddress?.length) {
-    verifyMethod.value = AccountType.Email
+    verifyMethod.value = appuserbase.SigninVerifyType.Email
     return
   }
-  verifyMethod.value = AccountType.Mobile
+  verifyMethod.value = appuserbase.SigninVerifyType.Mobile
 }
 
 const submitting = ref(false)
 
+const resetStatus = () => {
+  submitting.value = false
+  verifying.value = false
+  logging.value = false
+}
+
 const onCodeVerify = (code: string) => {
   submitting.value = true
+  verifying.value = true
 
-  user.loginVerify({
+  _user.loginVerify({
     Account: verifyAccount.value,
     AccountType: verifyAccountType.value,
     UserID: logined.User?.ID,
@@ -202,22 +193,21 @@ const onCodeVerify = (code: string) => {
     VerificationCode: code,
     Message: {
       Error: {
-        Title: t('MSG_LOGIN_VERIFY'),
-        Message: t('MSG_LOGIN_VERIFY_FAIL'),
+        Title: 'MSG_LOGIN_VERIFY',
+        Message: 'MSG_LOGIN_VERIFY_FAIL',
         Popup: true,
-        Type: NotifyType.Error
+        Type: notify.NotifyType.Error
       }
     }
-  }, (u: User, error: boolean) => {
-    submitting.value = false
-    verifying.value = false
+  }, (error: boolean) => {
     if (error) {
-      user.logout({
+      _user.logout({
         Token: logined.User?.LoginToken,
         Message: {}
       }, () => {
         // TODO
       })
+      resetStatus()
       return
     }
     if (target.value?.length) {
@@ -225,6 +215,7 @@ const onCodeVerify = (code: string) => {
         path: target.value,
         query: route.query
       })
+      resetStatus()
       return
     }
     remainder()
@@ -237,10 +228,11 @@ const remainder = () => {
     return
   }
 
-  kyc.getKYC({
+  _kyc.getKYC({
     Message: {}
   }, (error: boolean) => {
-    if (error || !kyc.KYC || kyc.KYC.State === KYCState.Rejected) {
+    if (error || !_kyc.kyc(undefined, logined.loginedUserID as string) ||
+      _kyc.kyc(undefined, logined.loginedUserID as string)?.State === kyc.KYCState.Rejected) {
       void router.push({ path: '/remainder/kyc' })
       return
     }
@@ -252,6 +244,7 @@ const remainder = () => {
       void router.push({ path: '/remainder/ga' })
       return
     }
+    resetStatus()
     void router.push({ path: '/dashboard' })
   })
 }
