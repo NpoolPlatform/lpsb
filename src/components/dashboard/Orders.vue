@@ -61,6 +61,12 @@ const exportOrders = computed(() => Array.from(orders.value.filter((el) => el.Or
   el.OrderState === order.OrderState.EXPIRED ||
   el.OrderState === order.OrderState.WAIT_START
 )).map((el) => {
+  let orderType = undefined as unknown as order.OrderType
+  if (el.OrderType === order.OrderType.Offline) {
+    orderType = order.OrderType.Offline
+  } else if (el.OrderType === order.OrderType.Airdrop) {
+    orderType = order.OrderType.Airdrop
+  }
   return {
     CreatedAt: new Date(el.CreatedAt * 1000).toISOString()?.replace('T', ' ')?.replace('.000Z', ' UTC'),
     ProductType: getGoodType.value(el.AppGoodID),
@@ -73,7 +79,8 @@ const exportOrders = computed(() => Array.from(orders.value.filter((el) => el.Or
     MiningPeriod: el.GoodServicePeriodDays,
     CumulativeProfit: detail.miningRewardFloat(undefined, logined.loginedUserID, el.CoinTypeID, el.ID) / getDeservedRatio.value(el.AppGoodID),
     ProfitCurrency: good.good(undefined, el.AppGoodID)?.CoinUnit,
-    OrderStatus: _order.orderState(el.ID)?.startsWith('MSG') ? t(_order.orderState(el.ID)) : t('MSG_AWAITING_CONFIRMATION')
+    OrderStatus: (_order.orderState(el.ID)?.startsWith('MSG') ? t(_order.orderState(el.ID)) : t('MSG_AWAITING_CONFIRMATION')) +
+                (orderType ? '(' + orderType + ')' : '')
   } as ExportOrder
 }))
 const onExportClick = () => {
@@ -98,6 +105,7 @@ const onExportClick = () => {
   const filename = t('MSG_ORDER_HISTORY') + '-' + utils.formatTime(new Date().getTime() / 1000) + '.csv'
   saveAs(blob, filename)
 }
+
 const table = computed(() => [
   {
     name: 'Date',
@@ -133,7 +141,16 @@ const table = computed(() => [
     name: 'State',
     label: t('MSG_STATE'),
     align: 'center',
-    field: (row: order.Order) => _order.orderState(row.ID)?.startsWith('MSG') ? t(_order.orderState(row.ID)) : t('MSG_AWAITING_CONFIRMATION')
+    field: (row: order.Order) => {
+      let orderType = undefined as unknown as order.OrderType
+      if (row.OrderType === order.OrderType.Offline) {
+        orderType = order.OrderType.Offline
+      } else if (row.OrderType === order.OrderType.Airdrop) {
+        orderType = order.OrderType.Airdrop
+      }
+      return (_order.orderState(row.ID)?.startsWith('MSG') ? t(_order.orderState(row.ID)) : t('MSG_AWAITING_CONFIRMATION')) +
+            (orderType ? ' (' + orderType + ')' : '')
+    }
   }
 ])
 </script>

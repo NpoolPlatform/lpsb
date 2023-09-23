@@ -6,7 +6,7 @@ const locale = _locale.useLocaleStore()
 const langID = computed(() => locale.langID())
 
 const _message = message.useMessageStore()
-const messages = computed(() => _message.messages(undefined, langID.value))
+const messages = computed(() => _message.messages(undefined, langID.value, undefined))
 
 watch(langID, () => {
   if (messages.value.length === 0) {
