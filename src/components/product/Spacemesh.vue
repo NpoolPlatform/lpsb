@@ -96,7 +96,7 @@ const target = computed(() => good.good(undefined, appGoodID.value as string))
 const route = useRoute()
 const query = computed(() => route.query as unknown as Query)
 
-// Use CoinUnit to find GoodID from AppDefaultGood
+// Use CoinUnit to find AppGoodID from AppDefaultGood
 const coinUnit = 'SMH'
 const appGoodID = computed(() => query.value?.appGoodID || coin.defaultGoodID(undefined, coinUnit))
 const _good = computed(() => good.good(undefined, appGoodID.value as string))

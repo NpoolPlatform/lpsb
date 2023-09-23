@@ -171,8 +171,8 @@ const goodAchievements = computed(() => Array.from(referral.value?.Achievements.
 }))
 
 const visibleGoodAchievements = ref(goodAchievements.value)
-const getGoodCommissionValue = computed(() => (goodID: string) => {
-  return Number(_achievement.commissionPercent(undefined, logined?.User.ID, undefined, goodID))
+const getGoodCommissionValue = computed(() => (appGoodID: string) => {
+  return Number(_achievement.commissionPercent(undefined, logined?.User.ID, undefined, appGoodID))
 })
 const getGoodCommissionSettleMode = computed(() => (appGoodID: string) => {
   return _achievement.settleMode(undefined, logined?.User.ID, undefined, appGoodID) as commission.SettleMode

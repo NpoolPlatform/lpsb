@@ -80,8 +80,8 @@ const _commission = commission.useCommissionStore()
 const onSubmit = () => {
   submitting.value = true
   referral.value?.Achievements?.forEach((g) => {
-    if (Number(g.CommissionValue) > getGoodCommissionValue.value(g.GoodID)) {
-      g.CommissionValue = getGoodCommissionValue.value(g.GoodID).toString()
+    if (Number(g.CommissionValue) > getGoodCommissionValue.value(g.AppGoodID)) {
+      g.CommissionValue = getGoodCommissionValue.value(g.AppGoodID).toString()
     }
     if (Number(g.CommissionValue) < 0) {
       g.CommissionValue = '0'
@@ -111,7 +111,7 @@ const onSubmit = () => {
     }
 
     visibleGoodAchievements?.value?.forEach((row) => {
-      switch (getGoodCommissionSettleAmountType.value(row.GoodID)) {
+      switch (getGoodCommissionSettleAmountType.value(row.AppGoodID)) {
         case commission.SettleAmountType.SettleByAmount:
           break
         case commission.SettleAmountType.SettleByPercent:

@@ -23,8 +23,8 @@ const logined = user.useLocalUserStore()
 
 const good = appgood.useAppGoodStore()
 
-const getTBD = computed(() => (goodID: string) => {
-  const _good = good.good(undefined, goodID)
+const getTBD = computed(() => (appGoodID: string) => {
+  const _good = good.good(undefined, appGoodID)
   return _good?.Descriptions?.[5] || '*'
 })
 
