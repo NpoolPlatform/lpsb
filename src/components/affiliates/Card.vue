@@ -196,7 +196,6 @@ const _commission = commission.useCommissionStore()
 const commissions = computed(() => _commission.commissions(undefined, referral.value.UserID))
 
 const onSaveCommissionClick = (row: MyGoodAchievement) => {
-  console.log('--------', row.AppGoodID)
   if (Number(row.CommissionValue) > getGoodCommissionValue.value(row.AppGoodID)) {
     row.CommissionValue = getGoodCommissionValue.value(row.AppGoodID).toString()
   }
