@@ -73,6 +73,7 @@
         :used-for='basetypes.EventType.SetWithdrawAddress'
         @cancel='onCancelClick'
         show-cancel
+        :disabled='submitting'
       />
     </div>
   </q-dialog>
@@ -123,7 +124,6 @@ const labelsError = ref(false)
 const verifying = ref(false)
 const onSubmit = () => {
   verifying.value = true
-  submitting.value = true
 }
 
 const onMenuHide = () => {
@@ -131,7 +131,6 @@ const onMenuHide = () => {
     return
   }
   verifying.value = false
-  submitting.value = false
 }
 
 const onCancelClick = () => {
@@ -165,6 +164,7 @@ const onCodeVerify = (code: string) => {
       }
     }
   }, () => {
+    submitting.value = false
     if (gotoWithdraw.value) {
       submitting.value = false
       void router.push({
