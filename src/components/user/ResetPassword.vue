@@ -80,7 +80,7 @@
 <script setup lang='ts'>
 import { defineAsyncComponent, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { appuserbase, notify, user, coderepo, utils, basetypes } from 'src/npoolstore'
+import { appuserbase, notify, user, notifverify, utils, basetypes } from 'src/npoolstore'
 const FormPage = defineAsyncComponent(() => import('src/components/page/FormPage.vue'))
 const Input = defineAsyncComponent(() => import('src/components/input/Input.vue'))
 const PhoneNO = defineAsyncComponent(() => import('src/components/input/PhoneNO.vue'))
@@ -154,7 +154,6 @@ const onSwitcherClick = (flag: boolean) => {
   accountError.value = false
 }
 
-const _coderepo = coderepo.useCodeRepoStore()
 const _user = user.useUserStore()
 const router = useRouter()
 
@@ -192,6 +191,7 @@ const onSubmit = () => {
   return false
 }
 
+const _notifverify = notifverify.useVerifyStore()
 const onSendCodeClick = () => {
   onAccountError()
   if (accountError.value) {
@@ -199,7 +199,7 @@ const onSendCodeClick = () => {
   }
 
   const account = signupMethod.value === appuserbase.SignMethodType.Email ? emailAddress.value : phoneNO.value
-  _coderepo.sendVerificationCode(account, signupMethod.value as unknown as appuserbase.SigninVerifyType, basetypes.EventType.Update, account)
+  _notifverify.sendVerificationCode(account, signupMethod.value as unknown as appuserbase.SigninVerifyType, basetypes.EventType.Update, account)
 }
 
 </script>

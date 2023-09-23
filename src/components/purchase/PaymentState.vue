@@ -13,7 +13,7 @@
       <div class='full-section'>
         <h4>{{ $t('MSG_PAYMENT') }}:</h4>
         <span class='number'>{{ _order?.PaymentAmount }}</span>
-        <span class='unit'>{{ _order?.PaymentCoinUnit }}</span>
+        <span class='unit'>{{ _order?.PaymentCoinUnit.length ? _order.PaymentCoinUnit : constant.PriceCoinName }}</span>
       </div>
       <div class='full-section'>
         <h4>{{ $t('MSG_STATUS') }}:</h4>
@@ -45,7 +45,7 @@ import { defineProps, toRef, computed, defineEmits } from 'vue'
 import { date } from 'quasar'
 
 import warning from 'src/assets/warning.svg'
-import { order, utils } from 'src/npoolstore'
+import { order, utils, constant } from 'src/npoolstore'
 
 interface Props {
   orderId: string

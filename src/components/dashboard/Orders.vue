@@ -20,7 +20,7 @@ import { computed, defineAsyncComponent } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { stringify } from 'csv-stringify/sync'
 import saveAs from 'file-saver'
-import { order, user, ledgerstatement, appgood, goodbase, utils } from 'src/npoolstore'
+import { order, user, ledgerstatement, appgood, goodbase, utils, constant } from 'src/npoolstore'
 
 const OpTable = defineAsyncComponent(() => import('src/components/table/OpTable.vue'))
 
@@ -68,8 +68,8 @@ const exportOrders = computed(() => Array.from(orders.value.filter((el) => el.Or
     PurchaseAmount: el.Units,
     UnitType: t(el.GoodUnit),
     Price: parseFloat(good.good(undefined, el?.AppGoodID)?.Price as string),
-    PaymentCurrency: el.PaymentCoinUnit,
-    TotalCost: (Number(el.PaymentAmount) + Number(el.PayWithBalanceAmount)).toString(),
+    PaymentCurrency: el.PaymentCoinUnit.length ? el.PaymentCoinUnit : constant.PriceCoinName,
+    TotalCost: Number(el.PaymentAmount).toString(),
     MiningPeriod: el.GoodServicePeriodDays,
     CumulativeProfit: detail.miningRewardFloat(undefined, logined.loginedUserID, el.CoinTypeID, el.ID) / getDeservedRatio.value(el.AppGoodID),
     ProfitCurrency: good.good(undefined, el.AppGoodID)?.CoinUnit,
@@ -121,7 +121,7 @@ const table = computed(() => [
     name: 'Price',
     label: t('MSG_PRICE'),
     align: 'center',
-    field: (row: order.Order) => utils.getLocaleString(Number(row.PaymentAmount) + Number(row.PayWithBalanceAmount)) + ' ' + row.PaymentCoinUnit
+    field: (row: order.Order) => utils.getLocaleString(Number(row.GoodValueUSD)) + ' ' + constant.PriceCoinName
   },
   {
     name: 'Period',

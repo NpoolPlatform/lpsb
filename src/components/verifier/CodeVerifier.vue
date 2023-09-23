@@ -167,7 +167,7 @@ const onCancelClick = () => {
   emit('cancel')
 }
 
-const verify = notifverify.useFrontendVerifyStore()
+const verify = notifverify.useVerifyStore()
 const onSendCodeClick = () => {
   verify.sendVerificationCode(account.value, myVerifyMethod.value, usedFor.value, toUsername.value?.length ? toUsername.value : account.value)
 }
