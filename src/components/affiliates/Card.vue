@@ -7,7 +7,7 @@
         {{ username }}
       </h3>
       <span class='aff-email'>{{ referral?.EmailAddress?.length > 0 ? referral?.EmailAddress : referral?.PhoneNO }}</span>
-      <span>{{ $t('MSG_ONBOARDED_USERS') }}:<span class='aff-number'>{{ util.getLocaleString(referral.TotalInvitees)
+      <span>{{ $t('MSG_ONBOARDED_USERS') }}:<span class='aff-number'>{{ utils.getLocaleString(referral.TotalInvitees)
       }}</span></span>
     </div>
     <div class='aff-table'>
@@ -42,11 +42,11 @@
             <td>
               <span
                 class='aff-product'
-                v-html='getDisplayNames(_good.GoodID)?.[4] ? $t(getDisplayNames(_good.GoodID)?.[4] as string) : _good.GoodName'
+                v-html='getDisplayNames(_good.AppGoodID)?.[4] ? $t(getDisplayNames(_good.AppGoodID)?.[4] as string) : _good.GoodName'
               />
             </td>
             <td v-if='_good.Editing'>
-              <input type='number' v-model='_good.CommissionValue' :min='0' :max='getGoodCommissionValue(_good.GoodID)'>
+              <input type='number' v-model='_good.CommissionValue' :min='0' :max='getGoodCommissionValue(_good.AppGoodID)'>
               <button @click='onSaveCommissionClick(_good)'>
                 {{ $t('MSG_SAVE') }}
               </button>
@@ -55,27 +55,27 @@
               <span class='aff-number'>{{ _good.CommissionValue }}<span class='unit'>%</span></span>
               <button
                 v-if='child'
-                :class='["alt", !good.enableSetCommission(_good.GoodID) || !good.haveSale(good.getGoodByID(_good.GoodID) as AppGood) ? "in-active" : ""]'
-                :disabled='!good.enableSetCommission(_good.GoodID) || !good.haveSale(good.getGoodByID(_good.GoodID) as AppGood)'
+                :class='["alt", !good.enableSetCommission(undefined, _good.AppGoodID) || !good.canBuy(undefined, _good.AppGoodID) ? "in-active" : ""]'
+                :disabled='!good.enableSetCommission(undefined, _good.AppGoodID) || !good.canBuy(undefined, _good.AppGoodID)'
                 @click='(_good.Editing = true)'
               >
                 {{ $t('MSG_SET') }}
               </button>
             </td>
             <td>
-              <span class='aff-number'>{{ util.getLocaleString(_good.TotalUnits) }}<span class='unit'>{{
+              <span class='aff-number'>{{ utils.getLocaleString(_good.TotalUnits) }}<span class='unit'>{{
                 _good.GoodUnit?.length ? $t(_good.GoodUnit) : '' }}</span></span>
             </td>
             <td>
-              <span class='aff-number'>{{ util.getLocaleString(Math.floor(Number(_good.TotalAmount) * 100) / 100, 2)
-              }}<span class='unit'>{{ PriceCoinName }}</span></span>
+              <span class='aff-number'>{{ utils.getLocaleString(Math.floor(Number(_good.TotalAmount) * 100) / 100, 2)
+              }}<span class='unit'>{{ constant.PriceCoinName }}</span></span>
             </td>
             <td>
               <span class='aff-number'>
-                {{ child ? (_good.SuperiorCommission ? util.getLocaleString(Math.floor(Number(_good.SuperiorCommission) *
-                  100) / 100, 2) : "0.00") : util.getLocaleString(Math.floor(Number(_good.TotalCommission) * 100) / 100, 2)
+                {{ child ? (_good.SuperiorCommission ? utils.getLocaleString(Math.floor(Number(_good.SuperiorCommission) *
+                  100) / 100, 2) : "0.00") : utils.getLocaleString(Math.floor(Number(_good.TotalCommission) * 100) / 100, 2)
                 }}
-                <span class='unit'>{{ PriceCoinName }}</span>
+                <span class='unit'>{{ constant.PriceCoinName }}</span>
               </span>
             </td>
           </tr>
@@ -100,12 +100,16 @@
                 <td>
                   <span
                     class='aff-product'
-                    v-html='getDisplayNames(__commission.GoodID)?.[4] ? $t(getDisplayNames(__commission.GoodID)?.[4] as string) : good.getGoodByID(__commission.GoodID)?.GoodName'
+                    v-html='getDisplayNames(__commission.AppGoodID)?.[4] ? $t(getDisplayNames(__commission.AppGoodID)?.[4] as string) : good.good(undefined, __commission.AppGoodID)?.GoodName'
                   />
                 </td>
                 <td>
-                  <span class='aff-number'>{{ _commission.settingDate(__commission) }}<span class='unit'>{{
-                    _commission.settingTime(__commission) }}</span></span>
+                  <span class='aff-number'>
+                    <span class='aff-number'>{{ utils.formatTime(__commission.StartAt, 'YYYY/MM/DD', 9) }}</span>
+                    <span class='unit'>
+                      {{ ' ' + utils.formatTime(__commission.StartAt, 'HH:mm:ss', 9) }}
+                    </span>
+                  </span>
                 </td>
                 <td><span class='aff-number'>{{ __commission.AmountOrPercent }}<span class='unit'>%</span></span></td>
               </tr>
@@ -123,26 +127,13 @@
 </template>
 
 <script setup lang='ts'>
-import {
-  PriceCoinName
-} from 'npool-cli-v2'
 import { ref, toRef, defineProps, computed } from 'vue'
 import chevrons from '../../assets/chevrons.svg'
-import {
-  useBaseUserStore,
-  useLocalUserStore,
-  User,
-  useAdminAppGoodStore,
-  NotifyType,
-  AppGood,
-  useLocaleStringStore
-} from 'npool-cli-v4'
-import { useI18n } from 'vue-i18n'
 import { MyGoodAchievement } from 'src/localstore/ledger/types'
-import { commission, achievement } from 'src/teststore'
-
+import { commission, achievement, constant, user, appgood, notify, utils } from 'src/npoolstore'
+import { useI18n } from 'vue-i18n'
 // eslint-disable-next-line @typescript-eslint/unbound-method
-const { locale, t } = useI18n({ useScope: 'global' })
+const { locale } = useI18n({ useScope: 'global' })
 
 interface Props {
   child: boolean
@@ -160,43 +151,40 @@ const firstAndLastChild = toRef(props, 'firstAndLastChild')
 const target = toRef(props, 'referral')
 const referral = ref(target.value)
 
-const util = useLocaleStringStore()
+const _user = user.useUserStore()
+const username = computed(() => _user.displayName(undefined, undefined, referral.value?.FirstName,
+  referral.value?.LastName, locale.value as string))
 
-const baseUser = useBaseUserStore()
-const username = computed(() => baseUser.displayName({
-  FirstName: referral.value.FirstName,
-  LastName: referral.value.LastName
-} as User, locale.value as string))
+const logined = user.useLocalUserStore()
 
-const logined = useLocalUserStore()
-
-const good = useAdminAppGoodStore()
-const getDisplayNames = computed(() => (goodID: string) => good.getGoodByID(goodID)?.DisplayNames)
+const good = appgood.useAppGoodStore()
+const getDisplayNames = computed(() => (appGoodID: string) => good.displayNames(undefined, appGoodID))
 
 const _achievement = achievement.useAchievementStore()
 const goodAchievements = computed(() => Array.from(referral.value?.Achievements.filter((el) => {
-  return good.visible(el.GoodID)
+  return good.visible(undefined, el.AppGoodID)
 })).sort((a, b) => a.GoodName.localeCompare(b.GoodName, 'zh-CN')).map((el) => {
   return {
     ...el,
     Editing: false
   } as MyGoodAchievement
 }))
+
 const visibleGoodAchievements = ref(goodAchievements.value)
-const getGoodCommissionValue = computed(() => (goodID: string) => {
-  return Number(_achievement.inviterGoodCommissionValue(logined?.User.ID, goodID))
+const getGoodCommissionValue = computed(() => (appGoodID: string) => {
+  return Number(_achievement.commissionPercent(undefined, logined?.User.ID, undefined, appGoodID))
 })
-const getGoodCommissionSettleMode = computed(() => (goodID: string) => {
-  return _achievement.inviterGoodCommissionSettleMode(logined?.User.ID, goodID) as commission.SettleMode
+const getGoodCommissionSettleMode = computed(() => (appGoodID: string) => {
+  return _achievement.settleMode(undefined, logined?.User.ID, undefined, appGoodID) as commission.SettleMode
 })
-const getGoodCommissionSettleAmountType = computed(() => (goodID: string) => {
-  return _achievement.inviterGoodCommissionSettleAmountType(logined?.User.ID, goodID) as commission.SettleAmountType
+const getGoodCommissionSettleAmountType = computed(() => (appGoodID: string) => {
+  return _achievement.settleAmountType(undefined, logined?.User.ID, undefined, appGoodID) as commission.SettleAmountType
 })
-const getGoodCommissionSettleInterval = computed(() => (goodID: string) => {
-  return _achievement.inviterGoodCommissionSettleInterval(logined?.User.ID, goodID) as commission.SettleInterval
+const getGoodCommissionSettleInterval = computed(() => (appGoodID: string) => {
+  return _achievement.settleInterval(undefined, logined?.User.ID, undefined, appGoodID) as commission.SettleInterval
 })
-const getGoodCommissionThreshold = computed(() => (goodID: string) => {
-  return _achievement.inviterGoodCommissionThreshold(logined?.User.ID, goodID)
+const getGoodCommissionThreshold = computed(() => (appGoodID: string) => {
+  return _achievement.threshold(undefined, logined?.User.ID, undefined, appGoodID)
 })
 
 const showDetailSummary = ref(false)
@@ -205,15 +193,11 @@ const onShowMoreClick = () => {
 }
 
 const _commission = commission.useCommissionStore()
-const commissions = computed(() => _commission.Commissions.filter((el) => {
-  return el.UserID === referral.value.UserID
-}).sort((a, b) => {
-  return a.StartAt < b.StartAt ? 1 : -1
-}))
+const commissions = computed(() => _commission.commissions(undefined, referral.value.UserID))
 
 const onSaveCommissionClick = (row: MyGoodAchievement) => {
-  if (Number(row.CommissionValue) > getGoodCommissionValue.value(row.GoodID)) {
-    row.CommissionValue = getGoodCommissionValue.value(row.GoodID).toString()
+  if (Number(row.CommissionValue) > getGoodCommissionValue.value(row.AppGoodID)) {
+    row.CommissionValue = getGoodCommissionValue.value(row.AppGoodID).toString()
   }
   if (Number(row.CommissionValue) < 0) {
     row.CommissionValue = '0'
@@ -222,19 +206,19 @@ const onSaveCommissionClick = (row: MyGoodAchievement) => {
   row.Editing = false
   _commission.createCommission({
     TargetUserID: referral.value.UserID,
-    GoodID: row.GoodID,
+    AppGoodID: row.AppGoodID,
     SettleType: commission.SettleType.GoodOrderPayment,
-    SettleAmountType: getGoodCommissionSettleAmountType.value(row.GoodID),
-    SettleMode: getGoodCommissionSettleMode.value(row.GoodID),
-    SettleInterval: getGoodCommissionSettleInterval.value(row.GoodID),
-    Threshold: getGoodCommissionThreshold.value(row.GoodID),
+    SettleAmountType: getGoodCommissionSettleAmountType.value(row.AppGoodID),
+    SettleMode: getGoodCommissionSettleMode.value(row.AppGoodID),
+    SettleInterval: getGoodCommissionSettleInterval.value(row.AppGoodID),
+    Threshold: getGoodCommissionThreshold.value(row.AppGoodID).toString(),
     AmountOrPercent: `${row.CommissionValue}`,
     StartAt: Math.ceil(Date.now() / 1000),
     Message: {
       Error: {
-        Title: t('MSG_CREATE_COMMISSION_FAIL'),
+        Title: 'MSG_CREATE_COMMISSION_FAIL',
         Popup: true,
-        Type: NotifyType.Error
+        Type: notify.NotifyType.Error
       }
     }
   }, () => {

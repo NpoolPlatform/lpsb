@@ -1,6 +1,6 @@
 <template>
   <footer>
-    <div class='content'>
+    <div class='content' :class='[ special ? "special" : "" ]'>
       <div class='columns-4'>
         <div class='column-4'>
           <img class='logo' :src='logoText'>
@@ -43,11 +43,13 @@
 </template>
 
 <script setup lang='ts'>
-import { useAdminAppLangStore } from 'npool-cli-v4'
 import { computed, defineAsyncComponent } from 'vue'
-
+import { _locale, applang } from 'src/npoolstore'
 import logoText from '../../assets/logo-text.png'
 const LangSwitcher = defineAsyncComponent(() => import('src/components/lang/LangSwitcher.vue'))
-const lang = useAdminAppLangStore()
-const langs = computed(() => lang.AppLangs.AppLangs)
+const locale = _locale.useLocaleStore()
+const special = computed(() => locale.lang() === 'ja-JP')
+
+const _applang = applang.useAppLangStore()
+const langs = computed(() => _applang.langs(undefined))
 </script>

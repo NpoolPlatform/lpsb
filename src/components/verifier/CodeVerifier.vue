@@ -5,15 +5,15 @@
       <div>
         <span>{{ $t(caption) }}</span>
       </div>
-      <div v-if='myVerifyMethod !== AccountType.Google'>
+      <div v-if='myVerifyMethod !== appuserbase.SigninVerifyType.Google'>
         <p
           class='tip'
-          v-if='myVerifyMethod === AccountType.Email'
+          v-if='myVerifyMethod === appuserbase.SigninVerifyType.Email'
           v-html='$t("MSG_VERIFICATION_CODE_SENT_TO", { ACCOUNT: account })'
         />
         <p
           class='tip'
-          v-if='myVerifyMethod === AccountType.Mobile'
+          v-if='myVerifyMethod === appuserbase.SigninVerifyType.Mobile'
           v-html='$t("MSG_VERIFICATION_CODE_SENT_TO", { ACCOUNT: account })'
         />
       </div>
@@ -30,13 +30,13 @@
         @blur='onCodeFocusOut'
       />
       <TimeoutSendBtn
-        v-if='myVerifyMethod !== AccountType.Google'
+        v-if='myVerifyMethod !== appuserbase.SigninVerifyType.Google'
         :initial-clicked='true'
         @click='onSendCodeClick'
         class='margin-top-0'
         :target-error='false'
       />
-      <button class='btn' @click='onVerifyClick' :disabled='disabled'>
+      <button class='btn' @click='onVerifyClick' :disabled='disabled || !utils.validateVerificationCode(myCode)'>
         {{ $t('MSG_VERIFY') }}
       </button>
       <button v-if='showCancel' class='send-code alt' @click='onCancelClick' :disabled='disabled'>
@@ -48,16 +48,17 @@
 
 <script setup lang='ts'>
 import { defineProps, toRef, defineEmits, computed, watch, onMounted, ref, defineAsyncComponent } from 'vue'
-import { AccountType, useLocalUserStore, useFrontendVerifyStore, UsedFor, validateVerificationCode } from 'npool-cli-v4'
+import { user, basetypes, utils, appuserbase, notifverify } from 'src/npoolstore'
 
 const TimeoutSendBtn = defineAsyncComponent(() => import('src/components/button/TimeoutSendBtn.vue'))
 const Input = defineAsyncComponent(() => import('src/components/input/Input.vue'))
 
 interface Props {
-  verifyMethod?: AccountType
-  usedFor: UsedFor
+  verifyMethod?: appuserbase.SigninVerifyType
+  usedFor: basetypes.EventType
+  toUsername?: string
   account: string
-  accountType: AccountType
+  accountType: appuserbase.SignMethodType
   disabled?: boolean
   showCancel?: boolean
 }
@@ -65,62 +66,64 @@ interface Props {
 const props = defineProps<Props>()
 const verifyMethod = toRef(props, 'verifyMethod')
 const usedFor = toRef(props, 'usedFor')
+const toUsername = toRef(props, 'toUsername')
 const disabled = toRef(props, 'disabled')
 const showCancel = toRef(props, 'showCancel')
 
-const logined = useLocalUserStore()
-const coderepo = useFrontendVerifyStore()
+const logined = user.useLocalUserStore()
 
 const myVerifyMethod = computed(() => {
   if (verifyMethod.value?.length) {
     switch (verifyMethod.value) {
-      case AccountType.Mobile:
-      case AccountType.Email:
-      case AccountType.Google:
+      case appuserbase.SigninVerifyType.Mobile:
+      case appuserbase.SigninVerifyType.Email:
+      case appuserbase.SigninVerifyType.Google:
         return verifyMethod.value
     }
   }
   if (logined.User?.GoogleAuthVerified) {
-    return AccountType.Google
+    return appuserbase.SigninVerifyType.Google
   }
   if (logined.User?.EmailAddress?.length) {
-    return AccountType.Email
+    return appuserbase.SigninVerifyType.Email
   }
-  return AccountType.Mobile
+  return appuserbase.SigninVerifyType.Mobile
 })
 const title = computed(() => {
   switch (myVerifyMethod.value) {
-    case AccountType.Mobile:
+    case appuserbase.SigninVerifyType.Mobile:
       return 'MSG_MOBILE_VERIFICATION'
-    case AccountType.Email:
+    case appuserbase.SigninVerifyType.Email:
       return 'MSG_EMAIL_VERIFICATION'
-    case AccountType.Google:
+    case appuserbase.SigninVerifyType.Google:
       return 'MSG_GOOGLE_VERIFICATION'
     default:
       break
   }
   return 'MSG_EMAIL_VERIFICATION'
 })
+
 const account = computed(() => {
   switch (myVerifyMethod.value) {
-    case AccountType.Mobile:
+    case appuserbase.SigninVerifyType.Mobile:
       return logined.User?.PhoneNO
-    case AccountType.Email:
+    case appuserbase.SigninVerifyType.Email:
       return logined.User?.EmailAddress
-    case AccountType.Google:
+    case appuserbase.SigninVerifyType.Google:
       return ''
     default:
       break
   }
   return logined.User?.EmailAddress
 })
+
 const caption = computed(() => {
   switch (myVerifyMethod.value) {
-    case AccountType.Mobile:
+    case appuserbase.SigninVerifyType.Mobile:
       return 'MSG_MOBILE_VERIFICATION_CAPTION'
-    case AccountType.Email:
+    case appuserbase.SigninVerifyType.Email:
       return 'MSG_EMAIL_VERIFICATION_CAPTION'
-    case AccountType.Google:
+    case appuserbase.SigninVerifyType.Google:
       return 'MSG_GOOGLE_VERIFICATION_CAPTION'
     default:
       break
@@ -134,7 +137,7 @@ const onCodeFocusIn = () => {
   codeError.value = false
 }
 const onCodeFocusOut = () => {
-  codeError.value = !validateVerificationCode(myCode.value)
+  codeError.value = !utils.validateVerificationCode(myCode.value)
 }
 
 const emit = defineEmits<{(e: 'update:account', account: string): void;
@@ -153,7 +156,7 @@ watch(account, () => {
 })
 
 const onVerifyClick = () => {
-  codeError.value = !validateVerificationCode(myCode.value)
+  codeError.value = !utils.validateVerificationCode(myCode.value)
   if (codeError.value) {
     return
   }
@@ -164,8 +167,9 @@ const onCancelClick = () => {
   emit('cancel')
 }
 
+const verify = notifverify.useVerifyStore()
 const onSendCodeClick = () => {
-  coderepo.sendVerificationCode(account.value, myVerifyMethod.value, usedFor.value, logined.User.Username.length ? logined.User.Username : account.value)
+  verify.sendVerificationCode(account.value, myVerifyMethod.value, usedFor.value, toUsername.value?.length ? toUsername.value : account.value)
 }
 
 onMounted(() => {

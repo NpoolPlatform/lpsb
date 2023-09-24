@@ -1,28 +1,28 @@
 <template>
   <ProductPage
-    :good-id='goodID'
+    :app-good-i-d='appGoodID'
     project-class='project-spacemesh'
     bg-img='product/spacemesh/spacemesh-banner.jpg'
     :customize-info='false'
   >
     <template #product-detail>
-      <div v-show='coinDescription'>
+      <!-- <div v-show='coinDescription'>
         <h3>{{ coinDescription ? $t(coinDescription?.Title) : '' }}</h3>
         <p v-html='coinDescription ? $t(coinDescription?.Message) : ""' />
-      </div>
+      </div> -->
       <h3>
         <span v-html='$t("MSG_WHY_TITLE")' />
       </h3>
       <p v-html='$t("MSG_WHY_CONTENT")' />
       <div v-show='targetCoin?.Specs'>
-        <h3>{{ $t('MSG_OFFICIAL_SPECS', { COIN_NAME: good?.CoinName }) }}</h3>
+        <h3>{{ $t('MSG_OFFICIAL_SPECS', { COIN_NAME: _good?.CoinName }) }}</h3>
         <p>
           <img class='content-image' :src='targetCoin?.Specs'>
         </p>
       </div>
       <p>
         <a :href='targetCoin?.HomePage'>
-          {{ $t('MSG_HOMEPAGE_WITH_RIGHT_ARROW', { COIN_NAME: good?.CoinName }) }}
+          {{ $t('MSG_HOMEPAGE_WITH_RIGHT_ARROW', { COIN_NAME: _good?.CoinName }) }}
         </a>
       </p>
     </template>
@@ -81,84 +81,63 @@
 </template>
 
 <script setup lang='ts'>
-import { defineAsyncComponent, computed, onMounted, watch } from 'vue'
+import { computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { useI18n } from 'vue-i18n'
-import { CoinDescriptionUsedFor, InvalidID, NotifyType, useAdminAppCoinStore, useAdminAppGoodStore, useAdminCoinDescriptionStore } from 'npool-cli-v4'
-import { getDescriptions } from 'src/api/chain'
-
-// eslint-disable-next-line @typescript-eslint/unbound-method
-const { t } = useI18n({ useScope: 'global' })
+import { getCoins } from 'src/api/chain'
+import { appgood, notify, appcoin } from 'src/npoolstore'
 
 interface Query {
-  goodId: string
+  appGoodID: string
 }
+
+const good = appgood.useAppGoodStore()
+const target = computed(() => good.good(undefined, appGoodID.value as string))
 
 const route = useRoute()
 const query = computed(() => route.query as unknown as Query)
 
-// Use CoinUnit to find GoodID from AppDefaultGood
+// Use CoinUnit to find AppGoodID from AppDefaultGood
 const coinUnit = 'SMH'
-const defaultGoodID = computed(() => {
-  if (coin.AppCoins.AppCoins?.length === 0) {
-    return `${InvalidID}_`
+const appGoodID = computed(() => query.value?.appGoodID || coin.defaultGoodID(undefined, coinUnit))
+const _good = computed(() => good.good(undefined, appGoodID.value as string))
+
+const coin = appcoin.useAppCoinStore()
+const targetCoin = computed(() => coin.coin(undefined, target.value?.CoinTypeID as string))
+
+const getGood = () => {
+  if (_good.value) {
+    return
   }
-  const goodID = coin.getGoodIDByCoinUnit(coinUnit)
-  if (!goodID) {
-    return InvalidID
-  }
-  return goodID
-})
-
-const goodID = computed(() => query.value.goodId?.length > 0 ? query.value.goodId : defaultGoodID.value)
-
-const appGood = useAdminAppGoodStore()
-const good = computed(() => appGood.getGoodByID(goodID.value))
-
-const coin = useAdminAppCoinStore()
-const targetCoin = computed(() => coin.getCoinByID(good.value?.CoinTypeID as string))
-
-const description = useAdminCoinDescriptionStore()
-const coinDescription = computed(() => description.getCoinDescriptionByCoinUsedFor(good.value?.CoinTypeID as string, CoinDescriptionUsedFor.ProductPage))
-
-const ProductPage = defineAsyncComponent(() => import('src/components/product/ProductPage.vue'))
-
-const router = useRouter()
-
-watch(defaultGoodID, () => {
-  if (defaultGoodID.value === InvalidID) {
-    void router.push({ path: '/dashboard' })
-  }
-})
-
-onMounted(() => {
-  console.log('CoinUnit: ', coinUnit)
-
-  if (description.CoinDescriptions.CoinDescriptions.length === 0) {
-    getDescriptions(0, 100)
-  }
-  if (defaultGoodID.value === InvalidID) {
+  if (!appGoodID.value) {
     void router.push({ path: '/dashboard' })
     return
   }
-
-  if (defaultGoodID.value === `${InvalidID}_`) {
-    return
-  }
-
-  appGood.getAppGood({
-    GoodID: goodID.value,
+  good.getAppGood({
+    ID: appGoodID.value,
     Message: {
       Error: {
-        Title: t('MSG_GET_GOOD'),
-        Message: t('MSG_GET_GOOD_FAIL'),
+        Title: 'MSG_GET_GOOD',
+        Message: 'MSG_GET_GOOD_FAIL',
         Popup: true,
-        Type: NotifyType.Error
+        Type: notify.NotifyType.Error
       }
     }
   }, () => {
-    // TODO
+    if (!_good.value) {
+      void router.push({ path: '/' })
+    }
   })
+}
+
+const router = useRouter()
+onMounted(() => {
+  if (!coin.coins(undefined).length) {
+    getCoins(0, 100, () => {
+      getGood()
+    })
+  } else {
+    getGood()
+  }
 })
 
 </script>

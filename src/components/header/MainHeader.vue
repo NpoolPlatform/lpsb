@@ -8,7 +8,7 @@
         <li><a class='nav-link' href='#/faqs'>{{ $t('MSG_SUPPORT_AND_FAQ') }}</a></li>
         <li><a class='nav-link' href='#/contact'>{{ $t('MSG_CONTACT') }}</a></li>
         <LangSwitcher />
-        <SignHelper v-if='!logined.logined' />
+        <SignHelper v-if='!localUser.logined' />
         <q-btn
           v-else
           size='1.1rem'
@@ -44,7 +44,7 @@
 
     <div class='header-inner'>
       <LangSwitcher />
-      <SignHelper v-if='!logined.logined' />
+      <SignHelper v-if='!localUser.logined' />
       <q-btn
         v-else
         size='1.1rem'
@@ -83,46 +83,34 @@
     </div>
   </header>
 </template>
-
 <script setup lang='ts'>
 import { defineAsyncComponent, computed, watch, onMounted } from 'vue'
 import { HeaderAvatarMenu, MenuItem } from 'src/menus/menus'
 import { useRouter } from 'vue-router'
+import { notify, user, localapp } from 'src/npoolstore'
 
 import logoText from '../../assets/logo-text.png'
 import logo from '../../assets/logo-icon.png'
-
-import { useI18n } from 'vue-i18n'
-
 import userAvatar from '../../assets/user-circle.svg'
-import {
-  NotifyType,
-  useFrontendAppStore,
-  useFrontendUserStore,
-  useLocalUserStore
-} from 'npool-cli-v4'
 
 const LangSwitcher = defineAsyncComponent(() => import('src/components/lang/LangSwitcher.vue'))
 const SignHelper = defineAsyncComponent(() => import('src/components/header/SignHelper.vue'))
 const ExpandList = defineAsyncComponent(() => import('src/components/list/ExpandList.vue'))
 
-// eslint-disable-next-line @typescript-eslint/unbound-method
-const { t } = useI18n({ useScope: 'global' })
-
-const user = useFrontendUserStore()
-const logined = useLocalUserStore()
+const _user = user.useUserStore()
+const localUser = user.useLocalUserStore()
 
 const router = useRouter()
 
 const onSwitchMenu = (item: MenuItem) => {
   if (item.label === 'MSG_LOGOUT') {
-    user.logout({
-      Token: logined.User.LoginToken,
+    _user.logout({
+      Token: localUser.User.LoginToken,
       Message: {
         Error: {
-          Title: t('MSG_LOGOUT_FAIL'),
+          Title: 'MSG_LOGOUT_FAIL',
           Popup: true,
-          Type: NotifyType.Error
+          Type: notify.NotifyType.Error
         }
       }
     }, () => {
@@ -142,7 +130,7 @@ const onSwitchMenu = (item: MenuItem) => {
 
 const menu = computed(() => {
   const myMenu = HeaderAvatarMenu()
-  myMenu.children = myMenu.children.filter((m) => m.label !== 'MSG_REFERRAL' || logined.isKol)
+  myMenu.children = myMenu.children.filter((m) => m.label !== 'MSG_REFERRAL' || localUser.isKol)
   return myMenu
 })
 
@@ -150,10 +138,10 @@ const onLogoClick = () => {
   void router.push({ path: '/product/aleo' })
 }
 
-const userLogined = computed(() => logined.logined)
+const logined = computed(() => localUser.logined)
 
-watch(userLogined, () => {
-  if (!userLogined.value) {
+watch(logined, () => {
+  if (!logined.value) {
     return
   }
   setTimeout(() => {
@@ -162,27 +150,30 @@ watch(userLogined, () => {
 })
 
 const initialize = () => {
-  if (logined.User?.InvitationCode?.length) {
+  if (localUser.User?.InvitationCode?.length) {
     // TODO
   }
 }
 
 onMounted(() => {
-  if (userLogined.value) {
+  if (logined.value) {
     setTimeout(() => {
       initialize()
     }, 2000)
   }
 })
 
-const app = useFrontendAppStore()
-watch(() => app.App?.Maintaining, () => {
-  if (app.App?.Maintaining) {
+const app = localapp.useLocalApplicationStore()
+const maintaining = computed(() => app.maintaining())
+
+watch(maintaining, () => {
+  if (maintaining.value) {
     void router.push({ path: '/maintenance' })
   }
 })
+
 onMounted(() => {
-  if (app.App?.Maintaining) {
+  if (maintaining.value) {
     void router.push({ path: '/maintenance' })
   }
 })
