@@ -179,7 +179,6 @@ const coinUnit = 'ALEO'
 const _good = computed(() => good.good(undefined, appGoodID.value as string))
 
 const getGood = () => {
-  console.log(coin.defaultGoodID(undefined, coinUnit), coin.coins(undefined))
   if (_good.value) {
     return
   }
