@@ -1,12 +1,13 @@
 import { defineStore } from 'pinia'
 import { SettingState } from './types'
 
-export const useSettingStore = defineStore('localsetting', {
+export const useSettingStore = defineStore('local-setting', {
   state: (): SettingState => ({
     ShowSideMenu: false,
     ActiveMenuTarget: undefined as unknown as string,
     ShowMainHeader: true,
-    ShowFooterTop: true
+    ShowFooterTop: true,
+    LangThrottling: false
   }),
   getters: {},
   actions: {}
