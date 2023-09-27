@@ -20,6 +20,9 @@ onMounted(() => {
   if (!lang.langs(undefined).length) {
     getAppLangs(0, 100)
   }
+  if (messages.value.length === 0) {
+    getMessages(0, 100)
+  }
 })
 
 const getAppLangs = (offset: number, limit: number) => {

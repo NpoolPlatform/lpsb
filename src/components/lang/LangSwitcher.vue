@@ -3,7 +3,7 @@
     <div v-if='langs.length > 1'>
       <li
         v-for='language in langs'
-        :class='[ curLang === language.Lang ? "selected" : "" ]'
+        :class='[ curLang === language.Lang ? "selected" : "", throtting ? "disabled" : "" ]'
         :key='language.ID'
         @click='onLangClick(language)'
       >
@@ -16,20 +16,27 @@
 </template>
 
 <script setup lang='ts'>
-import { Cookies } from 'quasar'
-import { applang, _locale, g11nbase, user } from 'src/npoolstore'
-import { computed, watch } from 'vue'
+import { applang, _locale, user, g11nbase } from 'src/npoolstore'
+import { computed } from 'vue'
+import { useSettingStore } from 'src/localstore'
 
 const lang = applang.useAppLangStore()
 const langs = computed(() => lang.langs(undefined))
 
 const locale = _locale.useLocaleStore()
-const curLang = computed(() => locale.AppLang?.Lang)
+const curLang = computed(() => locale.lang())
 
 const logined = user.useLocalUserStore()
 const _user = user.useUserStore()
 
+const _setting = useSettingStore()
+const throtting = computed(() => _setting.LangThrottling)
+
 const onLangClick = (language: g11nbase.AppLang) => {
+  if (language.LangID === locale.langID()) {
+    return
+  }
+  _setting.LangThrottling = true
   locale.setLang(language)
   if (logined.logined) {
     _user.updateUser({
@@ -40,22 +47,4 @@ const onLangClick = (language: g11nbase.AppLang) => {
     })
   }
 }
-
-watch([() => logined?.selectedLangID, () => langs.value?.length], () => {
-  if (logined?.logined && logined?.selectedLangID?.length > 0) {
-    const _lang = lang.langs(undefined).find((el) => el.LangID === logined?.selectedLangID)
-    if (_lang) {
-      locale.setLang(_lang)
-      return
-    }
-  }
-  const langID = Cookies.get('X-Lang-ID')
-  if (langID && langID?.length > 0) {
-    const _lang = lang.langs(undefined).find((el) => el.LangID === langID)
-    if (_lang) {
-      locale.setLang(_lang)
-    }
-  }
-})
-
 </script>
