@@ -10,7 +10,7 @@ const messages = computed(() => _message.messages(undefined, langID.value, undef
 
 watch(langID, () => {
   if (messages.value.length === 0) {
-    getMessages(0, 500, langID.value)
+    getMessages(0, 100)
   }
 })
 
@@ -42,7 +42,7 @@ const getAppLangs = (offset: number, limit: number) => {
   })
 }
 
-const getMessages = (offset: number, limit: number, langID: string) => {
+const getMessages = (offset: number, limit: number) => {
   _message.getMessages({
     Disabled: false,
     Offset: offset,
@@ -55,11 +55,32 @@ const getMessages = (offset: number, limit: number, langID: string) => {
         Type: notify.NotifyType.Error
       }
     }
-  }, (error: boolean, rows?: Array<g11nbase.Message>) => {
+  }, (error: boolean, rows?: Array<g11nbase.Message>, total?: number) => {
     if (error || !rows?.length) {
       return
     }
-    getMessages(offset + limit, limit, langID)
+    const arrays = new Array(Math.floor(total as number / 100)).fill(1).map((v, i) => ++i)
+    arrays.forEach((index) => {
+      batchGetMessages(index * 100, 100)
+    })
+  })
+}
+
+const batchGetMessages = (offset: number, limit: number) => {
+  _message.getMessages({
+    Disabled: false,
+    Offset: offset,
+    Limit: limit,
+    Message: {
+      Error: {
+        Title: 'MSG_GET_LANG_MESSAGES',
+        Message: 'MSG_GET_LANG_MESSAGES_FAIL',
+        Popup: true,
+        Type: notify.NotifyType.Error
+      }
+    }
+  }, () => {
+    // TODO
   })
 }
 </script>
