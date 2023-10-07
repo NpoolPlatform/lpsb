@@ -1,28 +1,46 @@
 <script setup lang='ts'>
 import { onMounted, computed, watch } from 'vue'
-import { _locale, notify, applang, message, g11nbase } from 'src/npoolstore'
+import { _locale, notify, applang, message, g11nbase, user } from 'src/npoolstore'
+import { useSettingStore } from 'src/localstore'
+
+const logined = user.useLocalUserStore()
 
 const locale = _locale.useLocaleStore()
-const langID = computed(() => locale.langID())
+const langID = computed(() => locale.langID() || logined.selectedLangID)
+
+const _setting = useSettingStore()
+const lang = applang.useAppLangStore()
 
 const _message = message.useMessageStore()
 const messages = computed(() => _message.messages(undefined, langID.value, undefined))
+const targetLangID = computed(() => locale.langID() || logined.selectedLangID || lang.mainLangID(undefined))
+
+const setLang = () => {
+  const _lang = lang.lang(undefined, targetLangID.value)
+  if (!_lang) {
+    return
+  }
+  locale.setLang(_lang)
+}
+
+watch(targetLangID, () => {
+  setLang()
+})
+
+const _getMessages = () => {
+  const concurrent = 10
+  for (let i = 0; i < concurrent; i++) {
+    _setting.LangThrottling = true
+    getMessages(i * 100, 100, concurrent)
+  }
+}
 
 watch(langID, () => {
   if (messages.value.length === 0) {
-    getMessages(0, 100)
+    _getMessages()
+    return
   }
-})
-
-const lang = applang.useAppLangStore()
-
-onMounted(() => {
-  if (!lang.langs(undefined).length) {
-    getAppLangs(0, 100)
-  }
-  if (messages.value.length === 0) {
-    getMessages(0, 100)
-  }
+  _setting.LangThrottling = false
 })
 
 const getAppLangs = (offset: number, limit: number) => {
@@ -39,13 +57,17 @@ const getAppLangs = (offset: number, limit: number) => {
     }
   }, (error: boolean, rows: Array<g11nbase.AppLang>) => {
     if (error || !rows.length) {
+      setLang()
+      if (messages.value.length === 0) {
+        _getMessages()
+      }
       return
     }
     getAppLangs(offset + limit, limit)
   })
 }
 
-const getMessages = (offset: number, limit: number) => {
+const getMessages = (offset: number, limit: number, concurrent: number) => {
   _message.getMessages({
     Disabled: false,
     Offset: offset,
@@ -58,32 +80,19 @@ const getMessages = (offset: number, limit: number) => {
         Type: notify.NotifyType.Error
       }
     }
-  }, (error: boolean, rows?: Array<g11nbase.Message>, total?: number) => {
+  }, (error: boolean, rows?: Array<g11nbase.Message>) => {
     if (error || !rows?.length) {
+      _setting.LangThrottling = false
       return
     }
-    const arrays = new Array(Math.floor(total as number / 100)).fill(1).map((v, i) => ++i)
-    arrays.forEach((index) => {
-      batchGetMessages(index * 100, 100)
-    })
+    getMessages(offset + concurrent * limit, limit, concurrent)
   })
 }
 
-const batchGetMessages = (offset: number, limit: number) => {
-  _message.getMessages({
-    Disabled: false,
-    Offset: offset,
-    Limit: limit,
-    Message: {
-      Error: {
-        Title: 'MSG_GET_LANG_MESSAGES',
-        Message: 'MSG_GET_LANG_MESSAGES_FAIL',
-        Popup: true,
-        Type: notify.NotifyType.Error
-      }
-    }
-  }, () => {
-    // TODO
-  })
-}
+onMounted(() => {
+  if (!lang.langs(undefined).length) {
+    getAppLangs(0, 100)
+  }
+})
+
 </script>
