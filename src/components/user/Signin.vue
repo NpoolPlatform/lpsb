@@ -34,6 +34,7 @@
       <CodeVerifier
         v-model:account='verifyAccount'
         v-model:account-type='verifyAccountType'
+        v-model:verify-method='verifyMethod'
         @verify='onCodeVerify'
         :used-for='basetypes.EventType.Signin'
         :disabled='submitting'
@@ -80,6 +81,7 @@ const _kyc = kyc.useKYCStore()
 const router = useRouter()
 
 const verifying = ref(false)
+const verifyMethod = ref(appuserbase.SigninVerifyType.Email)
 
 const onMenuHide = () => {
   verifying.value = false
@@ -159,6 +161,27 @@ const _verify = () => {
   }
 
   verifying.value = true
+
+  if (logined.User?.GoogleAuthVerified && logined.User?.SigninVerifyType === appuserbase.SigninVerifyType.Google) {
+    verifyMethod.value = appuserbase.SigninVerifyType.Google
+    return
+  }
+  switch (logined.User?.SigninVerifyType) {
+    case appuserbase.SigninVerifyType.Email:
+      if (logined.User?.EmailAddress?.length && utils.validateEmailAddress(logined.User?.EmailAddress)) {
+        return appuserbase.SigninVerifyType.Email
+      }
+      break
+    case appuserbase.SigninVerifyType.Mobile:
+      if (logined.User?.PhoneNO?.length && utils.validateMobileNO(logined.User?.PhoneNO)) {
+        return appuserbase.SigninVerifyType.Mobile
+      }
+  }
+  if (logined.User?.EmailAddress?.length) {
+    verifyMethod.value = appuserbase.SigninVerifyType.Email
+    return
+  }
+  verifyMethod.value = appuserbase.SigninVerifyType.Mobile
 }
 
 const submitting = ref(false)
