@@ -100,8 +100,8 @@ pipeline {
           revlist=`git rev-list --tags --max-count=1`
           rc=$?
           set -e
-          if [ 0 -eq $rc ]; then
-            tag=`git describe --tags $revlist`
+          if [ 0 -eq $rc -a x"$revlist" !=x ]; then
+            tag=`git tag -l | sort -V | tail -n1`
             major=`echo $tag | awk -F '.' '{ print $1 }'`
             minor=`echo $tag | awk -F '.' '{ print $2 }'`
             patch=`echo $tag | awk -F '.' '{ print $3 }'`
@@ -143,8 +143,8 @@ pipeline {
           revlist=`git rev-list --tags --max-count=1`
           rc=$?
           set -e
-          if [ 0 -eq $rc ]; then
-            tag=`git describe --tags $revlist`
+          if [ 0 -eq $rc -a x"$revlist" !=x ]; then
+            tag=`git tag -l | sort -V | tail -n1`
             major=`echo $tag | awk -F '.' '{ print $1 }'`
             minor=`echo $tag | awk -F '.' '{ print $2 }'`
             patch=`echo $tag | awk -F '.' '{ print $3 }'`
@@ -178,8 +178,8 @@ pipeline {
           revlist=`git rev-list --tags --max-count=1`
           rc=$?
           set -e
-          if [ 0 -eq $rc ]; then
-            tag=`git describe --tags $revlist`
+          if [ 0 -eq $rc -a x"$revlist" !=x ]; then
+            tag=`git tag -l | sort -V | tail -n1`
             major=`echo $tag | awk -F '.' '{ print $1 }'`
             minor=`echo $tag | awk -F '.' '{ print $2 }'`
             patch=`echo $tag | awk -F '.' '{ print $3 }'`
