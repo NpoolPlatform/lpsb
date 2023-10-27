@@ -166,6 +166,19 @@ const _verify = () => {
     verifyMethod.value = appuserbase.SigninVerifyType.Google
     return
   }
+  switch (logined.User?.SigninVerifyType) {
+    case appuserbase.SigninVerifyType.Email:
+      if (logined.User?.EmailAddress?.length && utils.validateEmailAddress(logined.User?.EmailAddress)) {
+        verifyMethod.value = appuserbase.SigninVerifyType.Email
+        return
+      }
+      break
+    case appuserbase.SigninVerifyType.Mobile:
+      if (logined.User?.PhoneNO?.length && utils.validateMobileNO(logined.User?.PhoneNO)) {
+        verifyMethod.value = appuserbase.SigninVerifyType.Mobile
+        return
+      }
+  }
   if (logined.User?.EmailAddress?.length) {
     verifyMethod.value = appuserbase.SigninVerifyType.Email
     return
