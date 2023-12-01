@@ -55,19 +55,19 @@ const subUsername = computed(() => referral.value?.EmailAddress?.length ? referr
 const logined = user.useLocalUserStore()
 
 const getGoodCommissionValue = computed(() => (appGoodID: string) => {
-  return _achievement.commissionPercent(undefined, logined?.User.ID, undefined, appGoodID)
+  return _achievement.commissionPercent(undefined, logined?.User.EntID, undefined, appGoodID)
 })
 const getGoodCommissionSettleMode = computed(() => (appGoodID: string) => {
-  return _achievement.settleMode(undefined, logined?.User.ID, undefined, appGoodID) as commission.SettleMode
+  return _achievement.settleMode(undefined, logined?.User.EntID, undefined, appGoodID) as commission.SettleMode
 })
 const getGoodCommissionSettleAmountType = computed(() => (appGoodID: string) => {
-  return _achievement.settleAmountType(undefined, logined?.User.ID, undefined, appGoodID) as commission.SettleAmountType
+  return _achievement.settleAmountType(undefined, logined?.User.EntID, undefined, appGoodID) as commission.SettleAmountType
 })
 const getGoodCommissionSettleInterval = computed(() => (appGoodID: string) => {
-  return _achievement.settleInterval(undefined, logined?.User.ID, undefined, appGoodID) as commission.SettleInterval
+  return _achievement.settleInterval(undefined, logined?.User.EntID, undefined, appGoodID) as commission.SettleInterval
 })
 const getGoodCommissionThreshold = computed(() => (appGoodID: string) => {
-  return _achievement.threshold(undefined, logined?.User.ID, undefined, appGoodID)
+  return _achievement.threshold(undefined, logined?.User.EntID, undefined, appGoodID)
 })
 
 const good = appgood.useAppGoodStore()
