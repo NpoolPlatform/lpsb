@@ -115,7 +115,7 @@ const paymentCoin = computed(() => coin.coin(undefined, coinTypeID.value))
 
 const good = appgood.useAppGoodStore()
 const target = computed(() => good.good(undefined, appGoodID.value))
-const purchaseLimit = computed(() => good.purchaseLimit(undefined, target.value?.ID as string))
+const purchaseLimit = computed(() => good.purchaseLimit(undefined, target.value?.EntID as string))
 const logined = user.useLocalUserStore()
 
 const selectedCoinCurrency = ref(1) // 币种汇率
@@ -227,7 +227,7 @@ onMounted(() => {
 
   if (!target.value) {
     good.getAppGood({
-      ID: appGoodID.value,
+      EntID: appGoodID.value,
       Message: {
         Error: {
           Title: 'MSG_GET_GOOD',

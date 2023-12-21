@@ -32,7 +32,7 @@
           </div>
           <div class='three-section'>
             <h4>{{ $t('MSG_PRICE') }}:</h4>
-            <span class='number'>{{ appGood?.priceFloat(undefined, good?.ID as string) }}</span>
+            <span class='number'>{{ appGood?.priceFloat(undefined, good?.EntID as string) }}</span>
             <span class='unit'>{{ constant.PriceCoinName }}</span>
           </div>
           <div class='product-detail-text'>
@@ -338,7 +338,7 @@ const onSubmit = throttle(() => {
 onMounted(() => {
   if (!good.value) {
     appGood.getAppGood({
-      ID: appGoodID.value,
+      EntID: appGoodID.value,
       Message: {
         Error: {
           Title: t('MSG_GET_GOOD'),
