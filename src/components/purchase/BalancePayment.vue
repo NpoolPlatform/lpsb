@@ -125,12 +125,12 @@ const balance = computed(() => parseFloat((Number(general.coinBalance(undefined,
 const _order = order.useOrderStore()
 const purchaseLimited = computed(() => {
   const purchasedUnits = _order.purchasedUnits(undefined, logined.loginedUserID as string, target.value?.CoinTypeID as string, appGoodID.value)
-  return purchasedUnits >= Number(target?.value?.UserPurchaseLimit) ||
-        (purchasedUnits + Number(purchaseAmount.value)) > Number(target?.value?.UserPurchaseLimit)
+  return purchasedUnits >= Number(target?.value?.MaxUserAmount) ||
+        (purchasedUnits + Number(purchaseAmount.value)) > Number(target?.value?.MaxUserAmount)
 })
 
 const purchaseAmount = ref(query.value.purchaseAmount) // 购买数量
-const paymentAmount = computed(() => Number(good.priceFloat(undefined, appGoodID.value)) * purchaseAmount.value) // 支付金额
+const paymentAmount = computed(() => Number(good.packagePriceFloat(undefined, appGoodID.value)) * purchaseAmount.value) // 支付金额
 const usdToOtherAmount = computed(() => parseFloat((Math.ceil(paymentAmount.value / selectedCoinCurrency.value * 10000) / 10000).toFixed(4)))
 const usedToOtherAmountISNaN = computed(() => isNaN(usdToOtherAmount.value))
 const insufficientFunds = computed(() => balance.value < paymentAmount.value)
@@ -143,7 +143,7 @@ const message = computed(() => {
     return t('MSG_NOT_SUPPORT_FLOAT_VALUE')
   }
   if (purchaseLimited.value) {
-    return t('MSG_USER_TOTAL_PURCHASE_LIMIT', { MAX: parseFloat(target.value?.UserPurchaseLimit || '0') })
+    return t('MSG_USER_TOTAL_PURCHASE_LIMIT', { MAX: parseFloat(target.value?.MaxUserAmount || '0') })
   }
   return t('MSG_UNKNOWN_ERROR')
 })
