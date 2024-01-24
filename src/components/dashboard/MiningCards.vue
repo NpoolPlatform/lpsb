@@ -10,7 +10,7 @@
 
 <script setup lang='ts'>
 import { computed, defineAsyncComponent } from 'vue'
-import { appgood, appcoin, coincurrency, ledgerprofit, user, utils } from 'src/npoolstore'
+import { appgood, appcoin, coincurrency, ledgerprofit, user, utils, goodbase } from 'src/npoolstore'
 import { IntervalKey } from 'src/const/const'
 import { MyGoodProfit } from 'src/localstore/ledger/types'
 
@@ -34,7 +34,22 @@ const goodProfits = computed(() => Array.from(profit.goodProfits(undefined, logi
   const now = Math.floor(Date.now() / 1000)
   const remain = now - _good?.ServiceStartAt >= 0 ? now - _good?.ServiceStartAt : 0
   const daysMined = Math.floor(remain / 24 / 60 / 60)
-  const daysRemaining = el.GoodServicePeriodDays - daysMined > 0 ? el.GoodServicePeriodDays - daysMined : 0
+  let durationDays = Number(el.MaxOrderDuration)
+  switch (el.DurationType) {
+    case goodbase.GoodDurationType.GoodDurationByHour:
+      durationDays = durationDays / 24
+      break
+    case goodbase.GoodDurationType.GoodDurationByDay:
+      break
+    case goodbase.GoodDurationType.GoodDurationByMonth:
+      durationDays = durationDays * 30
+      break
+    case goodbase.GoodDurationType.GoodDurationByYear:
+      durationDays = durationDays * 365
+      break
+  }
+
+  const daysRemaining = durationDays - daysMined > 0 ? durationDays - daysMined : 0
   return {
     ...el,
     Units: el.Units,
@@ -45,10 +60,9 @@ const goodProfits = computed(() => Array.from(profit.goodProfits(undefined, logi
     Last24HoursUSDInComing: currency.currency(el.CoinTypeID) * profit.intervalGoodIncoming(undefined, logined.loginedUserID, IntervalKey.LastDay, el.CoinTypeID, el.AppGoodID),
     Last30DaysInComing: profit.intervalGoodIncoming(undefined, logined.loginedUserID, IntervalKey.LastMonth, el.CoinTypeID, el.AppGoodID),
     Last30DaysUSDInComing: currency.currency(el.CoinTypeID) * profit.intervalGoodIncoming(undefined, logined.loginedUserID, IntervalKey.LastMonth, el.CoinTypeID, el.AppGoodID),
-    TotalEstimatedDailyReward: Number(el.Units) * parseFloat(good.good(undefined, el.AppGoodID)?.DailyRewardAmount as string),
     GoodSaleEndAt: _good?.SaleEndAt,
     MiningStartDate: _good?.ServiceStartAt > Math.ceil(Date.now() / 1000) ? getTBD.value(el.AppGoodID) : utils.formatTime(_good?.ServiceStartAt, 'YYYY-MM-DD'),
-    DaysMined: daysMined > el.GoodServicePeriodDays ? el.GoodServicePeriodDays : daysMined,
+    DaysMined: daysMined > durationDays ? durationDays : daysMined,
     DaysRemaining: daysRemaining
   } as MyGoodProfit
 }).sort((a, b) => {
