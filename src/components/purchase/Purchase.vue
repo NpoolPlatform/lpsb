@@ -1,6 +1,6 @@
 <template>
   <div :class='[ showBalanceDialog ? "blur" : "" ]'>
-    <PurchasePage :good='(good as appgood.Good)'>
+    <PurchasePage :app-good-id='appGoodID'>
       <div class='info'>
         <h3 class='form-title'>
           {{ $t('MSG_PRODUCT_DETAILS') }}
@@ -9,7 +9,7 @@
           <div class='three-section'>
             <h4>{{ $t('MSG_DAILY_MINING_REWARDS') }}:</h4>
             <span class='number'>*</span>
-            <span class='unit'>{{ good?.CoinUnit }} / {{ $t('MSG_DAY') }}</span>
+            <span class='unit'>{{ sdk.appPowerRental.mainCoinUnit(appGoodID) }} / {{ $t('MSG_DAY') }}</span>
           </div>
           <div class='three-section'>
             <h4>{{ $t('MSG_SERVICE_PERIOD') }}:</h4>
@@ -28,11 +28,11 @@
           </div>
           <div class='three-section'>
             <h4>{{ $t('MSG_ORDER_EFFECTIVE') }}:</h4>
-            <span class='number'>{{ utils.formatTime(good?.StartAt as number, undefined) }}</span>
+            <span class='number'>{{ utils.formatTime(good?.ServiceStartAt as number, undefined) }}</span>
           </div>
           <div class='three-section'>
             <h4>{{ $t('MSG_PRICE') }}:</h4>
-            <span class='number'>{{ appGood?.packagePriceFloat(undefined, good?.EntID as string) }}</span>
+            <span class='number'>{{ sdk.appPowerRental.unitPriceFloat(appGoodID) }}</span>
             <span class='unit'>{{ constant.PriceCoinName }}</span>
           </div>
           <div class='product-detail-text'>
@@ -43,14 +43,14 @@
             <h3>{{ $t('MSG_WHY_TITLE') }}?</h3>
             <p v-html='$t("MSG_WHY_CONTENT")' />
             <div v-show='targetCoin?.Specs'>
-              <h3>{{ $t('MSG_OFFICIAL_SPECS', { COIN_NAME: good?.CoinName }) }}</h3>
+              <h3>{{ $t('MSG_OFFICIAL_SPECS', { COIN_NAME: targetCoin?.CoinName }) }}</h3>
               <p>
                 <img class='content-image' :src='targetCoin?.Specs'>
               </p>
             </div>
             <p>
               <a :href='targetCoin?.HomePage'>
-                {{ $t('MSG_HOMEPAGE_WITH_RIGHT_ARROW', { COIN_NAME: good?.CoinName }) }}
+                {{ $t('MSG_HOMEPAGE_WITH_RIGHT_ARROW', { COIN_NAME: targetCoin?.CoinName }) }}
               </a>
             </p>
           </div>
@@ -159,7 +159,7 @@ import { defineAsyncComponent, computed, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 import { ThrottleSeconds } from 'src/const/const'
-import { appgood, ledger, notify, order, user, appcoindescription, constant, coin, utils, sdk } from 'src/npoolstore'
+import { ledger, notify, order, user, appcoindescription, constant, coin, utils, sdk, powerrentalorder } from 'src/npoolstore'
 
 const PurchasePage = defineAsyncComponent(() => import('src/components/purchase/PurchasePage.vue'))
 const WaitingBtn = defineAsyncComponent(() => import('src/components/button/WaitingBtn.vue'))
@@ -176,17 +176,17 @@ const route = useRoute()
 const query = computed(() => route.query as unknown as Query)
 const appGoodID = computed(() => query.value.appGoodID)
 
-const appGood = appgood.useAppGoodStore()
-const good = computed(() => appGood.good(undefined, appGoodID.value))
+const good = computed(() => sdk.appPowerRental.appPowerRental(appGoodID.value))
 
-const total = computed(() => sdk.appGoodPurchaseLimit(appGoodID.value))
+const total = computed(() => sdk.appPowerRental.purchaseLimit(appGoodID.value))
 
 const usedFor = ref(appcoindescription.CoinDescriptionUsedFor.ProductPage)
 const coindescription = appcoindescription.useCoinDescriptionStore()
-const _coin = coin.useCoinStore()
-const targetCoin = computed(() => _coin.coinByEntID(good.value?.CoinTypeID as string))
 
-const description = computed(() => coindescription.coinUsedForDescription(undefined, good.value?.CoinTypeID as string, usedFor.value))
+const _coin = coin.useCoinStore()
+const targetCoin = computed(() => sdk.appCoin.appCoin(sdk.appPowerRental.mainCoinTypeID(appGoodID.value) as string))
+
+const description = computed(() => coindescription.coinUsedForDescription(undefined, sdk.appPowerRental.mainCoinTypeID(appGoodID.value) as string, usedFor.value))
 const coins = computed(() => _coin.coins().filter((coin) => coin.ForPay && !coin.Presale && coin.ENV === targetCoin.value?.ENV))
 
 const selectedCoinID = ref(undefined as unknown as string)
@@ -233,7 +233,7 @@ const balance = computed(() => {
 })
 
 const selectedCoinCurrency = ref(1)
-const totalAmount = computed(() => appGood?.packagePriceFloat(undefined, good.value?.EntID as string) * purchaseAmount.value / selectedCoinCurrency.value)
+const totalAmount = computed(() => sdk.appPowerRental.unitPriceFloat(appGoodID.value) * purchaseAmount.value / selectedCoinCurrency.value)
 const inputBalance = ref(0)
 
 const remainOrderAmount = computed(() => {
@@ -301,36 +301,32 @@ const getGenerals = (offset:number, limit: number) => {
   })
 }
 
-const odr = order.useOrderStore()
-
 const onSubmit = throttle(() => {
   showBalanceDialog.value = false
   submitting.value = true
 
-  odr.createOrder({
+  sdk.powerRentalOrder.createPowerRentalOrder({
     AppGoodID: appGoodID.value,
-    Units: purchaseAmount.value.toString(),
-    PaymentCoinID: paymentCoin.value?.EntID as string,
-    PayWithBalanceAmount: `${inputBalance.value}`,
-    InvestmentType: order.InvestmentType.FullPayment,
-    Message: {
-      Error: {
-        Title: 'MSG_CREATE_ORDER',
-        Message: 'MSG_CREATE_ORDER_FAIL',
-        Popup: true,
-        Type: notify.NotifyType.Error
+    DurationSeconds: sdk.appPowerRental.minOrderDurationSeconds(appGoodID.value),
+    Units: `${purchaseAmount.value}`,
+    Balances: [
+      {
+        CoinTypeID: paymentCoin.value?.EntID as string,
+        Amount: `${inputBalance.value}`
       }
-    }
-  }, (error: boolean, o?: order.Order) => {
+    ],
+    FeeAppGoodIDs: [],
+    InvestmentType: order.InvestmentType.FullPayment
+  }, (error: boolean, o?: powerrentalorder.PowerRentalOrder) => {
     submitting.value = false
     if (error) {
       return
     }
-
+    general.$reset()
     void router.push({
       path: '/payment',
       query: {
-        orderId: o?.ID
+        orderId: o?.OrderID
       }
     })
   })
@@ -338,19 +334,7 @@ const onSubmit = throttle(() => {
 
 onMounted(() => {
   if (!good.value) {
-    appGood.getAppGood({
-      EntID: appGoodID.value,
-      Message: {
-        Error: {
-          Title: t('MSG_GET_GOOD'),
-          Message: t('MSG_GET_GOOD_FAIL'),
-          Popup: true,
-          Type: notify.NotifyType.Error
-        }
-      }
-    }, () => {
-      // TODO
-    })
+    sdk.appPowerRental.getAppPowerRental(appGoodID.value)
   }
 
   if (coins.value.length === 0) {

@@ -4,9 +4,9 @@
       <div class='product-container content-glass'>
         <div class='product-title-section fallback-title'>
           <div class='product-page-icon'>
-            <img :src='good?.CoinLogo'>
+            <img :src='sdk.appPowerRental.mainCoinLogo(appGoodId)'>
           </div>
-          <h1>{{ good?.CoinName }} {{ $t('MSG_MINING') }}</h1>
+          <h1>{{ sdk.appPowerRental.mainCoinName(appGoodId) }} {{ $t('MSG_MINING') }}</h1>
         </div>
         <slot />
       </div>
@@ -16,15 +16,15 @@
 </template>
 
 <script setup lang='ts'>
-import { appgood } from 'src/npoolstore'
+import { sdk } from 'src/npoolstore'
 import { defineAsyncComponent, defineProps, toRef } from 'vue'
 
 interface Props {
-  good: appgood.Good
+  appGoodId: string
 }
 
 const props = defineProps<Props>()
-const good = toRef(props, 'good')
+const appGoodId = toRef(props, 'appGoodId')
 
 const BackPage = defineAsyncComponent(() => import('src/components/page/BackPage.vue'))
 

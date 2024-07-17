@@ -179,7 +179,6 @@ import {
   transferaccount,
   useraccount,
   user,
-  accountbase,
   ledger,
   coincurrency,
   ledgerstatement,
@@ -188,10 +187,12 @@ import {
   notify,
   appuserbase,
   useraccountbase,
-  basetypes
+  basetypes,
+  sdk
 } from 'src/npoolstore'
 import checkmark from 'src/assets/icon-checkmark.svg'
 import { getCoins, getCurrencies } from 'src/api/chain'
+
 // eslint-disable-next-line @typescript-eslint/unbound-method
 const { locale, t } = useI18n({ useScope: 'global' })
 
@@ -230,7 +231,7 @@ const transferAccounts = computed(() => transferAccount.transferAccounts(undefin
 const selectedTransferAccount = computed(() => transferAccounts.value[selectedAccountIndex.value])
 
 const userAccount = useraccount.useUserAccountStore()
-const withdraws = computed(() => userAccount.accounts(undefined, logined.loginedUserID, coinTypeID.value, accountbase.AccountUsedFor.UserWithdraw))
+const withdraws = computed(() => sdk.userWithdrawAccount.userWithdrawAccounts(logined.loginedUserID, coinTypeID.value))
 const selectedAccountIndex = ref(0)
 const selectedAccount = computed(() => withdraws.value[selectedAccountIndex.value])
 
@@ -390,7 +391,7 @@ onMounted(() => {
 
   userAccount.$reset()
   if (!withdraws.value.length) {
-    getUserAccounts(0, 20)
+    sdk.userWithdrawAccount.getMyUserWithdrawAccounts(0, 0)
   }
 
   if (!transferAccounts.value.length) {
@@ -406,24 +407,6 @@ onMounted(() => {
     getCurrencies(0, 100)
   }
 })
-
-const getUserAccounts = (offset: number, limit: number) => {
-  userAccount.getUserAccounts({
-    Offset: offset,
-    Limit: limit,
-    UsedFor: accountbase.AccountUsedFor.UserWithdraw,
-    Message: {
-      Error: {
-        Title: t('MSG_GET_WITHDRAW_ACCOUNTS_FAIL'),
-        Popup: true,
-        Type: notify.NotifyType.Error
-      }
-    }
-  }, (error: boolean, accounts?: Array<useraccountbase.Account>) => {
-    if (error || !accounts?.length) return
-    getUserAccounts(offset + limit, limit)
-  })
-}
 
 const getTransferAccounts = (offset: number, limit: number) => {
   transferAccount.getTransfers({

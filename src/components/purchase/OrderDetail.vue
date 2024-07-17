@@ -1,9 +1,9 @@
 <template>
   <div :class='[ showStatus || showWarning ? "blur" : "" ]'>
-    <PurchasePage :good='(good as appgood.Good)'>
+    <PurchasePage :app-good-id='_order?.AppGoodID as string'>
       <div class='info'>
         <h3 class='form-title'>
-          {{ _order?.CoinName?.length ? utils.formatCoinName(_order?.CoinName as string) : '' }} | <strong>{{ $t('MSG_ORDER_ID') }}: {{ orderId }}</strong>
+          {{ sdk.appCoin.displayName(sdk.appPowerRental.mainCoinTypeID(_order?.AppGoodID as string) as string, 0) }} | <strong>{{ $t('MSG_ORDER_ID') }}: {{ orderId }}</strong>
         </h3>
         <div class='info-flex'>
           <div class='three-section'>
@@ -13,8 +13,8 @@
           </div>
           <div class='three-section'>
             <h4>{{ $t('MSG_AMOUNT_DUE') }}:</h4>
-            <span class='number'>{{ _order?.PaymentAmount }}</span>
-            <span class='unit'>{{ _order?.PaymentCoinUnit.length ? _order.PaymentCoinUnit : constant.PriceCoinName }}</span>
+            <span class='number'>{{ sdk.powerRentalOrder.powerRentalOrder(orderId)?.PaymentBalances?.[0]?.Amount || _order?.GoodValueUSD }}</span>
+            <span class='unit'>{{ sdk.powerRentalOrder.powerRentalOrder(orderId)?.PaymentBalances?.[0]?.CoinUnit || constant.PriceCoinName }}</span>
             <img class='copy-button' :src='copyIcon' @click='onCopyAmountClick'>
             <div class='tooltip'>
               <img class='more-info' :src='question'><span>{{ $t('MSG_LEARN_MORE') }}</span>
@@ -41,7 +41,7 @@
             </div>
             <div v-else class='warning warning-pink'>
               <img :src='warning'>
-              <span v-html='$t("MSG_COIN_PAYMENT_TIP", { COIN_NAME: coinName })' />
+              <span v-html='$t("MSG_COIN_PAYMENT_TIP", { COIN_NAME: paymentCoinName })' />
             </div>
             <!-- <span class='wallet-type'>{{ coinName }} &nbsp; </span> -->
             <!-- <span class='number'>  {{ order?.PaymentAddress }}</span> -->
@@ -56,7 +56,7 @@
         </div>
         <div class='hr' />
         <h4>{{ $t('MSG_IMPORTANT_INFORMATION') }}</h4>
-        <p v-html='$t("MSG_PAYMENT_NOTE", { COIN_NAME: coinName })' />
+        <p v-html='$t("MSG_PAYMENT_NOTE", { COIN_NAME: paymentCoinName })' />
       </div>
       <div class='order-form'>
         <!-- <h3 class='form-title'>
@@ -162,7 +162,7 @@
 import { defineAsyncComponent, computed, ref, onMounted, onUnmounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import copy from 'copy-to-clipboard'
-import { order, appgood, utils, notify, constant } from 'src/npoolstore'
+import { order, utils, notify, constant, sdk, powerrentalorder } from 'src/npoolstore'
 import copyIcon from 'src/assets/icon-copy.svg'
 import question from 'src/assets/question.svg'
 import warning from 'src/assets/warning.svg'
@@ -179,10 +179,7 @@ const query = computed(() => route.query as unknown as Query)
 const orderId = computed(() => query.value.orderId)
 
 const odr = order.useOrderStore()
-const _order = computed(() => odr.getOrderByEntID(orderId.value))
-
-const appGood = appgood.useAppGoodStore()
-const good = computed(() => appGood.good(undefined, _order.value?.AppGoodID as string))
+const _order = computed(() => sdk.powerRentalOrder.powerRentalOrder(orderId.value))
 
 const notification = notify.useNotificationStore()
 
@@ -199,44 +196,17 @@ const remainTime = ref(order.RemainMax)
 const showWarning = ref(true)
 const showCancelling = ref(false)
 
-const coinName = computed(() => {
-  if (!_order.value?.PaymentCoinName?.length) {
-    return
-  }
-  if (_order.value?.PaymentCoinName?.toLowerCase()?.includes('bitcoin')) {
-    return 'BTC (Bitcoin)'
-  } else if (_order.value?.PaymentCoinName?.toLowerCase()?.includes('binanceusd')) {
-    return 'BUSD (BEP20)'
-  } else if (_order.value?.PaymentCoinName?.toLowerCase()?.includes('usdcerc20')) {
-    return 'USDC (ERC20)'
-  } else if (_order.value?.PaymentCoinName?.toLowerCase()?.includes('usdterc20')) {
-    return 'USDT (ERC20)'
-  } else if (_order.value?.PaymentCoinName?.toLowerCase()?.includes('usdttrc20')) {
-    return 'USDT (TRC20)'
-  }
-  return utils.formatCoinName(_order.value?.PaymentCoinName)
-})
-
-const showBUSDTip = computed(() => _order.value?.PaymentCoinName?.toLowerCase()?.includes('binanceusd'))
+const paymentCoinName = computed(() => sdk.appCoin.displayName(_order.value?.PaymentBalances?.[0]?.CoinTypeID as string, 0))
+const showBUSDTip = computed(() => paymentCoinName.value?.toLowerCase()?.includes('binanceusd'))
 
 const remainTicker = ref(-1)
+
 watch(counter, () => {
   if (counter.value % 30 === 0) {
-    odr.getOrder({
-      EntID: _order.value?.EntID as string,
-      Message: {
-        Error: {
-          Title: 'MSG_GET_ORDER',
-          Message: 'MSG_GET_ORDER_FAIL',
-          Popup: true,
-          Type: notify.NotifyType.Error
-        }
-      }
-    }, () => {
-    // TODO
-    })
+    sdk.powerRentalOrder.getPowerRentalOrder(orderId.value)
   }
 })
+
 const launchTicker = () => {
   ticker.value = window.setInterval(() => {
     remainSeconds.value = odr.orderState(_order.value?.ID as number)
@@ -272,18 +242,8 @@ const launchTicker = () => {
 }
 
 onMounted(() => {
-  odr.getOrder({
-    EntID: orderId.value,
-    Message: {
-      Error: {
-        Title: 'MSG_GET_ORDER',
-        Message: 'MSG_GET_ORDER_FAIL',
-        Popup: true,
-        Type: notify.NotifyType.Error
-      }
-    }
-  }, (error: boolean, o?: order.Order) => {
-    if (error || !odr.validateOrder(o?.ID as number)) {
+  sdk.powerRentalOrder.getPowerRentalOrder(orderId.value, (error: boolean) => {
+    if (error || !sdk.powerRentalOrder.validate(orderId.value)) {
       return
     }
     launchTicker()
@@ -311,21 +271,8 @@ const onPaymentCanceled = () => {
 
 const onCancelOrderClick = () => {
   showCancelling.value = false
-  odr.updateOrder({
-    ID: _order.value?.ID as number,
-    EntID: _order.value?.EntID as string,
-    Canceled: true,
-    Message: {
-      Error: {
-        Title: 'MSG_UPDATE_PAYMENT',
-        Message: 'MSG_UPDATE_PAYMENT_FAIL',
-        Popup: true,
-        Type: notify.NotifyType.Error
-      }
-    }
-  }, (error: boolean) => {
+  sdk.powerRentalOrder.updatePowerRentalOrder(_order.value as powerrentalorder.PowerRentalOrder, undefined, true, (error: boolean) => {
     if (error) return
-
     void router.push({
       path: '/dashboard'
     })
@@ -333,7 +280,7 @@ const onCancelOrderClick = () => {
 }
 
 const onCopyAmountClick = () => {
-  copy(_order.value?.PaymentAmount as string)
+  copy(_order.value?.PaymentBalances?.[0]?.Amount as string)
   notification.Notifications.push({
     Title: 'MSG_AMOUNT_COPIED',
     Message: 'MSG_COPY_AMOUNT_SUCCESS',

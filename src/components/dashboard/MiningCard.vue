@@ -5,7 +5,7 @@
         <img :src='goodProfit?.CoinLogo'>
       </div>
       <h3 class='mining-title'>
-        <div v-html='target?.DisplayNames?.[2]? $t(target?.DisplayNames?.[2]) : goodProfit.GoodName' />
+        <div v-html='sdk.appPowerRental.displayName(target?.AppGoodID as string, 2)' />
       </h3>
     </div>
     <div class='top-line-summary'>
@@ -58,7 +58,7 @@
           <span class='label'>{{ $t('MSG_TECHNIQUE_SERVICE_FEE') }}:</span>
           <span class='value'>
             {{ goodProfit?.CoinPreSale ? '*' : utils.getLocaleString(parseFloat((goodProfit.Last24HoursInComing / deservedRatio * techServiceFee)?.toFixed(4))) }}
-            <span class='unit'>{{ goodProfit?.CoinUnit }} ({{ target?.TechnicalFeeRatio }}%)</span>
+            <span class='unit'>{{ goodProfit?.CoinUnit }} ({{ sdk.appPowerRental.techniqueFeeRatio(target?.AppGoodID as string) }}%)</span>
           </span>
         </div>
         <div class='line' v-if='goodProfit.AppGoodID === "de420061-e878-4a8b-986a-805cadd59233"'>
@@ -67,9 +67,9 @@
             {{ goodProfit.TotalEstimatedDailyReward === 0 ? '*' : utils.getLocaleString(goodProfit.TotalEstimatedDailyReward) }}
             <span class='unit'>{{ $t('MSG_CREDITS') }}</span></span>
         </div>
-        <div class='warning' v-if='target?.Descriptions?.[3] && target?.Descriptions?.[3]?.length > 0'>
+        <div class='warning' v-if='sdk.appPowerRental.requireDescription(target?.AppGoodID as string, 3)'>
           <img src='font-awesome/warning.svg'>
-          <span v-html='$t(target?.Descriptions?.[3])' />
+          <span v-html='$t(sdk.appPowerRental.requireDescription(target?.AppGoodID as string, 3) as string)' />
         </div>
       </div>
     </q-slide-transition>
@@ -81,9 +81,9 @@
         {{ $t('MSG_EXPORT_DAILY_OUTPUT_CSV') }}
       </button>
       <button
-        :class='["alt", showProductPage(target as appgood.Good) ? "" : "in-active"]'
-        :disabled='!showProductPage(target as appgood.Good)'
-        @click='onPurchaseClick(target as appgood.Good)'
+        :class='["alt", showProductPage ? "" : "in-active"]'
+        :disabled='!showProductPage'
+        @click='onPurchaseClick(target as apppowerrental.AppPowerRental)'
       >
         {{ $t('MSG_PURCHASE_CAPACITY') }}
       </button>
@@ -96,10 +96,12 @@ import saveAs from 'file-saver'
 import { defineProps, toRef, computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { stringify } from 'csv-stringify/sync'
-import { appgood, ledgerstatement, utils, user } from 'src/npoolstore'
+import { ledgerstatement, utils, user, sdk, apppowerrental } from 'src/npoolstore'
 import { useI18n } from 'vue-i18n'
-import chevrons from '../../assets/chevrons.svg'
 import { MyGoodProfit } from 'src/localstore/ledger/types'
+
+import chevrons from '../../assets/chevrons.svg'
+
 // eslint-disable-next-line @typescript-eslint/unbound-method
 const { t } = useI18n({ useScope: 'global' })
 
@@ -113,16 +115,15 @@ const goodProfit = toRef(props, 'profit')
 const short = ref(true)
 
 const logined = user.useLocalUserStore()
-const good = appgood.useAppGoodStore()
-const target = computed(() => good.good(undefined, goodProfit.value?.AppGoodID))
-const coinUnit = computed(() => target.value?.CoinUnit as string)
-const techServiceFee = computed(() => good.techniqueFeeTatio(undefined, goodProfit.value?.AppGoodID) / 100)
+const target = computed(() => sdk.appPowerRental.appPowerRental(goodProfit.value?.AppGoodID))
+const coinUnit = computed(() => sdk.appPowerRental.mainCoinUnit(goodProfit.value?.AppGoodID) || '')
+const techServiceFee = computed(() => sdk.appPowerRental.techniqueFeeRatio(goodProfit.value?.AppGoodID) / 100)
 const deservedRatio = computed(() => 1 - techServiceFee.value)
 
-const showProductPage = computed(() => (_good: appgood.Good) => _good.EnableProductPage && good.canBuy(undefined, _good.EntID) && good.spotQuantity(undefined, _good.EntID))
+const showProductPage = computed(() => sdk.appPowerRental.showProductPage(goodProfit.value?.AppGoodID))
 
 const router = useRouter()
-const onPurchaseClick = (_good: appgood.Good) => {
+const onPurchaseClick = (_good: apppowerrental.AppPowerRental) => {
   void router.push({
     path: _good.ProductPage?.length ? _good.ProductPage : '/product/aleo',
     query: {
@@ -201,7 +202,7 @@ const onExportClick = () => {
     columns: columns
   })
   const blob = new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), output], { type: 'text/plain;charset=utf-8' })
-  let name = target?.value?.DisplayNames?.[2] ? t(target?.value?.DisplayNames?.[2]) : goodProfit.value?.GoodName
+  let name = sdk.appPowerRental.displayName(target.value?.AppGoodID as string, 2) as string
   name = name.replace(/<.*?>/g, '')
   const filename = name + '-' + utils.formatTime(new Date().getTime() / 1000) + '.csv'
   saveAs(blob, filename)

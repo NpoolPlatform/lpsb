@@ -4,9 +4,9 @@
       <div class='product-title-section project-title-section' :style='{"background-image": "url(" + bgImg + ")"}'>
         <div class='product-title-container'>
           <div class='product-page-icon'>
-            <img :src='target?.CoinLogo'>
+            <img :src='sdk.appPowerRental.mainCoinLogo(appGoodID)'>
           </div>
-          <h1 v-html='target?.DisplayNames?.[1]? $t(target?.DisplayNames?.[1]) : target?.GoodName' />
+          <h1 v-html='sdk.appPowerRental.displayName(appGoodID, 1)' />
         </div>
       </div>
       <!-- mobile start -->
@@ -15,7 +15,7 @@
           {{ $t('MSG_MINING_PURCHASE') }}
         </h3>
         <form action='javascript:void(0)' id='purchase'>
-          <div class='full-section' v-if='good.canBuy(undefined, target?.EntID as string)'>
+          <div class='full-section' v-if='sdk.appPowerRental.canBuy(appGoodID)'>
             <h4>{{ $t("MSG_SALE_END_DATE") }}</h4>
             <span class='number'>{{ remainDays }}</span>
             <span class='unit'> {{ $t("MSG_DAYS") }} </span>
@@ -87,7 +87,7 @@
             {{ $t('MSG_MINING_PURCHASE') }}
           </h3>
           <form action='javascript:void(0)' id='purchase'>
-            <div class='full-section' v-if='good.canBuy(undefined, target?.EntID as string)'>
+            <div class='full-section' v-if='sdk.appPowerRental.canBuy(appGoodID)'>
               <h4>{{ $t("MSG_SALE_END_DATE") }}</h4>
               <span class='number'>{{ remainDays }}</span>
               <span class='unit'> {{ $t("MSG_DAYS") }} </span>
@@ -152,7 +152,7 @@ import { defineAsyncComponent, defineProps, toRef, ref, computed, onMounted, onU
 import { useRouter } from 'vue-router'
 import warning from 'src/assets/warning.svg'
 import { getCoins } from 'src/api/chain'
-import { constant, appgood, appcoin, ledger, user } from 'src/npoolstore'
+import { constant, appcoin, ledger, user, sdk } from 'src/npoolstore'
 
 const CoinSelector = defineAsyncComponent(() => import('src/components/coin/CoinSelector.vue'))
 const WaitingBtn = defineAsyncComponent(() => import('src/components/button/WaitingBtn.vue'))
@@ -160,7 +160,7 @@ const WaitingBtn = defineAsyncComponent(() => import('src/components/button/Wait
 const Input = defineAsyncComponent(() => import('src/components/input/Input.vue'))
 
 interface Props {
-  appGoodID: string
+  appGoodId: string
   projectClass: string
   bgImg: string
   customizeInfo?: boolean
@@ -168,7 +168,7 @@ interface Props {
 }
 
 const props = defineProps<Props>()
-const appGoodID = toRef(props, 'appGoodID')
+const appGoodID = toRef(props, 'appGoodId')
 const projectClass = toRef(props, 'projectClass')
 const bgImg = toRef(props, 'bgImg')
 const customizeInfo = toRef(props, 'customizeInfo')
@@ -178,12 +178,12 @@ const router = useRouter()
 
 const logined = user.useLocalUserStore()
 const general = ledger.useLedgerStore()
-const good = appgood.useAppGoodStore()
-const target = computed(() => good.good(undefined, appGoodID.value))
-const total = computed(() => good.purchaseLimit(undefined, target.value?.EntID as string))
+
+const target = computed(() => sdk.appPowerRental.appPowerRental(appGoodID.value))
+const total = computed(() => sdk.appPowerRental.purchaseLimit(appGoodID.value))
 
 const coin = appcoin.useAppCoinStore()
-const coins = computed(() => coin.payableCoins().filter((el) => el.ENV === target.value?.CoinEnv))
+const coins = computed(() => coin.payableCoins().filter((el) => el.ENV === sdk.appPowerRental.coinEnv(appGoodID.value)))
 
 const defaultCoinTypeID = computed(() => {
   return coins.value?.length > 0 ? coins.value?.[0].CoinTypeID : undefined as unknown as string

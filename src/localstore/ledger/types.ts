@@ -13,6 +13,7 @@ export interface MyGoodProfit extends ledgerprofit.GoodProfit {
   MiningStartDate: string
   DaysMined: number
   DaysRemaining: number
+  GoodServicePeriodDays: number
 }
 
 export interface MyGoodAchievement extends achievement.GoodAchievement {

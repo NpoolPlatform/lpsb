@@ -14,7 +14,7 @@
           v-model='_good.CommissionValue'
           :min='0'
           :max='getGoodCommissionValue(_good.AppGoodID)'
-          :disabled='!good.canBuy(undefined, _good.AppGoodID)'
+          :disabled='!sdk.appPowerRental.canBuy(_good.AppGoodID)'
         >
       </div>
     </template>

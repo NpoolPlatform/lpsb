@@ -20,20 +20,17 @@ import { computed, defineAsyncComponent } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { stringify } from 'csv-stringify/sync'
 import saveAs from 'file-saver'
-import { order, user, ledgerstatement, appgood, goodbase, utils, constant } from 'src/npoolstore'
+import { order, goodbase, utils, constant, sdk, powerrentalorder } from 'src/npoolstore'
 
 const OpTable = defineAsyncComponent(() => import('src/components/table/OpTable.vue'))
 
 // eslint-disable-next-line @typescript-eslint/unbound-method
 const { t } = useI18n({ useScope: 'global' })
 
-const logined = user.useLocalUserStore()
-
 const _order = order.useOrderStore()
-const orders = computed(() => _order.orders(undefined, logined.loginedUserID))
+const orders = sdk.powerRentalOrder.powerRentalOrders
 
-const good = appgood.useAppGoodStore()
-const getDeservedRatio = computed(() => (id: string) => 1 - Number(good.good(undefined, id)?.TechnicalFeeRatio) / 100)
+const getDeservedRatio = computed(() => (appGoodID: string) => 1 - Number(sdk.appPowerRental.techniqueFeeRatio(appGoodID)) / 100)
 
 interface ExportOrder {
   CreatedAt: string
@@ -50,12 +47,13 @@ interface ExportOrder {
   OrderStatus: order.OrderState
 }
 
-const getGoodType = computed(() => (id: string) => {
-  const _good = good.good(undefined, id)
-  return _good?.GoodType === goodbase.GoodType.PowerRenting || _good?.GoodType === goodbase.GoodType.MachineHosting ? 'Mining' : _good?.GoodType
+const getGoodType = computed(() => (appGoodID: string) => {
+  const _good = sdk.appPowerRental.appPowerRental(appGoodID)
+  return (_good?.GoodType === goodbase.GoodType.PowerRental ||
+          _good?.GoodType === goodbase.GoodType.LegacyPowerRental ||
+          _good?.GoodType === goodbase.GoodType.MachineRental) ? 'Mining' : _good?.GoodType
 })
 
-const detail = ledgerstatement.useStatementStore()
 const exportOrders = computed(() => Array.from(orders.value.filter((el) => el.OrderState === order.OrderState.PAID ||
   el.OrderState === order.OrderState.IN_SERVICE ||
   el.OrderState === order.OrderState.EXPIRED ||
@@ -70,15 +68,15 @@ const exportOrders = computed(() => Array.from(orders.value.filter((el) => el.Or
   return {
     CreatedAt: new Date(el.CreatedAt * 1000).toISOString()?.replace('T', ' ')?.replace('.000Z', ' UTC'),
     ProductType: getGoodType.value(el.AppGoodID),
-    ProductName: good.displayNames(undefined, el.AppGoodID)?.[3] ? t(good.displayNames(undefined, el.AppGoodID)?.[3]) : el.GoodName,
+    ProductName: sdk.appPowerRental.displayName(el.AppGoodID, 3),
     PurchaseAmount: el.Units,
-    UnitType: t(el.GoodUnit),
-    Price: good.packagePriceFloat(undefined, el.AppGoodID),
-    PaymentCurrency: el.PaymentCoinUnit.length ? el.PaymentCoinUnit : constant.PriceCoinName,
-    TotalCost: Number(el.PaymentAmount).toString(),
-    MiningPeriod: el.Duration,
-    CumulativeProfit: detail.miningRewardFloat(undefined, logined.loginedUserID, el.CoinTypeID, el.EntID) / getDeservedRatio.value(el.AppGoodID),
-    ProfitCurrency: good.good(undefined, el.AppGoodID)?.CoinUnit,
+    UnitType: t(el.QuantityUnit),
+    Price: sdk.appPowerRental.unitPriceFloat(el.AppGoodID),
+    PaymentCurrency: el.PaymentBalances[0]?.CoinUnit || constant.PriceCoinName,
+    TotalCost: Number(el.PaymentBalances[0]?.Amount || el.GoodValueUSD).toString(),
+    MiningPeriod: el.DurationSeconds / utils.SecondsPerDay,
+    CumulativeProfit: sdk.ledgerStatement.totalMiningReward(sdk.appPowerRental.mainCoinTypeID(el.AppGoodID), undefined, el.EntID) / getDeservedRatio.value(el.AppGoodID),
+    ProfitCurrency: sdk.appPowerRental.mainCoinUnit(el.AppGoodID),
     OrderStatus: (_order.orderState(el.ID)?.startsWith('MSG') ? t(_order.orderState(el.ID)) : t('MSG_AWAITING_CONFIRMATION')) +
                 (orderType ? '(' + orderType + ')' : '')
   } as ExportOrder
@@ -111,37 +109,37 @@ const table = computed(() => [
     name: 'Date',
     label: t('MSG_DATE'),
     align: 'left',
-    field: (row: order.Order) => utils.formatTime(row.CreatedAt)
+    field: (row: powerrentalorder.PowerRentalOrder) => utils.formatTime(row.CreatedAt)
   },
   {
     name: 'Product',
     label: t('MSG_PRODUCT'),
     align: 'center',
-    field: (row: order.Order) => good.displayNames(undefined, row.AppGoodID).length >= 4 ? t(good.displayNames(undefined, row.AppGoodID)[3]) : row.GoodName
+    field: (row: powerrentalorder.PowerRentalOrder) => sdk.appPowerRental.displayName(row.AppGoodID, 4)
   },
   {
     name: 'Total',
     label: t('MSG_PURCHASE_AMOUNT'),
     align: 'center',
-    field: (row: order.Order) => `${utils.getLocaleString(parseFloat(row.Units))} ${t(row.GoodUnit)}`
+    field: (row: powerrentalorder.PowerRentalOrder) => `${utils.getLocaleString(parseFloat(row.Units))} ${t(row.QuantityUnit)}`
   },
   {
     name: 'Price',
     label: t('MSG_PRICE'),
     align: 'center',
-    field: (row: order.Order) => utils.getLocaleString(Number(row.GoodValueUSD)) + ' ' + constant.PriceCoinName
+    field: (row: powerrentalorder.PowerRentalOrder) => utils.getLocaleString(Number(row.GoodValueUSD)) + ' ' + constant.PriceCoinName
   },
   {
     name: 'Period',
     label: t('MSG_PERIOD'),
     align: 'center',
-    field: (row: order.Order) => utils.getLocaleString(row.Duration) + t('MSG_DAY')
+    field: (row: powerrentalorder.PowerRentalOrder) => utils.getLocaleString(row.DurationSeconds / utils.SecondsPerDay) + t('MSG_DAY')
   },
   {
     name: 'State',
     label: t('MSG_STATE'),
     align: 'center',
-    field: (row: order.Order) => {
+    field: (row: powerrentalorder.PowerRentalOrder) => {
       let orderType = undefined as unknown as order.OrderType
       if (row.OrderType === order.OrderType.Offline) {
         orderType = order.OrderType.Offline

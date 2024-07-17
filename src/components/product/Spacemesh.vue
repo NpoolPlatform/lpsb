@@ -1,6 +1,6 @@
 <template>
   <ProductPage
-    :app-good-i-d='appGoodID'
+    :app-good-id='appGoodID'
     project-class='project-spacemesh'
     bg-img='product/spacemesh/spacemesh-banner.jpg'
     :customize-info='false'
@@ -15,14 +15,14 @@
       </h3>
       <p v-html='$t("MSG_WHY_CONTENT")' />
       <div v-show='targetCoin?.Specs'>
-        <h3>{{ $t('MSG_OFFICIAL_SPECS', { COIN_NAME: _good?.CoinName }) }}</h3>
+        <h3>{{ $t('MSG_OFFICIAL_SPECS', { COIN_NAME: sdk.appPowerRental.mainCoinName(appGoodID as string) }) }}</h3>
         <p>
           <img class='content-image' :src='targetCoin?.Specs'>
         </p>
       </div>
       <p>
         <a :href='targetCoin?.HomePage'>
-          {{ $t('MSG_HOMEPAGE_WITH_RIGHT_ARROW', { COIN_NAME: _good?.CoinName }) }}
+          {{ $t('MSG_HOMEPAGE_WITH_RIGHT_ARROW', { COIN_NAME: sdk.appPowerRental.mainCoinName(appGoodID as string) }) }}
         </a>
       </p>
     </template>
@@ -84,14 +84,13 @@
 import { computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { getCoins } from 'src/api/chain'
-import { appgood, notify, appcoin } from 'src/npoolstore'
+import { appgood, appcoin, sdk } from 'src/npoolstore'
 
 interface Query {
   appGoodID: string
 }
 
 const good = appgood.useAppGoodStore()
-const target = computed(() => good.good(undefined, appGoodID.value as string))
 
 const route = useRoute()
 const query = computed(() => route.query as unknown as Query)
@@ -102,7 +101,7 @@ const appGoodID = computed(() => query.value?.appGoodID || coin.defaultGoodID(un
 const _good = computed(() => good.good(undefined, appGoodID.value as string))
 
 const coin = appcoin.useAppCoinStore()
-const targetCoin = computed(() => coin.coin(undefined, target.value?.CoinTypeID as string))
+const targetCoin = computed(() => sdk.appCoin.appCoin(sdk.appPowerRental.mainCoinTypeID(appGoodID.value as string) as string))
 
 const getGood = () => {
   if (_good.value) {
@@ -112,17 +111,7 @@ const getGood = () => {
     void router.push({ path: '/dashboard' })
     return
   }
-  good.getAppGood({
-    EntID: appGoodID.value,
-    Message: {
-      Error: {
-        Title: 'MSG_GET_GOOD',
-        Message: 'MSG_GET_GOOD_FAIL',
-        Popup: true,
-        Type: notify.NotifyType.Error
-      }
-    }
-  }, () => {
+  sdk.appPowerRental.getAppPowerRental(appGoodID.value, () => {
     if (!_good.value) {
       void router.push({ path: '/' })
     }

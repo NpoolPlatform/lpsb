@@ -1,22 +1,22 @@
 <template>
   <div class='product'>
     <div class='product-heading'>
-      <img class='icon' :src='good.CoinLogo'>
+      <img class='icon' :src='sdk.appPowerRental.mainCoinLogo(appGoodId)'>
       <h3 class='product-title'>
-        {{ good.GoodName }}
+        {{ sdk.appPowerRental.displayName(appGoodId, 0) }}
       </h3>
     </div>
     <h4 class='price'>
-      <span>{{ good.Price }}</span> {{ constant.PriceCoinName }} / {{ $t(good.Unit) }}
+      <span>{{ sdk.appPowerRental.unitPrice(appGoodId) }}</span> {{ constant.PriceCoinName }} / {{ $t(good?.QuantityUnit || '') }}
     </h4>
     <div class='line'>
       <span class='label'>{{ $t('MSG_DAILY_MINING_REWARDS') }}:</span>
-      <span class='value'>*{{ good.CoinUnit }} / {{ $t('MSG_DAY') }}</span>
+      <span class='value'>*{{ sdk.appPowerRental.mainCoinUnit(appGoodId) }} / {{ $t('MSG_DAY') }}</span>
     </div>
 
     <div class='line'>
       <span class='label'>{{ $t('MSG_SERVICE_PERIOD') }}:</span>
-      <span class='value'>{{ good.DurationDays }} {{ $t('MSG_DAYS') }}</span>
+      <span class='value'>{{ sdk.appPowerRental.minOrderDurationDays(appGoodId) }} {{ $t('MSG_DAYS') }}</span>
     </div>
 
     <div class='line'>
@@ -31,7 +31,7 @@
 
     <div class='line'>
       <span class='label'>{{ $t('MSG_ORDER_EFFECTIVE') }}:</span>
-      <span class='value'>{{ utils.formatTime(good.StartAt, undefined) }}</span>
+      <span class='value'>{{ utils.formatTime(good?.ServiceStartAt as number, undefined) }}</span>
     </div>
     <button class='alt' @click='onPurchaseClick'>
       {{ $t('MSG_PURCHASE') }}
@@ -42,18 +42,19 @@
 <script setup lang='ts'>
 import { defineProps, toRef, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { appgood, appcoin, utils, constant } from 'src/npoolstore'
+import { appcoin, utils, constant, sdk } from 'src/npoolstore'
 import { getCoins } from 'src/api/chain'
 
 interface Props {
-  good: appgood.Good
+  appGoodId: string
 }
 
 const props = defineProps<Props>()
-const good = toRef(props, 'good')
+const appGoodId = toRef(props, 'appGoodId')
+const good = computed(() => sdk.appPowerRental.appPowerRental(appGoodId.value))
 
 const coin = appcoin.useAppCoinStore()
-const productInfo = computed(() => coin.productPage(undefined, good.value?.CoinTypeID))
+const productInfo = computed(() => coin.productPage(undefined, sdk.appPowerRental.mainCoinTypeID(appGoodId.value) as string))
 
 const router = useRouter()
 const onPurchaseClick = () => {
@@ -65,7 +66,7 @@ const onPurchaseClick = () => {
   void router.push({
     path: target,
     query: {
-      appGoodID: good.value.EntID
+      appGoodID: appGoodId.value
     }
   })
 }

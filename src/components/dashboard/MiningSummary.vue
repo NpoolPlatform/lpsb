@@ -21,16 +21,13 @@
 </template>
 
 <script setup lang="ts">
-import { IntervalKey } from 'src/const/const'
 import { computed } from 'vue'
-import { constant, coincurrency, ledgerprofit, user } from 'src/npoolstore'
+import { constant, coincurrency, sdk, utils } from 'src/npoolstore'
 
 const currency = coincurrency.useCurrencyStore()
-const logined = user.useLocalUserStore()
 
-const profit = ledgerprofit.useProfitStore()
-const profits = computed(() => profit.profits(undefined, logined.loginedUserID))
-const intervalProfits = computed(() => profit.intervalProfits(undefined, logined.loginedUserID, undefined, IntervalKey.LastDay))
+const profits = computed(() => sdk.ledgerProfit.coinProfits(utils.IntervalKey.All))
+const intervalProfits = computed(() => sdk.ledgerProfit.coinProfits(utils.IntervalKey.LastDay))
 
 const totalProfit = computed(() => {
   let total = 0
