@@ -75,7 +75,7 @@ const exportOrders = computed(() => Array.from(orders.value.filter((el) => el.Or
     PaymentCurrency: el.PaymentBalances[0]?.CoinUnit || constant.PriceCoinName,
     TotalCost: Number(el.PaymentBalances[0]?.Amount || el.GoodValueUSD).toString(),
     MiningPeriod: el.DurationSeconds / utils.SecondsPerDay,
-    CumulativeProfit: sdk.ledgerStatement.totalMiningReward(sdk.appPowerRental.mainCoinTypeID(el.AppGoodID), undefined, el.EntID) / getDeservedRatio.value(el.AppGoodID),
+    CumulativeProfit: sdk.ledgerStatement.totalMiningReward(sdk.appPowerRental.mainCoinTypeID(el.AppGoodID), undefined, el.OrderID) / getDeservedRatio.value(el.AppGoodID),
     ProfitCurrency: sdk.appPowerRental.mainCoinUnit(el.AppGoodID),
     OrderStatus: (_order.orderState(el.ID)?.startsWith('MSG') ? t(_order.orderState(el.ID)) : t('MSG_AWAITING_CONFIRMATION')) +
                 (orderType ? '(' + orderType + ')' : '')
@@ -121,7 +121,7 @@ const table = computed(() => [
     name: 'Total',
     label: t('MSG_PURCHASE_AMOUNT'),
     align: 'center',
-    field: (row: powerrentalorder.PowerRentalOrder) => `${utils.getLocaleString(parseFloat(row.Units))} ${t(row.QuantityUnit)}`
+    field: (row: powerrentalorder.PowerRentalOrder) => `${utils.getLocaleString(parseFloat(row.Units))} ${t(row.GoodQuantityUnit)}`
   },
   {
     name: 'Price',

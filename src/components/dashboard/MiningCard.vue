@@ -22,7 +22,7 @@
       <div class='top-line-item'>
         <span class='label'>{{ $t('MSG_CAPACITY') }}: </span>
         <span class='value'>{{ utils.getLocaleString(goodProfit?.Units) }}</span>
-        <span class='sub-value'>{{ goodProfit ? $t(goodProfit?.GoodUnit) : '' }}</span>
+        <span class='sub-value'>{{ goodProfit ? $t(goodProfit?.GoodQuantityUnit) : '' }}</span>
       </div>
     </div>
     <q-slide-transition>
