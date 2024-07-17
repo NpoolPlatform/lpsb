@@ -70,7 +70,7 @@ const exportOrders = computed(() => Array.from(orders.value.filter((el) => el.Or
     ProductType: getGoodType.value(el.AppGoodID),
     ProductName: sdk.appPowerRental.displayName(el.AppGoodID, 3),
     PurchaseAmount: el.Units,
-    UnitType: t(el.QuantityUnit),
+    UnitType: t(el.GoodQuantityUnit),
     Price: sdk.appPowerRental.unitPriceFloat(el.AppGoodID),
     PaymentCurrency: el.PaymentBalances[0]?.CoinUnit || constant.PriceCoinName,
     TotalCost: Number(el.PaymentBalances[0]?.Amount || el.GoodValueUSD).toString(),
