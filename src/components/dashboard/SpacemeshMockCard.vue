@@ -79,7 +79,7 @@ const coin = appcoin.useAppCoinStore()
 const target = computed(() => coin.coins(undefined).find((el) => el.Name?.toLowerCase()?.includes('spacemesh')) as appcoin.AppCoin)
 
 const goodProfits = computed(() => sdk.ledgerProfit.goodProfits(utils.IntervalKey.All, target?.value?.CoinTypeID))
-const goodUnit = computed(() => goodProfits.value?.[0]?.GoodUnit || '')
+const goodUnit = computed(() => sdk.ledgerProfit.goodQuantityUnit(goodProfits.value?.[0]?.AppGoodID))
 const goodPeriod = computed(() => sdk.appPowerRental.durationDisplayType(goodProfits.value?.[0]?.AppGoodID) || '')
 const totalUnits = computed(() => goodProfits.value?.length ? goodProfits.value?.[0].Units : 0)
 
