@@ -3,10 +3,10 @@
     <img :src='logoText' class='attachment-large size-large logo  cursor-pointer' @click='onLogoClick'>
     <div class='nav'>
       <ul>
-        <li><a class='nav-link' href='#/product/aleo'>{{ $t('MSG_HOME') }}</a></li>
+        <li><a class='nav-link' target='_blank' @click='router.push({ path: "/product/aleo" })'>{{ $t('MSG_HOME') }}</a></li>
         <!-- <li><a class='nav-link' href='javascript:void(0)'>{{ $t('MSG_BLOG') }}</a></li> -->
-        <li><a class='nav-link' href='#/faqs'>{{ $t('MSG_SUPPORT_AND_FAQ') }}</a></li>
-        <li><a class='nav-link' href='#/contact'>{{ $t('MSG_CONTACT') }}</a></li>
+        <li><a class='nav-link' target='_blank' @click='router.push({ path: "/faqs" })'>{{ $t('MSG_SUPPORT_AND_FAQ') }}</a></li>
+        <li><a class='nav-link' target='_blank' @click='router.push({ path: "/contact" })'>{{ $t('MSG_CONTACT') }}</a></li>
         <LangSwitcher />
         <SignHelper v-if='!localUser.logined' />
         <q-btn
@@ -75,10 +75,10 @@
     <div class='hr' />
     <div class='nav'>
       <ul>
-        <li><a class='nav-link' href='#/product/aleo'>{{ $t('MSG_HOME') }}</a></li>
+        <li><a class='nav-link' target='_blank' @click='router.push({ path: "/product/aleo" })'>{{ $t('MSG_HOME') }}</a></li>
         <!-- <li><a class='nav-link' href='javascript:void(0)'>{{ $t('MSG_BLOG') }}</a></li> -->
-        <li><a class='nav-link' href='#/faqs'>{{ $t('MSG_SUPPORT_AND_FAQ') }}</a></li>
-        <li><a class='nav-link' href='#/contact'>{{ $t('MSG_CONTACT') }}</a></li>
+        <li><a class='nav-link' target='_blank' @click='router.push({ path: "/faqs" })'>{{ $t('MSG_SUPPORT_AND_FAQ') }}</a></li>
+        <li><a class='nav-link' target='_blank' @click='router.push({ path: "/contact" })'>{{ $t('MSG_CONTACT') }}</a></li>
       </ul>
     </div>
   </header>

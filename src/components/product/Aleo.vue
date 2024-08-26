@@ -134,7 +134,7 @@
             </a>
           </li>
           <li>
-            <a href='#/product/aleo'>
+            <a target='_blank' @click='router.push({ path: "/product/aleo" })'>
               <img class='link-icon' :src='lightbulb'>
               <span>{{ $t('MSG_PDF_MANUAL') }}</span>
             </a>

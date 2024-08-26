@@ -21,17 +21,17 @@
         <div class='column-4'>
           <h4>{{ $t('MSG_LINKS') }}</h4>
           <ul>
-            <li><a class='footer-link' href='#/product/aleo'>{{ $t('MSG_HOME') }}</a></li>
-            <li><a class='footer-link' href='#/product/aleo'>{{ $t('MSG_PRODUCTS') }}</a></li>
+            <li><a class='footer-link' target='_blank' @click='router.push({ path: "/product/aleo" })'>{{ $t('MSG_HOME') }}</a></li>
+            <li><a class='footer-link' target='_blank' @click='router.push({ path: "/product/aleo" })'>{{ $t('MSG_PRODUCTS') }}</a></li>
             <!-- <li><a class='footer-link' href='javascript:void(0)'>{{ $t('MSG_BLOG') }}</a></li> -->
           </ul>
         </div>
         <div class='column-4'>
           <h4>{{ $t('MSG_HELP') }}</h4>
           <ul>
-            <li><a class='footer-link' href='#/faqs'>{{ $t('MSG_FAQ') }}</a></li>
-            <li><a class='footer-link' href='#/contact'>{{ $t('MSG_CONTACT') }}</a></li>
-            <li><a class='footer-link' href='#/legal'>{{ $t('MSG_LEGAL') }}</a></li>
+            <li><a class='footer-link' target='_blank' @click='router.push({ path: "/faqs" })'>{{ $t('MSG_FAQ') }}</a></li>
+            <li><a class='footer-link' target='_blank' @click='router.push({ path: "/contact" })'>{{ $t('MSG_CONTACT') }}</a></li>
+            <li><a class='footer-link' target='_blank' @click='router.push({ path: "/legal" })'>{{ $t('MSG_LEGAL') }}</a></li>
           </ul>
         </div>
       </div>
@@ -45,10 +45,15 @@
 <script setup lang='ts'>
 import { computed, defineAsyncComponent } from 'vue'
 import { _locale, applang } from 'src/npoolstore'
+import { useRouter } from 'vue-router'
+
 import logoText from '../../assets/logo-text.png'
+
 const LangSwitcher = defineAsyncComponent(() => import('src/components/lang/LangSwitcher.vue'))
 const locale = _locale.useLocaleStore()
 const special = computed(() => locale.lang() === 'ja-JP')
+
+const router = useRouter()
 
 const _applang = applang.useAppLangStore()
 const langs = computed(() => _applang.langs(undefined))
