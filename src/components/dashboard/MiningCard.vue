@@ -127,7 +127,7 @@ const onPurchaseClick = (_good: apppowerrental.AppPowerRental) => {
   void router.push({
     path: _good.ProductPage?.length ? _good.ProductPage : '/product/aleo',
     query: {
-      appGoodID: _good.EntID
+      appGoodID: _good.AppGoodID
     }
   })
 }
