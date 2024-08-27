@@ -148,7 +148,7 @@
 <script setup lang='ts'>
 import { defineAsyncComponent, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { appcoin, appcoindescription, coincurrency, utils, constant, _locale, sdk } from 'src/npoolstore'
+import { appcoindescription, coincurrency, utils, constant, _locale, sdk } from 'src/npoolstore'
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { getCoins, getCurrencies, getDescriptions } from 'src/api/chain'
@@ -167,11 +167,10 @@ interface Query {
 
 const route = useRoute()
 const query = computed(() => route.query as unknown as Query)
-const appGoodID = computed(() => query.value?.appGoodID || coin.defaultGoodID(undefined, coinUnit))
+const appGoodID = computed(() => query.value?.appGoodID || sdk.appDefaultGood.coinDefaultAppGoodIDWithUnit(coinUnit))
 
 const target = computed(() => sdk.appPowerRental.appPowerRental(appGoodID.value as string))
 
-const coin = appcoin.useAppCoinStore()
 // Use CoinUnit to find AppGoodID from AppCoin
 const coinUnit = 'ALEO'
 
@@ -179,6 +178,7 @@ const getGood = () => {
   if (target.value) {
     return
   }
+  console.log(appGoodID.value, coinUnit)
   if (!appGoodID.value) {
     void router.push({ path: '/dashboard' })
     return
@@ -200,12 +200,19 @@ const description = appcoindescription.useCoinDescriptionStore()
 
 const router = useRouter()
 onMounted(() => {
-  if (!coin.coins(undefined).length) {
-    getCoins(0, 100, () => {
-      getGood()
+  if (!sdk.appCoin.appCoins.value.length) {
+    sdk.appCoin.getAppCoins(0, 0, (error: boolean) => {
+      if (error) return
+      sdk.appDefaultGood.getAppDefaultGoods(0, 0, (error: boolean) => {
+        if (error) return
+        getGood()
+      })
     })
   } else {
-    getGood()
+    sdk.appDefaultGood.getAppDefaultGoods(0, 0, (error: boolean) => {
+      if (error) return
+      getGood()
+    })
   }
   if (!description.descriptions(undefined)?.length) {
     getDescriptions(0, 100)
