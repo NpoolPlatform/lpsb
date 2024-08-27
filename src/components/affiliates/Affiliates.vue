@@ -16,7 +16,7 @@
 import { QAjaxBar } from 'quasar'
 import { getCoins } from 'src/api/chain'
 import { defineAsyncComponent, onMounted } from 'vue'
-import { commission, achievement, user, appgood, notify, appcoin, fiatcurrency, fiat } from 'src/npoolstore'
+import { commission, achievement, user, appgood, notify, appcoin, fiatcurrency, fiat, sdk } from 'src/npoolstore'
 
 const CommissionCard = defineAsyncComponent(() => import('src/components/affiliates/Commission.vue'))
 const ReferralCode = defineAsyncComponent(() => import('src/components/affiliates/ReferralCode.vue'))
@@ -46,6 +46,9 @@ onMounted(() => {
   }
   if (!_commission.commissions(undefined, logined.loginedUserID).length) {
     getCommissions(0, 100)
+  }
+  if (!sdk.appPowerRental.appPowerRentals.value.length) {
+    sdk.appPowerRental.getAppPowerRentals(0, 0)
   }
 })
 
