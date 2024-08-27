@@ -160,7 +160,7 @@ const logined = user.useLocalUserStore()
 const _achievement = achievement.useAchievementStore()
 const goodAchievements = computed(() => Array.from(referral.value?.Achievements.filter((el) => {
   return sdk.appPowerRental.visible(el.AppGoodID)
-})).sort((a, b) => a.GoodName.localeCompare(b.GoodName, 'zh-CN')).map((el) => {
+})).sort((a, b) => sdk.appPowerRental.displayName(a.AppGoodID, 4).localeCompare(sdk.appPowerRental.displayName(b.AppGoodID, 4), 'zh-CN')).map((el) => {
   return {
     ...el,
     Editing: false
