@@ -146,7 +146,7 @@ const table = computed(() => [
       } else if (row.OrderType === order.OrderType.Airdrop) {
         orderType = order.OrderType.Airdrop
       }
-      return (_order.orderState(row.ID)?.startsWith('MSG') ? t(_order.orderState(row.ID)) : t('MSG_AWAITING_CONFIRMATION')) +
+      return (sdk.powerRentalOrder.orderState(row.OrderID)?.startsWith('MSG') ? t(sdk.powerRentalOrder.orderState(row.OrderID)) : t('MSG_AWAITING_CONFIRMATION')) +
             (orderType ? ' (' + orderType + ')' : '')
     }
   }
