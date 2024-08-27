@@ -13,7 +13,7 @@
           </div>
           <div class='three-section'>
             <h4>{{ $t('MSG_SERVICE_PERIOD') }}:</h4>
-            <span class='number'>{{ good?.DurationDays }}</span>
+            <span class='number'>{{ sdk.appPowerRental.minOrderDurationDays(appGoodID) }}</span>
             <span class='unit'>{{ $t('MSG_DAYS') }}</span>
           </div>
           <div class='three-section'>
@@ -301,6 +301,8 @@ const getGenerals = (offset:number, limit: number) => {
   })
 }
 
+const getRequiredAppGoods = computed(() => sdk.requiredAppGoods.value?.filter((el) => el.MainAppGoodID === appGoodID.value).map((al) => al.RequiredAppGoodID))
+
 const onSubmit = throttle(() => {
   showBalanceDialog.value = false
   submitting.value = true
@@ -315,8 +317,11 @@ const onSubmit = throttle(() => {
         Amount: `${inputBalance.value}`
       }
     ],
-    FeeAppGoodIDs: [],
-    InvestmentType: order.InvestmentType.FullPayment
+    FeeAppGoodIDs: getRequiredAppGoods.value,
+    FeeDurationSeconds: sdk.appPowerRental.minOrderDurationSeconds(appGoodID.value),
+    InvestmentType: order.InvestmentType.FullPayment,
+    CouponIDs: [],
+    AppGoodStockID: good.value?.AppGoodStockID as string
   }, (error: boolean, o?: powerrentalorder.PowerRentalOrder) => {
     submitting.value = false
     if (error) {

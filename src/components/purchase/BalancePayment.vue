@@ -170,8 +170,9 @@ const onPurchaseClick = () => {
         Amount: `${usdToOtherAmount.value}`
       }
     ],
-    FeeAppGoodIDs: [],
-    InvestmentType: order.InvestmentType.FullPayment
+    InvestmentType: order.InvestmentType.FullPayment,
+    FeeAppGoodIDs: target.value?.Requireds?.map((el) => el.RequiredAppGoodID) as Array<string>,
+    AppGoodStockID: target.value?.AppGoodStockID as string
   }, (error: boolean) => {
     submitting.value = false
     if (error) {
