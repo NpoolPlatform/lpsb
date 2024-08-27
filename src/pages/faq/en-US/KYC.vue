@@ -35,7 +35,7 @@
           </div>
 
           <ul>
-            <li>(1) Open the <a href='https://www.procyon.vip/#/kyc'><strong>[KYC]</strong></a> page after logging in.</li>
+            <li>(1) Open the <a href='https://www.procyon.vip/kyc'><strong>[KYC]</strong></a> page after logging in.</li>
             <li>(2) Select the <strong>[type of identification]</strong> from the list below:</li>
             <ul>
               <li>Passport</li>
@@ -50,7 +50,7 @@
           </h3>
 
           <ul>
-            <li>(1) Open the <a href='https://www.procyon.vip/#/kyc'><strong>[KYC]</strong></a> page after logging in.</li>
+            <li>(1) Open the <a href='https://www.procyon.vip/kyc'><strong>[KYC]</strong></a> page after logging in.</li>
             <li>(2) You can check the status under <strong>[KYC Verification Status]</strong>.</li>
           </ul>
 
