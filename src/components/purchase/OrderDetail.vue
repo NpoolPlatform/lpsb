@@ -9,7 +9,7 @@
           <div class='three-section'>
             <h4>{{ $t('MSG_PURCHASE_AMOUNT') }}:</h4>
             <span class='number'>{{ _order?.Units }}</span>
-            <span class='unit'>{{ _order?.GoodUnit?.length ? $t(_order?.GoodUnit) : '' }}</span>
+            <span class='unit'>{{ $t(sdk.powerRentalOrder.orderGoodQuantityUnit(_order?.OrderID as string)) }}</span>
           </div>
           <div class='three-section'>
             <h4>{{ $t('MSG_AMOUNT_DUE') }}:</h4>
