@@ -3,7 +3,7 @@
     <div class='product-heading'>
       <img class='icon' :src='sdk.appPowerRental.mainCoinLogo(appGoodId)'>
       <h3 class='product-title'>
-        {{ sdk.appPowerRental.displayName(appGoodId, 0) }}
+        {{ $t(sdk.appPowerRental.displayName(appGoodId, 0)) }}
       </h3>
     </div>
     <h4 class='price'>

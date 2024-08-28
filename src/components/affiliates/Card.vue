@@ -42,7 +42,7 @@
             <td>
               <span
                 class='aff-product'
-                v-html='sdk.appPowerRental.displayName(_good.AppGoodID, 4)'
+                v-html='$t(sdk.appPowerRental.displayName(_good.AppGoodID, 4))'
               />
             </td>
             <td v-if='_good.Editing'>
@@ -100,7 +100,7 @@
                 <td>
                   <span
                     class='aff-product'
-                    v-html='sdk.appPowerRental.displayName(__commission.AppGoodID, 4)'
+                    v-html='$t(sdk.appPowerRental.displayName(__commission.AppGoodID, 4))'
                   />
                 </td>
                 <td>

@@ -8,7 +8,7 @@
         {{ subUsername }}
       </p>
       <div v-for='(_good, idx) in visibleGoodAchievements' :key='idx'>
-        <label>{{ sdk.appPowerRental.displayName(_good.AppGoodID, 4) }} {{ $t('MSG_KOL_COMMISSION_RATE') }}:</label>
+        <label>{{ $t(sdk.appPowerRental.displayName(_good.AppGoodID, 4)) }} {{ $t('MSG_KOL_COMMISSION_RATE') }}:</label>
         <input
           type='number'
           v-model='_good.CommissionValue'

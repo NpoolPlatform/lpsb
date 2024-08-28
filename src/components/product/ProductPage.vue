@@ -6,7 +6,7 @@
           <div class='product-page-icon'>
             <img :src='sdk.appPowerRental.mainCoinLogo(appGoodID)'>
           </div>
-          <h1 v-html='sdk.appPowerRental.displayName(appGoodID, 1)' />
+          <h1 v-html='$t(sdk.appPowerRental.displayName(appGoodID, 1))' />
         </div>
       </div>
       <!-- mobile start -->

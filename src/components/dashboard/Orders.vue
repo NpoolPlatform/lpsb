@@ -68,7 +68,7 @@ const exportOrders = computed(() => Array.from(orders.value.filter((el) => el.Or
   return {
     CreatedAt: new Date(el.CreatedAt * 1000).toISOString()?.replace('T', ' ')?.replace('.000Z', ' UTC'),
     ProductType: getGoodType.value(el.AppGoodID),
-    ProductName: sdk.appPowerRental.displayName(el.AppGoodID, 3),
+    ProductName: t(sdk.appPowerRental.displayName(el.AppGoodID, 3)),
     PurchaseAmount: el.Units,
     UnitType: t(el.GoodQuantityUnit),
     Price: sdk.appPowerRental.unitPriceFloat(el.AppGoodID),
@@ -115,7 +115,7 @@ const table = computed(() => [
     name: 'Product',
     label: t('MSG_PRODUCT'),
     align: 'center',
-    field: (row: powerrentalorder.PowerRentalOrder) => sdk.appPowerRental.displayName(row.AppGoodID, 4)
+    field: (row: powerrentalorder.PowerRentalOrder) => t(sdk.appPowerRental.displayName(row.AppGoodID, 4))
   },
   {
     name: 'Total',

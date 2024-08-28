@@ -5,7 +5,7 @@
         <img :src='goodProfit?.CoinLogo'>
       </div>
       <h3 class='mining-title'>
-        <div v-html='sdk.appPowerRental.displayName(target?.AppGoodID as string, 2)' />
+        <div v-html='$t(sdk.appPowerRental.displayName(target?.AppGoodID as string, 2))' />
       </h3>
     </div>
     <div class='top-line-summary'>
@@ -202,7 +202,7 @@ const onExportClick = () => {
     columns: columns
   })
   const blob = new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), output], { type: 'text/plain;charset=utf-8' })
-  let name = sdk.appPowerRental.displayName(target.value?.AppGoodID as string, 2)
+  let name = t(sdk.appPowerRental.displayName(target.value?.AppGoodID as string, 2))
   name = name.replace(/<.*?>/g, '')
   const filename = name + '-' + utils.formatTime(new Date().getTime() / 1000) + '.csv'
   saveAs(blob, filename)
