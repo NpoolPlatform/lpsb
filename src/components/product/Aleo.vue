@@ -1,6 +1,6 @@
 <template>
   <ProductPage
-    :app-good-i-d='(appGoodID as string)'
+    :app-good-id='(appGoodID as string)'
     :purchase-amount='purchaseAmount'
     project-class='project-aleo'
     bg-img='product/aleo/aleo-banner.jpg'
@@ -9,7 +9,7 @@
     <template #product-info>
       <div class='three-section'>
         <h4>{{ $t('MSG_PRICE') }}:</h4>
-        <span class='number'>{{ utils.getLocaleString(good.priceString(undefined, appGoodID as string)) }}</span>
+        <span class='number'>{{ utils.getLocaleString(sdk.appPowerRental.unitPrice(appGoodID as string) as string) }}</span>
         <span class='unit'>{{ constant.PriceCoinName }}</span>
         <div class='tooltip'>
           <img class='more-info' :src='question'><span>{{ $t('MSG_LEARN_MORE') }}</span>
@@ -21,7 +21,7 @@
       <div class='three-section'>
         <h4>{{ $t('MSG_DAILY_MINING_REWARDS') }}:</h4>
         <span class='number'>*</span>
-        <span class='unit'>{{ target?.CoinUnit }} / {{ $t('MSG_DAY') }}</span>
+        <span class='unit'>{{ sdk.appPowerRental.mainCoinUnit(target?.AppGoodID as string) }} / {{ $t('MSG_DAY') }}</span>
         <div class='tooltip'>
           <img class='more-info' :src='question'><span>{{ $t('MSG_LEARN_MORE') }}</span>
           <p class='tooltip-text'>
@@ -31,7 +31,7 @@
       </div>
       <div class='three-section'>
         <h4>{{ $t('MSG_SERVICE_PERIOD') }}:</h4>
-        <span class='number'>{{ utils.getLocaleString(target?.DurationDays?.toString() as string) }}</span>
+        <span class='number'>{{ utils.getLocaleString(sdk.appPowerRental.minOrderDurationDays(target?.AppGoodID as string)) }}</span>
         <span class='unit'>{{ $t('MSG_DAYS') }}</span>
         <div class='tooltip'>
           <img class='more-info' :src='question'><span>{{ $t('MSG_LEARN_MORE') }}</span>
@@ -53,7 +53,7 @@
       </div>
       <div class='three-section'>
         <h4>{{ $t('MSG_ORDER_EFFECTIVE') }}:</h4>
-        <span class='number'>{{ true ? 'TBD*' : utils.formatTime(target?.StartAt as number, 'YYYY/MM/DD') }}</span>
+        <span class='number'>{{ true ? 'TBD*' : utils.formatTime(target?.ServiceStartAt as number, 'YYYY/MM/DD') }}</span>
         <div class='tooltip'>
           <img class='more-info' :src='question'><span>{{ $t('MSG_LEARN_MORE') }}</span>
           <p class='tooltip-text'>
@@ -61,11 +61,11 @@
           </p>
         </div>
       </div>
-      <div class='three-section' v-if='good.canBuy(undefined, target?.EntID as string)'>
+      <div class='three-section' v-if='sdk.appPowerRental.canBuy(target?.AppGoodID as string)'>
         <h4>{{ $t("MSG_SALE_END_DATE") }}</h4>
-        <span class='number'>{{ good.saleEndDate(undefined, target?.EntID as string) }}</span>
+        <span class='number'>{{ sdk.appPowerRental.saleEndDate(target?.AppGoodID as string) }}</span>
         <br>
-        <span class='unit'>{{ good.saleEndTime(undefined, target?.EntID as string) }} {{ $t("MSG_JST") }}</span>
+        <span class='unit'>{{ sdk.appPowerRental.saleEndTime(target?.AppGoodID as string) }} {{ $t("MSG_JST") }}</span>
         <div class='tooltip'>
           <img class='more-info' src='font-awesome/question.svg'><span>{{ $t('MSG_LEARN_MORE') }}</span>
           <p class='tooltip-text'>
@@ -134,7 +134,7 @@
             </a>
           </li>
           <li>
-            <a href='#/product/aleo'>
+            <a target='_blank' @click='router.push({ path: "/product/aleo" })'>
               <img class='link-icon' :src='lightbulb'>
               <span>{{ $t('MSG_PDF_MANUAL') }}</span>
             </a>
@@ -148,12 +148,13 @@
 <script setup lang='ts'>
 import { defineAsyncComponent, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { appcoindescription, coincurrency, utils, constant, _locale, sdk } from 'src/npoolstore'
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { getCoins, getCurrencies, getDescriptions } from 'src/api/chain'
 
 import question from '../../assets/question.svg'
 // import lightbulb from '../../../assets/lightbulb.svg'
-import { appgood, notify, appcoin, appcoindescription, coincurrency, utils, constant, _locale } from 'src/npoolstore'
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { getCoins, getCurrencies, getDescriptions } from 'src/api/chain'
 
 const ProductPage = defineAsyncComponent(() => import('src/components/product/ProductPage.vue'))
 const ProductDetailUS = defineAsyncComponent(() => import('src/components/product/en-US/Detail.vue'))
@@ -165,39 +166,25 @@ interface Query {
 }
 
 const route = useRoute()
-
-const good = appgood.useAppGoodStore()
-const target = computed(() => good.good(undefined, appGoodID.value as string))
-
 const query = computed(() => route.query as unknown as Query)
-const appGoodID = computed(() => query.value?.appGoodID || coin.defaultGoodID(undefined, coinUnit))
+const appGoodID = computed(() => query.value?.appGoodID || sdk.appDefaultGood.coinDefaultAppGoodIDWithUnit(coinUnit))
 
-const coin = appcoin.useAppCoinStore()
+const target = computed(() => sdk.appPowerRental.appPowerRental(appGoodID.value as string))
+
 // Use CoinUnit to find AppGoodID from AppCoin
 const coinUnit = 'ALEO'
 
-const _good = computed(() => good.good(undefined, appGoodID.value as string))
-
 const getGood = () => {
-  if (_good.value) {
+  if (target.value) {
     return
   }
+  console.log(appGoodID.value, coinUnit)
   if (!appGoodID.value) {
     void router.push({ path: '/dashboard' })
     return
   }
-  good.getAppGood({
-    EntID: appGoodID.value,
-    Message: {
-      Error: {
-        Title: 'MSG_GET_GOOD',
-        Message: 'MSG_GET_GOOD_FAIL',
-        Popup: true,
-        Type: notify.NotifyType.Error
-      }
-    }
-  }, () => {
-    if (!_good.value) {
+  sdk.appPowerRental.getAppPowerRental(appGoodID.value, () => {
+    if (!target.value) {
       void router.push({ path: '/dashboard' })
     }
   })
@@ -213,12 +200,19 @@ const description = appcoindescription.useCoinDescriptionStore()
 
 const router = useRouter()
 onMounted(() => {
-  if (!coin.coins(undefined).length) {
-    getCoins(0, 100, () => {
-      getGood()
+  if (!sdk.appCoin.appCoins.value.length) {
+    sdk.appCoin.getAppCoins(0, 0, (error: boolean) => {
+      if (error) return
+      sdk.appDefaultGood.getAppDefaultGoods(0, 0, (error: boolean) => {
+        if (error) return
+        getGood()
+      })
     })
   } else {
-    getGood()
+    sdk.appDefaultGood.getAppDefaultGoods(0, 0, (error: boolean) => {
+      if (error) return
+      getGood()
+    })
   }
   if (!description.descriptions(undefined)?.length) {
     getDescriptions(0, 100)

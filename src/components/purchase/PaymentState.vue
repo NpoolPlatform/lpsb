@@ -3,7 +3,7 @@
     <div class='confirmation'>
       <h3>{{ $t(title) }}</h3>
       <h3 class='form-title'>
-        {{ _order?.PaymentCoinName?.length ? utils.formatCoinName(_order?.CoinName as string) : '' }} | <strong>{{ _order?.ID }}</strong>
+        {{ utils.formatCoinName(paymentCoinName as string) || '' }} | <strong>{{ _order?.ID }}</strong>
       </h3>
       <div class='full-section'>
         <h4>{{ $t('MSG_PURCHASE_AMOUNT') }}:</h4>
@@ -12,8 +12,8 @@
       </div>
       <div class='full-section'>
         <h4>{{ $t('MSG_PAYMENT') }}:</h4>
-        <span class='number'>{{ _order?.PaymentAmount }}</span>
-        <span class='unit'>{{ _order?.PaymentCoinUnit.length ? _order.PaymentCoinUnit : constant.PriceCoinName }}</span>
+        <span class='number'>{{ paymentAmount }}</span>
+        <span class='unit'>{{ paymentCoinUnit }}</span>
       </div>
       <div class='full-section'>
         <h4>{{ $t('MSG_STATUS') }}:</h4>
@@ -43,9 +43,9 @@
 <script setup lang='ts'>
 import { defineProps, toRef, computed, defineEmits } from 'vue'
 import { date } from 'quasar'
+import { utils, constant, sdk } from 'src/npoolstore'
 
 import warning from 'src/assets/warning.svg'
-import { order, utils, constant } from 'src/npoolstore'
 
 interface Props {
   orderId: string
@@ -61,8 +61,10 @@ const props = defineProps<Props>()
 const orderId = toRef(props, 'orderId')
 const title = toRef(props, 'title')
 
-const odr = order.useOrderStore()
-const _order = computed(() => odr.getOrderByEntID(orderId.value))
+const _order = computed(() => sdk.powerRentalOrder.powerRentalOrder(orderId.value))
+const paymentCoinName = computed(() => _order.value?.PaymentBalances?.[0]?.CoinName || constant.PriceCoinName)
+const paymentAmount = computed(() => _order.value?.PaymentBalances?.[0]?.Amount || _order.value?.GoodValueUSD)
+const paymentCoinUnit = computed(() => _order.value?.PaymentBalances?.[0]?.CoinUnit || constant.PriceCoinName)
 
 const emit = defineEmits<{(e: 'proceed'): void;}>()
 

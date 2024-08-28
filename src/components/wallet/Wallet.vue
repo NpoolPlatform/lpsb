@@ -23,25 +23,22 @@
 
 <script setup lang="ts">
 import {
-  accountbase,
   appcoin,
   ledger,
-  useraccount,
   transferaccount,
   coincurrency,
   fiatcurrency,
   notify,
   fiat,
-  constant,
-  useraccountbase,
   user,
-  ledgerprofit
+  sdk,
+  utils
 } from 'src/npoolstore'
 import { QAjaxBar } from 'quasar'
 import { getCoins, getCurrencies } from 'src/api/chain'
-import { IntervalKey } from 'src/const/const'
 import { defineAsyncComponent, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
+
 // eslint-disable-next-line @typescript-eslint/unbound-method
 const { t } = useI18n({ useScope: 'global' })
 
@@ -53,9 +50,7 @@ const WithdrawRecords = defineAsyncComponent(() => import('src/components/wallet
 const TransferAccounts = defineAsyncComponent(() => import('src/components/wallet/TransferAccounts.vue'))
 
 const general = ledger.useLedgerStore()
-const profit = ledgerprofit.useProfitStore()
 const coin = appcoin.useAppCoinStore()
-const account = useraccount.useUserAccountStore()
 const transfer = transferaccount.useTransferAccountStore()
 const _coincurrency = coincurrency.useCurrencyStore()
 const _fiatcurrency = fiatcurrency.useFiatCurrencyStore()
@@ -65,18 +60,20 @@ onMounted(() => {
   if (!general.ledgers().length) {
     getGenerals(0, 100)
   }
-  if (!profit.intervalProfits(undefined, logined.loginedUserID, undefined, IntervalKey.LastDay).length) {
-    getIntervalProfits(
-      IntervalKey.LastDay,
-      Math.ceil(new Date().getTime() / 1000) - constant.SecondsEachDay,
+  if (!sdk.ledgerProfit.coinProfits(utils.IntervalKey.LastDay).length) {
+    sdk.ledgerProfit.getCoinProfits(
+      utils.IntervalKey.LastDay,
+      utils.intervalStartAt(utils.IntervalKey.LastDay),
       Math.ceil(new Date().getTime() / 1000),
-      0, 100)
+      0,
+      0
+    )
   }
   if (!coin.coins(undefined).length) {
     getCoins(0, 100)
   }
-  if (!account.accounts(undefined).length) {
-    getUserAccounts(0, 100)
+  if (!sdk.userWithdrawAccount.userWithdrawAccounts(logined.loginedUserID).length) {
+    sdk.userWithdrawAccount.getMyUserWithdrawAccounts(0, 0)
   }
   if (!transfer.transferAccounts(undefined, logined.loginedUserID).length) {
     getTransfers(0, 100)
@@ -108,27 +105,6 @@ const getGenerals = (offset:number, limit: number) => {
   })
 }
 
-const getIntervalProfits = (key: IntervalKey, startAt: number, endAt: number, offset:number, limit: number) => {
-  profit.getIntervalProfits({
-    StartAt: startAt,
-    EndAt: endAt,
-    Offset: offset,
-    Limit: limit,
-    Message: {
-      Error: {
-        Title: t('MSG_GET_GENERAL_FAIL'),
-        Popup: true,
-        Type: notify.NotifyType.Error
-      }
-    }
-  }, key, (error: boolean, rows?: Array<ledgerprofit.Profit>) => {
-    if (error || !rows?.length) {
-      return
-    }
-    getIntervalProfits(key, startAt, endAt, limit + offset, limit)
-  })
-}
-
 const getTransfers = (offset: number, limit: number) => {
   transfer.getTransfers({
     Offset: offset,
@@ -145,24 +121,6 @@ const getTransfers = (offset: number, limit: number) => {
       return
     }
     getTransfers(limit + offset, limit)
-  })
-}
-
-const getUserAccounts = (offset: number, limit: number) => {
-  account.getUserAccounts({
-    Offset: offset,
-    Limit: limit,
-    UsedFor: accountbase.AccountUsedFor.UserWithdraw,
-    Message: {
-      Error: {
-        Title: t('MSG_GET_WITHDRAW_ACCOUNTS_FAIL'),
-        Popup: true,
-        Type: notify.NotifyType.Error
-      }
-    }
-  }, (error: boolean, accounts?: Array<useraccountbase.Account>) => {
-    if (error || !accounts?.length) return
-    getUserAccounts(offset + limit, limit)
   })
 }
 

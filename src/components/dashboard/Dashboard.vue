@@ -18,9 +18,8 @@
 <script setup lang='ts'>
 import { defineAsyncComponent, onMounted, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { IntervalKey } from 'src/const/const'
 import { QAjaxBar } from 'quasar'
-import { appgood, ledgerprofit, notify, order, constant, appcoin, coincurrency, ledgerstatement, user } from 'src/npoolstore'
+import { notify, appcoin, coincurrency, ledgerstatement, user, sdk, utils } from 'src/npoolstore'
 import { getCoins, getCurrencies } from 'src/api/chain'
 
 // const MiningSummary = defineAsyncComponent(() => import('src/components/dashboard/MiningSummary.vue'))
@@ -30,51 +29,54 @@ const Orders = defineAsyncComponent(() => import('src/components/dashboard/Order
 // eslint-disable-next-line @typescript-eslint/unbound-method
 const { t } = useI18n({ useScope: 'global' })
 
-const profit = ledgerprofit.useProfitStore()
 const coin = appcoin.useAppCoinStore()
-const _order = order.useOrderStore()
-const good = appgood.useAppGoodStore()
 const currency = coincurrency.useCurrencyStore()
 const logined = user.useLocalUserStore()
 
 const detail = ledgerstatement.useStatementStore()
 const miningRewards = computed(() => detail.miningRewards(undefined, logined.loginedUserID))
 onMounted(() => {
-  if (!profit.profits(undefined, logined.loginedUserID).length) {
-    getProfits(0, 100)
+  if (!sdk.ledgerProfit.coinProfits(utils.IntervalKey.All).length) {
+    sdk.ledgerProfit.getCoinProfits(utils.IntervalKey.All, 0, Math.ceil(new Date().getTime() / 1000), 0, 0)
   }
-  if (!profit.intervalProfits(undefined, logined.loginedUserID, undefined, IntervalKey.LastDay).length) {
-    getIntervalProfits(
-      IntervalKey.LastDay,
-      Math.ceil(new Date().getTime() / 1000) - constant.SecondsEachDay,
+  if (!sdk.ledgerProfit.coinProfits(utils.IntervalKey.LastDay).length) {
+    sdk.ledgerProfit.getCoinProfits(
+      utils.IntervalKey.All,
+      utils.intervalStartAt(utils.IntervalKey.LastDay),
       Math.ceil(new Date().getTime() / 1000),
-      0, 100)
+      0,
+      0
+    )
   }
 
-  if (!profit.goodProfits(undefined, logined.loginedUserID).length) {
-    getGoodProfits(0, 100, 0, Math.ceil(new Date().getTime() / 1000))
+  if (!sdk.ledgerProfit.goodProfits(utils.IntervalKey.All).length) {
+    sdk.ledgerProfit.getGoodProfits(utils.IntervalKey.All, 0, Math.ceil(new Date().getTime() / 1000), 0, 0)
   }
-  if (!profit.intervalGoodProfits(undefined, logined.loginedUserID, IntervalKey.LastDay).length) {
-    getIntervalGoodProfits(
-      IntervalKey.LastDay,
-      Math.ceil(new Date().getTime() / 1000) - constant.SecondsEachDay,
+  if (!sdk.ledgerProfit.goodProfits(utils.IntervalKey.LastDay).length) {
+    sdk.ledgerProfit.getGoodProfits(
+      utils.IntervalKey.LastDay,
+      utils.intervalStartAt(utils.IntervalKey.LastDay),
       Math.ceil(new Date().getTime() / 1000),
-      0, 100)
+      0,
+      0
+    )
   }
-  if (!profit.intervalGoodProfits(undefined, logined.loginedUserID, IntervalKey.LastMonth).length) {
-    getIntervalGoodProfits(
-      IntervalKey.LastMonth,
-      Math.ceil(new Date().getTime() / 1000) - (constant.SecondsEachDay * 30),
+  if (!sdk.ledgerProfit.goodProfits(utils.IntervalKey.LastMonth).length) {
+    sdk.ledgerProfit.getGoodProfits(
+      utils.IntervalKey.All,
+      utils.intervalStartAt(utils.IntervalKey.LastMonth),
       Math.ceil(new Date().getTime() / 1000),
-      0, 100)
+      0,
+      0
+    )
   }
 
-  if (!_order.orders(undefined, logined.loginedUserID).length) {
-    getOrders(0, 100)
+  if (!sdk.powerRentalOrder.powerRentalOrders.value.length) {
+    sdk.powerRentalOrder.getMyPowerRentalOrders(0, 0)
   }
 
-  if (!good.goods(undefined).length) {
-    getAppGoods(0, 100)
+  if (!sdk.appPowerRental.appPowerRentals.value.length) {
+    sdk.appPowerRental.getAppPowerRentals(0, 0)
   }
 
   if (!coin.coins(undefined).length) {
@@ -88,126 +90,6 @@ onMounted(() => {
     getMiningRewards(0, 100)
   }
 })
-
-const getProfits = (offset:number, limit: number) => {
-  profit.getProfits({
-    Offset: offset,
-    Limit: limit,
-    Message: {
-      Error: {
-        Title: 'MSG_GET_PROFIT_FAIL',
-        Popup: true,
-        Type: notify.NotifyType.Error
-      }
-    }
-  }, (error: boolean, rows: Array<ledgerprofit.Profit>) => {
-    if (error || !rows.length) {
-      return
-    }
-    getProfits(limit + offset, limit)
-  })
-}
-
-const getIntervalProfits = (key: IntervalKey, startAt: number, endAt: number, offset: number, limit: number) => {
-  profit.getIntervalProfits({
-    StartAt: startAt,
-    EndAt: endAt,
-    Offset: offset,
-    Limit: limit,
-    Message: {
-      Error: {
-        Title: 'MSG_GET_PROFIT_FAIL',
-        Popup: true,
-        Type: notify.NotifyType.Error
-      }
-    }
-  }, key, (error: boolean, rows: Array<ledgerprofit.Profit>) => {
-    if (error || !rows.length) {
-      return
-    }
-    getIntervalProfits(key, startAt, endAt, limit + offset, limit)
-  })
-}
-
-const getGoodProfits = (offset: number, limit: number, startAt: number, endAt: number) => {
-  profit.getGoodProfits({
-    Offset: offset,
-    Limit: limit,
-    StartAt: startAt,
-    EndAt: endAt,
-    Message: {
-      Error: {
-        Title: 'MSG_GET_PROFIT_FAIL',
-        Popup: true,
-        Type: notify.NotifyType.Error
-      }
-    }
-  }, (error: boolean, rows: Array<ledgerprofit.GoodProfit>) => {
-    if (error || !rows.length) {
-      return
-    }
-    getGoodProfits(limit + offset, limit, startAt, endAt)
-  })
-}
-
-const getIntervalGoodProfits = (key: IntervalKey, startAt: number, endAt: number, offset: number, limit: number) => {
-  profit.getIntervalGoodProfits({
-    StartAt: startAt,
-    EndAt: endAt,
-    Offset: offset,
-    Limit: limit,
-    Message: {
-      Error: {
-        Title: 'MSG_GET_PROFIT_FAIL',
-        Popup: true,
-        Type: notify.NotifyType.Error
-      }
-    }
-  }, key, (error: boolean, rows: Array<ledgerprofit.GoodProfit>) => {
-    if (error || !rows.length) {
-      return
-    }
-    getIntervalGoodProfits(key, startAt, endAt, limit + offset, limit)
-  })
-}
-
-const getOrders = (offset:number, limit: number) => {
-  _order.getOrders({
-    Offset: offset,
-    Limit: limit,
-    Message: {
-      Error: {
-        Title: 'MSG_GET_ORDERS_FAIL',
-        Popup: true,
-        Type: notify.NotifyType.Error
-      }
-    }
-  }, (error: boolean, rows?: Array<order.Order>) => {
-    if (error || !rows?.length) {
-      return
-    }
-    getOrders(offset + limit, limit)
-  })
-}
-
-const getAppGoods = (offset: number, limit: number) => {
-  good.getAppGoods({
-    Offset: offset,
-    Limit: limit,
-    Message: {
-      Error: {
-        Title: 'MSG_GET_APP_GOODS_FAIL',
-        Popup: true,
-        Type: notify.NotifyType.Error
-      }
-    }
-  }, (error: boolean, rows?: Array<appgood.Good>) => {
-    if (error || !rows?.length) {
-      return
-    }
-    getAppGoods(offset + limit, limit)
-  })
-}
 
 const getMiningRewards = (offset: number, limit: number) => {
   detail.getMiningRewards({

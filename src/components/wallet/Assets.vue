@@ -95,9 +95,8 @@ import {
   useraccountbase,
   accountbase,
   utils,
-  ledgerprofit
+  sdk
 } from 'src/npoolstore'
-import { IntervalKey } from 'src/const/const'
 import { useI18n } from 'vue-i18n'
 // eslint-disable-next-line @typescript-eslint/unbound-method
 const { t } = useI18n({ useScope: 'global' })
@@ -129,7 +128,6 @@ const _fiatcurrency = fiatcurrency.useFiatCurrencyStore()
 const logined = user.useLocalUserStore()
 
 const general = ledger.useLedgerStore()
-const profit = ledgerprofit.useProfitStore()
 
 const generals = computed(() => {
   return Array.from(general.ledgers(undefined, logined.loginedUserID).filter((el) => {
@@ -138,7 +136,7 @@ const generals = computed(() => {
     return {
       ...el,
       Balance: Number(el.Spendable),
-      Last24HoursBalance: profit.intervalIncoming(undefined, logined.loginedUserID, el.CoinTypeID, IntervalKey.LastDay),
+      Last24HoursBalance: sdk.ledgerProfit.totalIncoming(utils.IntervalKey.LastDay, el.CoinTypeID),
       TotalUSDValue: Number(el.Spendable) * _coincurrency.currency(el.CoinTypeID),
       TotalJPYValue: Number(el.Spendable) * _coincurrency.currency(el.CoinTypeID) * _fiatcurrency.jpy()
     } as MyLedger
@@ -166,17 +164,7 @@ const onReturnWallet = () => {
 
 const onDepositClick = (row: MyLedger) => {
   depositClick.value = true
-  account.getDepositAccount({
-    CoinTypeID: row.CoinTypeID,
-    UsedFor: accountbase.AccountUsedFor.UserDeposit,
-    Message: {
-      Error: {
-        Title: t('MSG_FAIL_TO_GET_DEPOSIT_ACCOUNT'),
-        Popup: true,
-        Type: notify.NotifyType.Error
-      }
-    }
-  }, (error: boolean, row?: useraccountbase.Account) => {
+  sdk.userDepositAccount.getDepositAccount(row.CoinTypeID, (error: boolean, row?: useraccountbase.Account) => {
     depositClick.value = false
     if (error) {
       return

@@ -7,7 +7,7 @@
         {{ username }}
       </h3>
       <span class='aff-email'>{{ referral?.EmailAddress?.length > 0 ? referral?.EmailAddress : referral?.PhoneNO }}</span>
-      <span>{{ $t('MSG_ONBOARDED_USERS') }}:<span class='aff-number'>{{ utils.getLocaleString(referral.TotalInvitees)
+      <span>{{ $t('MSG_ONBOARDED_USERS') }}:<span class='aff-number'>{{ utils.getLocaleString(referral.DirectInvitees)
       }}</span></span>
     </div>
     <div class='aff-table'>
@@ -42,7 +42,7 @@
             <td>
               <span
                 class='aff-product'
-                v-html='getDisplayNames(_good.AppGoodID)?.[4] ? $t(getDisplayNames(_good.AppGoodID)?.[4] as string) : _good.GoodName'
+                v-html='$t(sdk.appPowerRental.displayName(_good.AppGoodID, 4))'
               />
             </td>
             <td v-if='_good.Editing'>
@@ -55,8 +55,8 @@
               <span class='aff-number'>{{ _good.CommissionValue }}<span class='unit'>%</span></span>
               <button
                 v-if='child'
-                :class='["alt", !good.enableSetCommission(undefined, _good.AppGoodID) || !good.canBuy(undefined, _good.AppGoodID) ? "in-active" : ""]'
-                :disabled='!good.enableSetCommission(undefined, _good.AppGoodID) || !good.canBuy(undefined, _good.AppGoodID)'
+                :class='["alt", !sdk.appPowerRental.enableSetCommission(_good.AppGoodID) || !sdk.appPowerRental.canBuy(_good.AppGoodID) ? "in-active" : ""]'
+                :disabled='!sdk.appPowerRental.enableSetCommission(_good.AppGoodID) || !sdk.appPowerRental.canBuy(_good.AppGoodID)'
                 @click='(_good.Editing = true)'
               >
                 {{ $t('MSG_SET') }}
@@ -100,7 +100,7 @@
                 <td>
                   <span
                     class='aff-product'
-                    v-html='getDisplayNames(__commission.AppGoodID)?.[4] ? $t(getDisplayNames(__commission.AppGoodID)?.[4] as string) : good.good(undefined, __commission.AppGoodID)?.GoodName'
+                    v-html='$t(sdk.appPowerRental.displayName(__commission.AppGoodID, 4))'
                   />
                 </td>
                 <td>
@@ -130,7 +130,7 @@
 import { ref, toRef, defineProps, computed } from 'vue'
 import chevrons from '../../assets/chevrons.svg'
 import { MyGoodAchievement } from 'src/localstore/ledger/types'
-import { commission, achievement, constant, user, appgood, notify, utils } from 'src/npoolstore'
+import { commission, achievement, constant, user, notify, utils, sdk } from 'src/npoolstore'
 import { useI18n } from 'vue-i18n'
 // eslint-disable-next-line @typescript-eslint/unbound-method
 const { locale } = useI18n({ useScope: 'global' })
@@ -157,13 +157,10 @@ const username = computed(() => _user.displayName(undefined, undefined, referral
 
 const logined = user.useLocalUserStore()
 
-const good = appgood.useAppGoodStore()
-const getDisplayNames = computed(() => (appGoodID: string) => good.displayNames(undefined, appGoodID))
-
 const _achievement = achievement.useAchievementStore()
 const goodAchievements = computed(() => Array.from(referral.value?.Achievements.filter((el) => {
-  return good.visible(undefined, el.AppGoodID)
-})).sort((a, b) => a.GoodName.localeCompare(b.GoodName, 'zh-CN')).map((el) => {
+  return sdk.appPowerRental.visible(el.AppGoodID)
+})).sort((a, b) => sdk.appPowerRental.displayName(a.AppGoodID, 4).localeCompare(sdk.appPowerRental.displayName(b.AppGoodID, 4), 'zh-CN')).map((el) => {
   return {
     ...el,
     Editing: false

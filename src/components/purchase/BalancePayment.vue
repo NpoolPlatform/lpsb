@@ -84,7 +84,7 @@
 </template>
 
 <script setup lang='ts'>
-import { order, notify, ledger, appgood, appcoin, coincurrency, utils, user, coincurrencybase } from 'src/npoolstore'
+import { order, notify, ledger, appcoin, coincurrency, utils, user, coincurrencybase, sdk } from 'src/npoolstore'
 import { defineAsyncComponent, onMounted, ref, computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
@@ -110,27 +110,21 @@ const appGoodID = computed(() => query.value.appGoodID)
 const coinTypeID = ref(query.value.coinTypeID)
 
 const coin = appcoin.useAppCoinStore()
-const coins = computed(() => coin.payableCoins().filter((el) => el.ENV === target.value?.CoinEnv))
+const coins = computed(() => coin.payableCoins().filter((el) => el.ENV === sdk.appPowerRental.coinEnv(appGoodID.value)))
 const paymentCoin = computed(() => coin.coin(undefined, coinTypeID.value))
 
-const good = appgood.useAppGoodStore()
-const target = computed(() => good.good(undefined, appGoodID.value))
-const purchaseLimit = computed(() => good.purchaseLimit(undefined, target.value?.EntID as string))
+const target = computed(() => sdk.appPowerRental.appPowerRental(appGoodID.value))
+const purchaseLimit = computed(() => sdk.appPowerRental.purchaseLimit(appGoodID.value))
 const logined = user.useLocalUserStore()
 
 const selectedCoinCurrency = ref(1) // 币种汇率
 const general = ledger.useLedgerStore()
 const balance = computed(() => parseFloat((Number(general.coinBalance(undefined, logined.loginedUserID as string, coinTypeID.value)) * selectedCoinCurrency.value).toFixed(4)))
 
-const _order = order.useOrderStore()
-const purchaseLimited = computed(() => {
-  const purchasedUnits = _order.purchasedUnits(undefined, logined.loginedUserID as string, target.value?.CoinTypeID as string, appGoodID.value)
-  return purchasedUnits >= Number(target?.value?.MaxUserAmount) ||
-        (purchasedUnits + Number(purchaseAmount.value)) > Number(target?.value?.MaxUserAmount)
-})
+const purchaseLimited = computed(() => purchaseLimit.value <= 0)
 
 const purchaseAmount = ref(query.value.purchaseAmount) // 购买数量
-const paymentAmount = computed(() => Number(good.packagePriceFloat(undefined, appGoodID.value)) * purchaseAmount.value) // 支付金额
+const paymentAmount = computed(() => Number(sdk.appPowerRental.unitPriceFloat(appGoodID.value)) * purchaseAmount.value) // 支付金额
 const usdToOtherAmount = computed(() => parseFloat((Math.ceil(paymentAmount.value / selectedCoinCurrency.value * 10000) / 10000).toFixed(4)))
 const usedToOtherAmountISNaN = computed(() => isNaN(usdToOtherAmount.value))
 const insufficientFunds = computed(() => balance.value < paymentAmount.value)
@@ -166,26 +160,24 @@ const onPurchaseClick = () => {
     return
   }
   submitting.value = true
-  _order.createOrder({
+  sdk.powerRentalOrder.createPowerRentalOrder({
     AppGoodID: appGoodID.value,
+    DurationSeconds: sdk.appPowerRental.minOrderDurationSeconds(appGoodID.value),
     Units: `${purchaseAmount.value}`,
-    PaymentCoinID: coinTypeID.value,
-    PayWithBalanceAmount: `${usdToOtherAmount.value}`,
-    InvestmentType: order.InvestmentType.FullPayment,
-    Message: {
-      Error: {
-        Title: 'MSG_CREATE_ORDER',
-        Message: 'MSG_CREATE_ORDER_FAIL',
-        Popup: true,
-        Type: notify.NotifyType.Error
+    Balances: [
+      {
+        CoinTypeID: coinTypeID.value,
+        Amount: `${usdToOtherAmount.value}`
       }
-    }
+    ],
+    InvestmentType: order.InvestmentType.FullPayment,
+    FeeAppGoodIDs: target.value?.Requireds?.map((el) => el.RequiredAppGoodID) as Array<string>,
+    AppGoodStockID: target.value?.AppGoodStockID as string
   }, (error: boolean) => {
     submitting.value = false
     if (error) {
       return
     }
-    _order.$reset()
     general.$reset()
     void router.push({
       path: '/dashboard'
@@ -226,18 +218,7 @@ onMounted(() => {
   }
 
   if (!target.value) {
-    good.getAppGood({
-      EntID: appGoodID.value,
-      Message: {
-        Error: {
-          Title: 'MSG_GET_GOOD',
-          Message: 'MSG_GET_GOOD_FAIL',
-          Popup: true,
-          Type: notify.NotifyType.Error
-        }
-      }
-    }, () => {
-    // TODO
+    sdk.appPowerRental.getAppPowerRental(appGoodID.value, () => {
       onPurchaseAmountFocusOut()
     })
   }
@@ -254,32 +235,12 @@ onMounted(() => {
     getCurrencies(0, 500)
   }
 
-  _order.$reset()
-  if (!_order.orders(undefined, logined.loginedUserID).length) {
-    getOrders(0, 500)
+  if (!sdk.powerRentalOrder.powerRentalOrders.value.length) {
+    sdk.powerRentalOrder.getPowerRentalOrders(0, 0)
   }
 
   getCoinCurrency(coinTypeID.value)
 })
-const getOrders = (offset:number, limit: number) => {
-  _order.getOrders({
-    Offset: offset,
-    Limit: limit,
-    Message: {
-      Error: {
-        Title: 'MSG_GET_ORDERS',
-        Message: 'MSG_GET_ORDERS_FAIL',
-        Popup: true,
-        Type: notify.NotifyType.Error
-      }
-    }
-  }, (error: boolean, rows?: Array<order.Order>) => {
-    if (error || !rows?.length) {
-      return
-    }
-    getOrders(offset + limit, limit)
-  })
-}
 
 const getGenerals = (offset:number, limit: number) => {
   general.getLedgers({
