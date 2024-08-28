@@ -45,7 +45,7 @@ const router = useRouter()
 const query = computed(() => route.query as unknown as Query)
 
 const _achievement = achievement.useAchievementStore()
-const referral = computed(() => _achievement.achievement(undefined, query.value?.userID))
+const referral = computed(() => _achievement.achievement(undefined, query.value?.userID) as achievement.Achievement)
 
 const _user = user.useUserStore()
 const username = computed(() => _user.displayName(undefined, undefined, referral.value?.FirstName,
@@ -71,7 +71,9 @@ const getGoodCommissionThreshold = computed(() => (appGoodID: string) => {
 })
 
 const good = appgood.useAppGoodStore()
-const visibleGoodAchievements = computed(() => referral.value?.Achievements?.filter((el) => good.visible(undefined, el.AppGoodID)))
+const visibleGoodAchievements = computed(() => Array.from(referral.value?.Achievements?.filter((el) => {
+  return sdk.appPowerRental.visible(el.AppGoodID)
+})).sort((a, b) => sdk.appPowerRental.displayName(a.AppGoodID, 4).localeCompare(sdk.appPowerRental.displayName(b.AppGoodID, 4), 'zh-CN')))
 
 const backTimer = ref(-1)
 const submitting = ref(false)
@@ -89,7 +91,7 @@ const onSubmit = () => {
   })
 
   _user.updateUserKol({
-    TargetUserID: referral.value?.UserID as string,
+    TargetUserID: referral.value?.UserID,
     Kol: true,
     Message: {
       Error: {
@@ -120,7 +122,7 @@ const onSubmit = () => {
           return
       }
       _commission.createCommission({
-        TargetUserID: referral.value?.UserID as string,
+        TargetUserID: referral.value?.UserID,
         AppGoodID: row.AppGoodID,
         SettleType: commission.SettleType.GoodOrderPayment,
         SettleAmountType: getGoodCommissionSettleAmountType.value(row.AppGoodID),
