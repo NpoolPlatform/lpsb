@@ -34,6 +34,7 @@ const goodProfits = computed(() => Array.from(sdk.ledgerProfit.goodProfits(utils
   const daysMined = Math.floor(remain / 24 / 60 / 60)
   const durationDays = Number((_good?.MinOrderDurationSeconds || 0) / utils.SecondsPerDay)
   const daysRemaining = durationDays - daysMined > 0 ? durationDays - daysMined : 0
+  const servicePeriod = _good.MaxOrderDurationSeconds / 60 / 60 / 24
   return {
     ...el,
     Units: el.Units,
@@ -45,11 +46,12 @@ const goodProfits = computed(() => Array.from(sdk.ledgerProfit.goodProfits(utils
     Last30DaysInComing: sdk.ledgerProfit.totalIncoming(utils.IntervalKey.LastMonth, el.CoinTypeID, el.AppGoodID),
     Last30DaysUSDInComing: coinCurrency(el.CoinTypeID) * sdk.ledgerProfit.totalIncoming(utils.IntervalKey.LastMonth, el.CoinTypeID, el.AppGoodID),
     GoodSaleEndAt: _good?.SaleEndAt,
-    TotalEstimatedDailyReward: Number(el.Units) * parseFloat(good.good(undefined, el.AppGoodID)?.LastUnitRewardAmount as string),
+    TotalEstimatedDailyReward: Number(el.Units) * Number(_good.Rewards?.find((el) => el.MainCoin)?.LastUnitRewardAmount),
     MiningStartDate: _good?.ServiceStartAt > Math.ceil(Date.now() / 1000) ? getTBD.value(el.AppGoodID) : utils.formatTime(_good?.ServiceStartAt, 'YYYY-MM-DD'),
     DaysMined: daysMined > durationDays ? durationDays : daysMined,
     DaysRemaining: daysRemaining,
-    GoodServicePeriodDays: durationDays
+    GoodServicePeriodDays: durationDays,
+    ServicePeriod: servicePeriod
   } as MyGoodProfit
 }).sort((a, b) => {
   if (a.CoinUnit.localeCompare(b.CoinUnit, 'zh-CN')) {
