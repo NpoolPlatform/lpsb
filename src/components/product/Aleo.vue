@@ -42,7 +42,7 @@
       </div>
       <div class='three-section'>
         <h4>{{ $t('MSG_TECHNIQUE_SERVICE_FEE') }}:</h4>
-        <span class='number'>20</span>
+        <span class='number'>{{ techServiceFeePercent }}</span>
         <span class='unit'>%</span>
         <div class='tooltip'>
           <img class='more-info' :src='question'><span>{{ $t('MSG_LEARN_MORE') }}</span>
@@ -170,6 +170,7 @@ const query = computed(() => route.query as unknown as Query)
 const appGoodID = computed(() => query.value?.appGoodID || sdk.appDefaultGood.coinDefaultAppGoodIDWithUnit(coinUnit))
 
 const target = computed(() => sdk.appPowerRental.appPowerRental(appGoodID.value as string))
+const techServiceFeePercent = computed(() => sdk.appPowerRental.techniqueFeeRatio(appGoodID.value as string))
 
 // Use CoinUnit to find AppGoodID from AppCoin
 const coinUnit = 'ALEO'

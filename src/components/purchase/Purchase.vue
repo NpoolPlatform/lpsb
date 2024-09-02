@@ -18,7 +18,7 @@
           </div>
           <div class='three-section'>
             <h4>{{ $t('MSG_TECHNIQUE_SERVICE_FEE') }}:</h4>
-            <span class='number'>20</span>
+            <span class='number'>{{ techServiceFeePercent }}</span>
             <span class='unit'>%</span>
           </div>
           <div class='three-section'>
@@ -185,6 +185,7 @@ const coindescription = appcoindescription.useCoinDescriptionStore()
 
 const _coin = coin.useCoinStore()
 const targetCoin = computed(() => sdk.appCoin.appCoin(sdk.appPowerRental.mainCoinTypeID(appGoodID.value) as string))
+const techServiceFeePercent = computed(() => sdk.appPowerRental.techniqueFeeRatio(appGoodID.value))
 
 const description = computed(() => coindescription.coinUsedForDescription(undefined, sdk.appPowerRental.mainCoinTypeID(appGoodID.value) as string, usedFor.value))
 const coins = computed(() => _coin.coins().filter((coin) => coin.ForPay && !coin.Presale && coin.ENV === targetCoin.value?.ENV))
@@ -301,7 +302,7 @@ const getGenerals = (offset:number, limit: number) => {
   })
 }
 
-const getRequiredAppGoods = computed(() => sdk.requiredAppGoods.value?.filter((el) => el.MainAppGoodID === appGoodID.value).map((al) => al.RequiredAppGoodID))
+const getRequiredAppGoods = computed(() => sdk.requiredAppGood.requiredAppGoods.value?.filter((el) => el.MainAppGoodID === appGoodID.value).map((al) => al.RequiredAppGoodID))
 
 const onSubmit = throttle(() => {
   showBalanceDialog.value = false
@@ -337,9 +338,14 @@ const onSubmit = throttle(() => {
   })
 }, ThrottleSeconds * 1000)
 
+const requiredAppGoods = computed(() => sdk.requiredAppGood.requiredAppGoods.value)
+
 onMounted(() => {
   if (!good.value) {
     sdk.appPowerRental.getAppPowerRental(appGoodID.value)
+  }
+  if (!requiredAppGoods.value?.length) {
+    sdk.requiredAppGood.getRequiredAppGoods(0, 0)
   }
 
   if (coins.value.length === 0) {

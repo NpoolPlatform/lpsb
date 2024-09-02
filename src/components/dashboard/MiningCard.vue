@@ -58,7 +58,7 @@
           <span class='label'>{{ $t('MSG_TECHNIQUE_SERVICE_FEE') }}:</span>
           <span class='value'>
             {{ goodProfit?.CoinPreSale ? '*' : utils.getLocaleString(parseFloat((goodProfit.Last24HoursInComing / deservedRatio * techServiceFee)?.toFixed(4))) }}
-            <span class='unit'>{{ goodProfit?.CoinUnit }} ({{ sdk.appPowerRental.techniqueFeeRatio(target?.AppGoodID as string) }}%)</span>
+            <span class='unit'>{{ goodProfit?.CoinUnit }} ({{ techServiceFee * 100 }}%)</span>
           </span>
         </div>
         <div class='line' v-if='goodProfit.AppGoodID === "a7f969d9-913f-434c-a915-5f916a629feb"'>

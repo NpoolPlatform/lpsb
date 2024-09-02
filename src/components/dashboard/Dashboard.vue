@@ -36,6 +36,12 @@ const logined = user.useLocalUserStore()
 const detail = ledgerstatement.useStatementStore()
 const miningRewards = computed(() => detail.miningRewards(undefined, logined.loginedUserID))
 onMounted(() => {
+  if (!sdk.appPowerRental.appPowerRentals.value.length) {
+    sdk.appPowerRental.getAppPowerRentals(0, 0)
+  }
+  if (!sdk.requiredAppGood.requiredAppGoods.value.length) {
+    sdk.requiredAppGood.getRequiredAppGoods(0, 0)
+  }
   if (!sdk.ledgerProfit.coinProfits(utils.IntervalKey.All).length) {
     sdk.ledgerProfit.getCoinProfits(utils.IntervalKey.All, 0, Math.ceil(new Date().getTime() / 1000), 0, 0)
   }
