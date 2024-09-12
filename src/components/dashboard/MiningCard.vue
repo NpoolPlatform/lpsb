@@ -64,13 +64,13 @@
         <div class='line' v-if='goodProfit?.AppGoodID === "a7f969d9-913f-434c-a915-5f916a629feb"'>
           <span class='label'>{{ $t('MSG_TESTNET_3_INCENTIVE') }}:</span>
           <span class='value'>
-            {{ 1.1321 * Number(goodProfit?.Units) }}
+            1.1321 / 1{{ $t(goodProfit?.GoodQuantityUnit || '') }}
             <span class='unit'>{{ $t('MSG_CREDITS') }}</span></span>
         </div>
         <div class='line' v-if='goodProfit?.AppGoodID === "a7f969d9-913f-434c-a915-5f916a629feb" || goodProfit?.AppGoodID === "832242ba-6db2-46a2-951b-5f06eac1acab"'>
           <span class='label'>{{ $t('MSG_TESTNET_BETA_INCENTIVE') }}:</span>
           <span class='value'>
-            {{ 1.1321 * Number(goodProfit?.Units) }}
+            0.69 / 1{{ $t(goodProfit?.GoodQuantityUnit || '') }}
             <span class='unit'>{{ $t('MSG_CREDITS') }}</span></span>
         </div>
         <div class='warning' v-if='$t(sdk.appPowerRental.description(target?.AppGoodID as string, 3)).length > 0'>
